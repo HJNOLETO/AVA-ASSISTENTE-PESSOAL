@@ -1,0 +1,57 @@
+services:
+  ava-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ava-server
+    env_file:
+      - .env
+    command: sh -c "pnpm build && pnpm start"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./sqlite_v2.db:/app/sqlite_v2.db
+      - ./data:/app/data
+    restart: unless-stopped
+
+  telegram-study-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: telegram-study-bot
+    env_file:
+      - .env
+    command: pnpm telegram:study-bot
+    volumes:
+      - ./sqlite_v2.db:/app/sqlite_v2.db
+      - ./data:/app/data
+    depends_on:
+      - ava-server
+    restart: unless-stopped
+
+  study-collector:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: study-collector
+    env_file:
+      - .env
+    command: pnpm collector:study
+    volumes:
+      - ./sqlite_v2.db:/app/sqlite_v2.db
+      - ./data:/app/data
+    depends_on:
+      - ava-server
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+
+volumes:
+  ollama_data:

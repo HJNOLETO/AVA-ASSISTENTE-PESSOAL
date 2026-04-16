@@ -1,0 +1,177 @@
+{
+  "source": "C:\\Users\\hijon\\Downloads\\ava-assistant-30-03-26\\ava-assistant-v3-main\\scripts",
+  "generated_at": "2026-04-07T19:30:40.666Z",
+  "mode": "both",
+  "settings": {
+    "chunk_size": 1800,
+    "overlap_chars": 250,
+    "max_file_size_bytes": 2097152
+  },
+  "totals": {
+    "files_included": 19,
+    "files_excluded": 0,
+    "chunks": 102,
+    "modules": 1
+  },
+  "included_files": [
+    {
+      "file": "check_tags.js",
+      "type": "source_code",
+      "language": "javascript",
+      "chunks": 1,
+      "size": 1676,
+      "hash": "b56d787a7112cb1bf17f24ef1a333812becb5987"
+    },
+    {
+      "file": "clean.ps1",
+      "type": "other_text",
+      "language": "powershell",
+      "chunks": 2,
+      "size": 2184,
+      "hash": "b049906b6b862b1448f0c02facd54ac5103f8cc1"
+    },
+    {
+      "file": "drive-sync-manifest.json",
+      "type": "internal_memory",
+      "language": "json",
+      "chunks": 1,
+      "size": 2,
+      "hash": "bf21a9e8fbc5a3846fb05b4fa0859e0917b2202f"
+    },
+    {
+      "file": "drive_sync.py",
+      "type": "source_code",
+      "language": "python",
+      "chunks": 4,
+      "size": 5890,
+      "hash": "b3364faed0ae6d7a3dc3adb684c1268c5a49191c"
+    },
+    {
+      "file": "full-reset.ps1",
+      "type": "other_text",
+      "language": "powershell",
+      "chunks": 1,
+      "size": 735,
+      "hash": "7b4e41b34b96f4b2264a4b83e852fc8441b2b4eb"
+    },
+    {
+      "file": "import-drive-embeddings-to-memory.ts",
+      "type": "source_code",
+      "language": "typescript",
+      "chunks": 9,
+      "size": 13070,
+      "hash": "0de23bcec6ac5617b8e3f08eb07dd747653d2ecc"
+    },
+    {
+      "file": "index-drive-sync.ts",
+      "type": "source_code",
+      "language": "typescript",
+      "chunks": 8,
+      "size": 11630,
+      "hash": "3574fe011a5734499714d72e978b8bd3f133bad0"
+    },
+    {
+      "file": "knowledge-cli.ts",
+      "type": "source_code",
+      "language": "typescript",
+      "chunks": 14,
+      "size": 20525,
+      "hash": "330ba172baf73206fd7646c319eb0d5df6e7d16e"
+    },
+    {
+      "file": "knowledge-manager.ts",
+      "type": "source_code",
+      "language": "typescript",
+      "chunks": 16,
+      "size": 24187,
+      "hash": "0b8f5c89e7594ed9b69b53a5c57f9fb175d94990"
+    },
+    {
+      "file": "memory-pipeline.ts",
+      "type": "source_code",
+      "language": "typescript",
+      "chunks": 13,
+      "size": 19150,
+      "hash": "9718ba23a9cfe8a6959bfeb6d260ec00b03a76c7"
+    },
+    {
+      "file": "menu.ps1",
+      "type": "other_text",
+      "language": "powershell",
+      "chunks": 7,
+      "size": 12688,
+      "hash": "2c26f50ed658bf204927541236a754da5391be66"
+    },
+    {
+      "file": "prepare-journal-memory.ts",
+      "type": "source_code",
+      "language": "typescript",
+      "chunks": 7,
+      "size": 10916,
+      "hash": "223c1f62a4992f6b3f2f6d2a72c638e0af2a6f10"
+    },
+    {
+      "file": "process-text.ts",
+      "type": "source_code",
+      "language": "typescript",
+      "chunks": 6,
+      "size": 8051,
+      "hash": "e726175232239422d47dbbc504bed6cb5ae24ed0"
+    },
+    {
+      "file": "rag-backup.ts",
+      "type": "source_code",
+      "language": "typescript",
+      "chunks": 2,
+      "size": 3328,
+      "hash": "1f2e7735d51d9f414190bfef0d61e3d4b9d7d07e"
+    },
+    {
+      "file": "README.md",
+      "type": "documentation",
+      "language": "markdown",
+      "chunks": 4,
+      "size": 5407,
+      "hash": "b59a150acaa5a9f90972493c7fa35bc6694665aa"
+    },
+    {
+      "file": "start-dev.ps1",
+      "type": "other_text",
+      "language": "powershell",
+      "chunks": 1,
+      "size": 1697,
+      "hash": "fd74e859fd68a335b72ee5aac1d1fce0373d80e1"
+    },
+    {
+      "file": "start-prod.ps1",
+      "type": "other_text",
+      "language": "powershell",
+      "chunks": 2,
+      "size": 2167,
+      "hash": "339819081b40742a371ed60bc17d3a36c12a0303"
+    },
+    {
+      "file": "start-server.ps1",
+      "type": "other_text",
+      "language": "powershell",
+      "chunks": 2,
+      "size": 1947,
+      "hash": "fe3bbab337c5270e7e2af17314a2b179d97b3aa4"
+    },
+    {
+      "file": "test-rag.ts",
+      "type": "source_code",
+      "language": "typescript",
+      "chunks": 2,
+      "size": 3242,
+      "hash": "631a64c59c41afbd980cc22387357b3ecba16336"
+    }
+  ],
+  "excluded_entries": [],
+  "generated_files": {
+    "tree": "C:\\Users\\hijon\\Downloads\\ava-assistant-30-03-26\\ava-assistant-v3-main\\tmp-knowledge-tests\\knowledge-export-002\\tree.md",
+    "module_summaries_dir": "C:\\Users\\hijon\\Downloads\\ava-assistant-30-03-26\\ava-assistant-v3-main\\tmp-knowledge-tests\\knowledge-export-002\\module-summaries",
+    "chat": "C:\\Users\\hijon\\Downloads\\ava-assistant-30-03-26\\ava-assistant-v3-main\\tmp-knowledge-tests\\knowledge-export-002\\chat.md",
+    "rag": "C:\\Users\\hijon\\Downloads\\ava-assistant-30-03-26\\ava-assistant-v3-main\\tmp-knowledge-tests\\knowledge-export-002\\rag.jsonl"
+  }
+}

@@ -1,0 +1,2 @@
+CREATE UNIQUE INDEX `uq_chunks_document_chunk` ON `documentChunks` (`documentId`,`chunkIndex`);--> statement-breakpoint
+CREATE UNIQUE INDEX `uq_documents_user_external` ON `documents` (`userId`,`externalId`);

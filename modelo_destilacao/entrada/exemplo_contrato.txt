@@ -1,0 +1,29 @@
+CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE DESENVOLVIMENTO DE SOFTWARE
+
+Pelo presente instrumento particular, de um lado [NOME DA EMPRESA], pessoa jurídica de direito privado, inscrita no CNPJ sob o nº [00.000.000/0000-00], doravante denominada CONTRATANTE.
+
+E de outro lado, [NOME DO DESENVOLVEDOR], pessoa física, inscrito no CPF sob o nº [000.000.000-00], doravante denominado CONTRATADO.
+
+CLÁUSULA PRIMEIRA - DO OBJETO
+1.1 O presente contrato tem como objeto a prestação de serviços de desenvolvimento de software, especificamente a criação de um módulo de Inteligência Artificial para análise de documentos (RAG).
+
+CLÁUSULA SEGUNDA - DAS OBRIGAÇÕES
+2.1 O CONTRATADO deverá entregar o código fonte documentado até o dia 30/12/2026.
+2.2 A CONTRATANTE deverá fornecer acesso aos servidores e chaves de API necessárias.
+
+CLÁUSULA TERCEIRA - DO PAGAMENTO
+3.1 Pelo serviço, a CONTRATANTE pagará ao CONTRATADO o valor de R$ 15.000,00 (quinze mil reais), sendo 50% no ato da assinatura e 50% na entrega.
+
+CLÁUSULA QUARTA - DA CONFIDENCIALIDADE
+4.1 As partes se comprometem a manter sigilo absoluto sobre quaisquer dados, segredos industriais ou informações técnicas a que tiverem acesso.
+
+CLÁUSULA QUINTA - DO FORO
+5.1 Fica eleito o foro da Comarca de São Paulo para dirimir quaisquer dúvidas oriundas deste contrato.
+
+São Paulo, 09 de Fevereiro de 2026.
+
+_______________________
+CONTRATANTE
+
+_______________________
+CONTRATADO

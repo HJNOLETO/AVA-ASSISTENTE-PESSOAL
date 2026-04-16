@@ -1,0 +1,25 @@
+{
+  "source": "C:\\Users\\hijon\\Downloads\\ava-assistant-30-03-26\\ava-assistant-v3-main\\scripts\\process-text.ts",
+  "generated_at": "2026-04-07T19:21:21.041Z",
+  "mode": "both",
+  "settings": {
+    "chunk_size": 1800,
+    "overlap_chars": 250,
+    "max_file_size_bytes": 2097152
+  },
+  "totals": {
+    "files_included": 1,
+    "files_excluded": 0,
+    "chunks": 6
+  },
+  "included_files": [
+    {
+      "file": "process-text.ts",
+      "type": "source_code",
+      "chunks": 6,
+      "size": 8051,
+      "hash": "e726175232239422d47dbbc504bed6cb5ae24ed0"
+    }
+  ],
+  "excluded_entries": []
+}
