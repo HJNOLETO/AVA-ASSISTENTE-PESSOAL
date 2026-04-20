@@ -1,6 +1,7 @@
 import { ENV } from "./env";
 import axios from "axios";
 import { nanoid } from "nanoid";
+import { TaskQueue } from "../utils/TaskQueue";
 
 export type Role = "system" | "user" | "assistant" | "tool" | "function";
 
@@ -167,6 +168,14 @@ const fetchWithTimeout = async (url: string, options: RequestInit & { timeout?: 
   }
 };
 
+const ollamaTaskQueue = new TaskQueue({
+  maxConcurrent: ENV.maxConcurrentOllamaCalls,
+});
+
+const cloudTaskQueue = new TaskQueue({
+  maxConcurrent: ENV.maxConcurrentCloudLlmCalls,
+});
+
 export async function generateEmbedding(text: string, provider?: "forge" | "ollama"): Promise<number[]> {
   const selectedProvider = provider || (process.env.LLM_PROVIDER as "forge" | "ollama" | undefined) || "ollama";
   const model = process.env.EMBEDDING_MODEL || (selectedProvider === "ollama" ? "nomic-embed-text" : "text-embedding-3-small");
@@ -222,6 +231,16 @@ export async function generateEmbedding(text: string, provider?: "forge" | "olla
 
 export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
   const provider = params.provider || (process.env.LLM_PROVIDER as "forge" | "ollama" | undefined) || "ollama";
+  const queue = provider === "ollama" ? ollamaTaskQueue : cloudTaskQueue;
+
+  return queue.enqueue(
+    () => invokeLLMInternal({ ...params, provider }),
+    { taskType: "invokeLLM", provider },
+  );
+}
+
+async function invokeLLMInternal(params: InvokeParams & { provider: "forge" | "ollama" }): Promise<InvokeResult> {
+  const provider = params.provider;
   const { messages, tools, toolChoice, tool_choice, outputSchema, output_schema, responseFormat, response_format, model, signal, timeoutMs } = params;
 
   // ===== OLLAMA (Local ou Remoto) =====
@@ -414,6 +433,8 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
   if (normalizedResponseFormat) payload.response_format = normalizedResponseFormat;
 
   try {
+    const forgeTimeout = timeoutMs || Number(process.env.FORGE_CHAT_TIMEOUT_MS || 60000);
+
     const response = await fetchWithTimeout(apiUrl, {
       method: "POST",
       headers: {
@@ -422,7 +443,7 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
       },
       body: JSON.stringify(payload),
       signal,
-      timeout: Number(process.env.FORGE_CHAT_TIMEOUT_MS || 60000),
+      timeout: forgeTimeout,
     });
 
     if (!response.ok) {

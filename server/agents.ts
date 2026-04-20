@@ -299,6 +299,50 @@ export function getAvailableTools(): Tool[] {
     {
       type: "function",
       function: {
+        name: "explorar_diretorio_projeto",
+        description: "[Autoconsciência] Retorna a árvore de diretórios do próprio projeto. Use para descobrir onde os arquivos do sistema estão localizados antes de tentar lê-los.",
+        parameters: {
+          type: "object",
+          properties: {
+            caminho: { type: "string", description: "Caminho relativo (ex: '.' ou 'server/')" }
+          },
+          required: ["caminho"]
+        }
+      }
+    },
+    {
+      type: "function",
+      function: {
+        name: "ler_codigo_fonte",
+        description: "[Autoconsciência] Lê o conteúdo exato de um arquivo fonte do próprio projeto. Use para analisar como uma funcionalidade atual está implementada.",
+        parameters: {
+          type: "object",
+          properties: {
+            caminho_arquivo: { type: "string", description: "Caminho exato do arquivo (ex: 'server/db.ts')" }
+          },
+          required: ["caminho_arquivo"]
+        }
+      }
+    },
+    {
+      type: "function",
+      function: {
+        name: "sistema_de_arquivos",
+        description: "[Gestor de Arquivos] Permite acessar, criar ou modificar arquivos reais no computador local do usuário.",
+        parameters: {
+          type: "object",
+          properties: {
+            acao: { type: "string", enum: ["listar", "ler_arquivo", "criar_arquivo", "editar_arquivo"] },
+            caminho: { type: "string", description: "Caminho absoluto ou relativo no PC local." },
+            conteudo: { type: "string", description: "O conteúdo a ser salvo (para criar) ou modificado." }
+          },
+          required: ["acao", "caminho"]
+        }
+      }
+    },
+    {
+      type: "function",
+      function: {
         name: "criar_lembrete",
         description: "Cria um alerta de tempo (curto prazo, horário específico ou recorrente). Expertise em hábitos e organização pessoal.",
         parameters: {

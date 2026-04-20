@@ -4,6 +4,7 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
+    "predev": "tsx scripts/ensure-ollama-ready.ts",
     "dev": "tsx watch server/_core/index.ts",
     "build": "vite build && esbuild server/_core/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
     "start": "node dist/index.js",
@@ -27,6 +28,7 @@
     "format": "prettier --write .",
     "lint": "prettier --check .",
     "test": "vitest run",
+    "test:stress:ollama": "tsx scripts/stress-ollama-queue.ts",
     "db:push": "drizzle-kit generate && drizzle-kit migrate",
     "db:seed": "tsx server/_core/seed-admin.ts",
     "dev:sqlite": "pnpm dev"

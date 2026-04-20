@@ -184,7 +184,13 @@ function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((pre
     if (typeof window === "undefined") return initialValue;
     try {
       const item = window.localStorage.getItem(key);
-      return item ? (JSON.parse(item) as T) : initialValue;
+      if (!item) return initialValue;
+      try {
+        return JSON.parse(item) as T;
+      } catch (parseError) {
+        // Fallback for raw unquoted strings
+        return item as unknown as T;
+      }
     } catch (error) {
       console.warn(`Error reading localStorage key "${key}":`, error);
       return initialValue;
@@ -2954,7 +2960,7 @@ export function AVAChatBox({ conversationId, mode }: AVAChatBoxProps) {
                   ))}
                 </div>
 
-                {provider === "ollama" && connectionStatus !== "connected" && (
+                {provider === "ollama" && connectionStatus === "error" && (
                   <div className="mt-12 p-4 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center gap-3 text-orange-600 dark:text-orange-400 max-w-md">
                     <WifiOff className="h-5 w-5 shrink-0" />
                     <p className="text-xs leading-relaxed">

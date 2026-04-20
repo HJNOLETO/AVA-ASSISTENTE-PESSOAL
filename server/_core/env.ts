@@ -1,3 +1,15 @@
+const parsePositiveInt = (value: string | undefined, fallback: number): number => {
+  if (!value) return fallback;
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed <= 0) return fallback;
+  return Math.floor(parsed);
+};
+
+const parseOllamaConcurrency = (value: string | undefined): number => {
+  const parsed = parsePositiveInt(value, 1);
+  return Math.min(parsed, 1);
+};
+
 export const ENV = {
   appId: process.env.VITE_APP_ID ?? "",
   cookieSecret: process.env.JWT_SECRET ?? "",
@@ -13,4 +25,6 @@ export const ENV = {
   openaiApiKey: process.env.OPENAI_API_KEY ?? "",
   groqApiKey: process.env.GROQ_API_KEY ?? "",
   localWhisperUrl: process.env.WHISPER_LOCAL_URL ?? "",
+  maxConcurrentOllamaCalls: parseOllamaConcurrency(process.env.MAX_CONCURRENT_OLLAMA_CALLS),
+  maxConcurrentCloudLlmCalls: parsePositiveInt(process.env.MAX_CONCURRENT_CLOUD_LLM_CALLS, 5),
 };

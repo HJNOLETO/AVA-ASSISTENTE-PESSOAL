@@ -2898,6 +2898,11 @@ export const appRouter = router({
 3. SEMPRE verifique se a data escolhida cai em FIM DE SEMANA (Sábado/Domingo) ou FERIADO NACIONAL (use a ferramenta obter_feriados).
 4. Se a data for um feriado ou fim de semana, ALERTE o usuário e pergunte se ele deseja prosseguir ou prefere o próximo dia útil.
 5. Em lembretes recorrentes, use um tom proativo e encorajador.
+
+\n[DIRETRIZ DE AGENTE DE SISTEMA E REFLEXÃO]:
+Você agora tem acesso de leitura e escrita ao computador local do usuário e à sua própria arquitetura.
+1. Se o usuário pedir para criar, editar ou ler um arquivo dele (ex: "salve na minha Área de Trabalho"), USE a ferramenta 'sistema_de_arquivos'. Não recuse; aja e modifique arquivos reais.
+2. Se o usuário pedir para evoluir você mesmo ou perguntar como você funciona, USE 'explorar_diretorio_projeto' e 'ler_codigo_fonte' para ler seu próprio backend antes de sugerir um código de alteração.
 `;
 
           if (selectedProvider === "ollama") {
@@ -2999,7 +3004,6 @@ export const appRouter = router({
           }
 
           // ✅ MELHORIA: Timeout e tratamento de erro detalhado
-          const controller = new AbortController();
           const ollamaTimeoutFromEnv = Number(process.env.OLLAMA_CHAT_TIMEOUT_MS || process.env.OLLAMA_TIMEOUT_MS || 0);
           const forgeTimeoutFromEnv = Number(process.env.FORGE_CHAT_TIMEOUT_MS || 0);
 
@@ -3008,8 +3012,6 @@ export const appRouter = router({
               ? ollamaTimeoutFromEnv
               : (isVisionHeavy ? 420000 : (hasDocumentContext ? 300000 : 180000)))
             : (Number.isFinite(forgeTimeoutFromEnv) && forgeTimeoutFromEnv > 0 ? forgeTimeoutFromEnv : 120000);
-          const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-
           // ✅ NOVA MELHORIA: Passar tools disponíveis para que o LLM possa usá-las
           const availableTools = getAvailableTools();
 
@@ -3032,14 +3034,14 @@ export const appRouter = router({
           const llmResult = await executeWithFallback({
             capability: "llm",
             request_id: guardResult.request_id,
-            timeoutMs, // ← repassa o timeout calculado do .env (ex: 1.800.000ms = 30min)
+            skipTimeout: true,
             primary: () =>
               orchestrateAgentResponse(
                 messages,
                 selectedProvider,
                 input.model,
                 availableTools,
-                controller.signal,
+                undefined,
                 timeoutMs
               ),
             fallback: () =>
@@ -3049,7 +3051,7 @@ export const appRouter = router({
                     fallbackProvider,
                     input.model,
                     availableTools,
-                    controller.signal,
+                    undefined,
                     timeoutMs
                   )
                 : Promise.reject(
@@ -3062,8 +3064,6 @@ export const appRouter = router({
           const duration = Date.now() - startTime;
           console.log(`[CHAT] LLM finalizado em ${duration}ms (status: ${llmResult.ok ? "sucesso" : "falha"})`);
           
-          clearTimeout(timeoutId);
-
           if (!llmResult.ok || !llmResult.value) {
             throw new Error(buildUnavailableResponse("llm"));
           }
@@ -3399,6 +3399,58 @@ export const appRouter = router({
                    } catch (e) {
                      toolResult = "Erro ao buscar feriados: " + (e as any).message;
                    }
+                } else if (tc.function.name === "explorar_diretorio_projeto") {
+                   const cwd = process.cwd();
+                   const target = path.resolve(cwd, args.caminho || ".");
+                   if (!target.startsWith(cwd)) {
+                      toolResult = "Erro de Segurança: Acesso negado fora do workspace do projeto.";
+                   } else {
+                      try {
+                        const items = await fs.promises.readdir(target, { withFileTypes: true });
+                        const filtered = items.filter(i => !['node_modules', '.git', 'dist'].includes(i.name))
+                                              .map(i => `${i.isDirectory() ? '[DIR]' : '[FILE]'} ${i.name}`);
+                        toolResult = `Diretório '${args.caminho}':\n${filtered.join("\n")}`;
+                      } catch(e) { toolResult = `Erro ao ler diretório: ${(e as any).message}`; }
+                   }
+                } else if (tc.function.name === "ler_codigo_fonte") {
+                   const cwd = process.cwd();
+                   const target = path.resolve(cwd, args.caminho_arquivo);
+                   if (!target.startsWith(cwd)) {
+                      toolResult = "Erro de Segurança: Acesso negado fora do workspace do projeto.";
+                   } else {
+                      try {
+                        const stats = await fs.promises.stat(target);
+                        if (stats.size > 200000) toolResult = "Erro: Arquivo muito grande (>200KB) para análise completa.";
+                        else {
+                           const content = await fs.promises.readFile(target, "utf-8");
+                           toolResult = `\n--- INICIO DE ${args.caminho_arquivo} ---\n${content}\n--- FIM ---`;
+                        }
+                      } catch(e) { toolResult = `Erro ao ler arquivo: ${(e as any).message}`; }
+                   }
+                } else if (tc.function.name === "sistema_de_arquivos") {
+                   const { acao, caminho, conteudo } = args;
+                   // Em produção, restringir a pasta Documentos do usuário. Aqui usamos o caminho direto ou absoluto.
+                   let targetPath = path.isAbsolute(caminho) ? path.normalize(caminho) : path.resolve(process.cwd(), caminho);
+                   
+                   try {
+                     if (acao === "listar") {
+                        const items = await fs.promises.readdir(targetPath);
+                        toolResult = `Conteúdo de ${targetPath}:\n${items.join("\n")}`;
+                     } else if (acao === "ler_arquivo") {
+                        const content = await fs.promises.readFile(targetPath, "utf-8");
+                        toolResult = `Conteúdo de ${targetPath}:\n${content}`;
+                     } else if (acao === "criar_arquivo" || acao === "editar_arquivo") {
+                        // Impedir gravação bloqueadora
+                        if (targetPath.toLowerCase().includes("windows\\system32")) {
+                           toolResult = "Erro de Segurança: Caminhos do sistema operacional bloqueados.";
+                        } else {
+                           await fs.promises.writeFile(targetPath, conteudo || "");
+                           toolResult = `Sucesso: Arquivo ${targetPath} operado (ação: ${acao}).`;
+                        }
+                     }
+                   } catch(e) {
+                      toolResult = `Erro no file system: ${(e as any).message}`;
+                   }
                 } else if (tc.function.name === "criar_lembrete") {
                   const mensagem = String(args.mensagem || "").trim();
                   const minutos = args.minutos_daqui !== undefined ? Number(args.minutos_daqui) : undefined;
@@ -3456,7 +3508,7 @@ export const appRouter = router({
                 selectedProvider,
                 input.model,
                 availableTools,
-                controller.signal,
+                undefined,
                 timeoutMs
               );
 

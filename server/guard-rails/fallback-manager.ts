@@ -80,6 +80,8 @@ export async function executeWithFallback<T>(params: {
   fallback: () => Promise<T>;
   /** Timeout customizado em ms. Quando fornecido, sobrescreve o valor hardcoded de CAPABILITY_TIMEOUT_MS. */
   timeoutMs?: number;
+  /** Quando true, nao aplica timeout global e usa apenas timeouts internos da operacao. */
+  skipTimeout?: boolean;
 }): Promise<FallbackResult<T>> {
   if (isCircuitOpen(params.capability)) {
     try {
@@ -100,7 +102,9 @@ export async function executeWithFallback<T>(params: {
   }
 
   try {
-    const value = await runWithTimeout(params.capability, params.primary, params.timeoutMs);
+    const value = params.skipTimeout
+      ? await params.primary()
+      : await runWithTimeout(params.capability, params.primary, params.timeoutMs);
     markSuccess(params.capability);
     return { ok: true, value, fallback_used: false };
   } catch (primaryError) {
@@ -116,7 +120,9 @@ export async function executeWithFallback<T>(params: {
     });
 
     try {
-      const value = await runWithTimeout(params.capability, params.fallback, params.timeoutMs);
+      const value = params.skipTimeout
+        ? await params.fallback()
+        : await runWithTimeout(params.capability, params.fallback, params.timeoutMs);
       return {
         ok: true,
         value,
