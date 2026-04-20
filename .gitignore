@@ -119,3 +119,18 @@ embeddings/
 .chroma/
 *.csv
 !scripts/import-roberto-csv.ts
+
+# Local docs/examples and unnecessary artifacts
+examples/
+example/
+backup/
+project_documentation/
+AVA_Project_V3.1_Upgrade/
+modelo_destilacao/
+scratch/
+tmp-knowledge-tests/
+login_info.zip
+
+# Extra env-like local files
+.env*
+!.env.example
