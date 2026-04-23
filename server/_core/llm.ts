@@ -43,7 +43,7 @@ export type InvokeParams = {
   output_schema?: OutputSchema;
   responseFormat?: ResponseFormat;
   response_format?: ResponseFormat;
-  provider?: "forge" | "ollama";
+  provider?: "forge" | "ollama" | "groq" | "gemini";
   model?: string;
   ollamaBaseUrl?: string;
   ollamaAuthToken?: string;
@@ -101,10 +101,16 @@ const normalizeMessage = (message: Message) => {
   }
 
   const contentParts = ensureArray(message.content).map(normalizeContentPart);
-  if (contentParts.length === 1 && contentParts[0].type === "text") {
-    return { role, name, content: contentParts[0].text };
+  
+  const baseReturn = { role, name };
+  if (message.tool_calls) {
+    (baseReturn as any).tool_calls = message.tool_calls;
   }
-  return { role, name, content: contentParts };
+
+  if (contentParts.length === 1 && contentParts[0].type === "text") {
+    return { ...baseReturn, content: contentParts[0].text };
+  }
+  return { ...baseReturn, content: contentParts };
 };
 
 const normalizeToolChoice = (toolChoice: ToolChoice | undefined, tools: Tool[] | undefined): 
@@ -230,7 +236,7 @@ export async function generateEmbedding(text: string, provider?: "forge" | "olla
 }
 
 export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
-  const provider = params.provider || (process.env.LLM_PROVIDER as "forge" | "ollama" | undefined) || "ollama";
+  const provider = params.provider || (process.env.LLM_PROVIDER as "forge" | "ollama" | "groq" | "gemini" | undefined) || "ollama";
   const queue = provider === "ollama" ? ollamaTaskQueue : cloudTaskQueue;
 
   return queue.enqueue(
@@ -239,7 +245,7 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
   );
 }
 
-async function invokeLLMInternal(params: InvokeParams & { provider: "forge" | "ollama" }): Promise<InvokeResult> {
+async function invokeLLMInternal(params: InvokeParams & { provider: "forge" | "ollama" | "groq" | "gemini" }): Promise<InvokeResult> {
   const provider = params.provider;
   const { messages, tools, toolChoice, tool_choice, outputSchema, output_schema, responseFormat, response_format, model, signal, timeoutMs } = params;
 
@@ -411,13 +417,27 @@ async function invokeLLMInternal(params: InvokeParams & { provider: "forge" | "o
     }
   }
 
-  // ===== FORGE (Cloud) =====
-  assertApiKey();
-  const apiUrl = resolveApiUrl();
-  console.log(`[LLM] Conectando ao Forge: ${apiUrl}`);
+  // ===== CLOUD LLM (Forge / Groq / Gemini) =====
+  let apiKey = ENV.forgeApiKey;
+  let apiUrl = resolveApiUrl();
+
+  if (provider === "groq") {
+    apiKey = process.env.GROQ_API_KEY ?? "";
+    if (!apiKey) throw new Error("GROQ_API_KEY is not configured");
+    apiUrl = "https://api.groq.com/openai/v1/chat/completions";
+    console.log(`[LLM] Conectando ao Groq: ${apiUrl}`);
+  } else if (provider === "gemini") {
+    apiKey = process.env.GEMINI_API_KEY ?? "";
+    if (!apiKey) throw new Error("GEMINI_API_KEY is not configured");
+    apiUrl = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
+    console.log(`[LLM] Conectando ao Gemini Proxy: ${apiUrl}`);
+  } else {
+    assertApiKey();
+    console.log(`[LLM] Conectando ao Forge: ${apiUrl}`);
+  }
 
   const payload: Record<string, unknown> = {
-    model: model || "gemini-2.5-flash",
+    model: model || (provider === "groq" ? "llama-3.3-70b-versatile" : provider === "gemini" ? (process.env.GEMINI_MODEL || "gemini-2.5-flash") : "gemini-2.5-flash"),
     messages: messages.map(normalizeMessage),
   };
 
@@ -426,8 +446,10 @@ async function invokeLLMInternal(params: InvokeParams & { provider: "forge" | "o
   const normalizedToolChoice = normalizeToolChoice(toolChoice || tool_choice, tools);
   if (normalizedToolChoice) payload.tool_choice = normalizedToolChoice;
 
-  payload.max_tokens = 32768;
-  payload.thinking = { "budget_tokens": 128 };
+  payload.max_tokens = 8000;
+  if (provider === "forge") {
+    payload.thinking = { "budget_tokens": 128 };
+  }
 
   const normalizedResponseFormat = normalizeResponseFormat({ responseFormat, response_format, outputSchema, output_schema });
   if (normalizedResponseFormat) payload.response_format = normalizedResponseFormat;
@@ -439,7 +461,7 @@ async function invokeLLMInternal(params: InvokeParams & { provider: "forge" | "o
       method: "POST",
       headers: {
         "content-type": "application/json",
-        authorization: `Bearer ${ENV.forgeApiKey}`,
+        authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify(payload),
       signal,

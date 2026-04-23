@@ -1,0 +1,21 @@
+services:
+  ava-cli:
+    build:
+      context: .
+      dockerfile: cli.Dockerfile
+    container_name: ava-cli
+    env_file:
+      - .env
+    working_dir: /app
+    # Como o cli.Dockerfile já possui ENTRYPOINT, enviaremos apenas o parametro padrão:
+    command: ["--help"]
+    volumes:
+      # Monta o código do host (dev mode)
+      - ./:/app
+      # Protege os módulos instalados no contêiner
+      - /app/node_modules
+      # Banco de dados
+      - ./sqlite_v2.db:/app/sqlite_v2.db
+      # Mapeamento confidencial dos diretórios externos (dados e backup)
+      - ../ava-assistant-v3-main-dados:/app/data
+      - ../ava-assistant-v3-main-backup:/app/backup

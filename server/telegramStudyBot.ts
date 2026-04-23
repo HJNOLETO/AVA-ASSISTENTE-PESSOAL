@@ -1,9 +1,18 @@
-import "dotenv/config";
-import fs from "fs/promises";
+import dotenv from "dotenv";
+import { fileURLToPath } from "url";
 import path from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
+import fs from "fs/promises";
 import { getDocumentsRAG } from "./db";
 import { searchRelevantChunks } from "./rag";
 import { invokeLLM } from "./_core/llm";
+import { exec } from "child_process";
+import { promisify } from "util";
+
+const execAsync = promisify(exec);
 
 type TelegramUpdate = {
   update_id: number;
@@ -73,12 +82,33 @@ async function telegramGetUpdates(offset: number): Promise<TelegramUpdate[]> {
     body: JSON.stringify({ offset, timeout: 30, allowed_updates: ["message"] }),
   });
   if (!res.ok) {
-    throw new Error(`Telegram getUpdates falhou (HTTP ${res.status})`);
+    let errDesc = "";
+    try {
+      const errBody = await res.json();
+      errDesc = errBody.description || errBody.error_code || "Unknown Error";
+    } catch {
+      errDesc = await res.text().catch(() => "");
+    }
+    throw new Error(`Telegram getUpdates falhou (HTTP ${res.status}) - ${errDesc}`);
   }
 
   const payload = (await res.json()) as { ok: boolean; result?: TelegramUpdate[] };
   if (!payload.ok) return [];
   return payload.result || [];
+}
+
+async function telegramDeleteWebhook(): Promise<void> {
+  const url = apiUrl("deleteWebhook");
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ drop_pending_updates: true })
+  });
+  if (res.ok) {
+    console.log("[telegram-study-bot] Webhook do Telegram removido (prevenindo conflito 409).");
+  } else {
+    console.warn(`[telegram-study-bot] Falha ao remover webhook: HTTP ${res.status}`);
+  }
 }
 
 function chunkMessage(text: string, size = 3900) {
@@ -488,6 +518,7 @@ async function handleIncomingMessage(chatId: string, text: string, firstName?: s
         "/leitura <tema> - cria roteiro de leitura",
         "/post <tema> - gera post (texto + imagem)",
         "/carrossel <tema> - gera carrossel (texto + imagens)",
+        "/cli <comando> - Executa um comando autônomo remoto na máquina host",
       ].join("\n")
     );
     return;
@@ -496,6 +527,38 @@ async function handleIncomingMessage(chatId: string, text: string, firstName?: s
   if (cmd === "/novidades") {
     const summary = await latestTopicsSummary(TELEGRAM_LOOKBACK_MINUTES);
     await telegramSendMessage(chatId, summary);
+    return;
+  }
+
+  if (cmd === "/cli") {
+    if (!arg) {
+      await telegramSendMessage(chatId, "Use: /cli <tarefa para executar autonomamente na maquina>");
+      return;
+    }
+    await telegramSendMessage(chatId, `⏳ Agente CLI acionado localmente. Processando a tarefa: "${arg}"...`);
+    try {
+      // Execução Nativa de alta performance ignorando o Docker devido as falhas de VHD do Windows
+      const { stdout, stderr } = await execAsync(`npx tsx cli/index.ts ask "${arg.replace(/"/g, '\\"')}"`, { 
+        timeout: 120000 
+      });
+      
+      const output = stdout.trim();
+      let responseMsg = "[Terminal AVA-CLI (Nativo)]\n\n";
+      
+      // Filtrar linhas irrelevantes do stdout (TaskQueue, logs chatos...)
+      const cleanOutput = output.split('\n')
+          .filter(l => !l.startsWith('[TaskQueue]') && !l.startsWith('[LLM]') && !l.startsWith('Container '))
+          .join('\n');
+      
+      responseMsg += cleanOutput.slice(0, 3900);
+      if (stderr) {
+         responseMsg += `\n\n[Avisos do Sistema]:\n${stderr.slice(0, 500)}`;
+      }
+      await telegramSendMessage(chatId, responseMsg);
+    } catch (err) {
+      const errorMsg = String((err as Error).message);
+      await telegramSendMessage(chatId, `❌ Erro de execucao no Proxy Nativo CLI: ${errorMsg}`);
+    }
     return;
   }
 
@@ -594,8 +657,34 @@ async function handleIncomingMessage(chatId: string, text: string, firstName?: s
     return;
   }
 
-  const answer = await answerWithRag(normalized);
-  await telegramSendMessage(chatId, answer);
+  await telegramSendMessage(chatId, `⏳ Analisando sua solicitação...`);
+  try {
+    const { stdout, stderr } = await execAsync(`npx tsx cli/index.ts ask "${normalized.replace(/"/g, '\\"')}"`, { 
+      timeout: 120000 
+    });
+    
+    // Limpar output feio de logs internos e terminal
+    const cleanOutput = stdout.trim().split('\n')
+        .filter(l => !l.startsWith('[TaskQueue]') && !l.startsWith('[LLM]') && !l.startsWith('Container ') && !l.includes('[SYS]'))
+        .join('\n');
+    
+    let responseMsg = cleanOutput.slice(0, 3900);
+    // Limpar quebras de linha excessivas e logs '[AVA Responde]:'
+    responseMsg = responseMsg.replace(/\[AVA Responde\]:/gi, "").trim();
+
+    if (stderr) {
+       responseMsg += `\n\n[Avisos do Sistema]:\n${stderr.slice(0, 500)}`;
+    }
+    
+    if (!responseMsg) {
+       responseMsg = "Não foi possível gerar uma resposta. Tente reformular a solicitação.";
+    }
+    
+    await telegramSendMessage(chatId, responseMsg);
+  } catch (err) {
+    const errorMsg = String((err as Error).message);
+    await telegramSendMessage(chatId, `❌ Erro de processamento: ${errorMsg}`);
+  }
 }
 
 async function runNotifier(state: BotState) {
@@ -640,6 +729,13 @@ async function start() {
 
   console.log("[telegram-study-bot] iniciado");
   console.log(`[telegram-study-bot] userId=${TELEGRAM_STUDY_USER_ID}`);
+  
+  // GARANTIR QUE NENHUM WEBHOOK (ex: n8n) ESTEJA ATIVO CONFLITANDO COM O POLLING
+  try {
+    await telegramDeleteWebhook();
+  } catch (err: any) {
+    console.error("[telegram-study-bot] Falha silenciosa ao tentar deletar webhook:", err?.message);
+  }
 
   setInterval(() => {
     runNotifier(state).catch(err => {
