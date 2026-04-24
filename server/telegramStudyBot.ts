@@ -42,6 +42,48 @@ const TELEGRAM_IMAGE_PROVIDER = (process.env.TELEGRAM_IMAGE_PROVIDER || "pollina
 const TELEGRAM_CAROUSEL_SLIDES = Number(process.env.TELEGRAM_CAROUSEL_SLIDES || "5");
 
 const statePath = path.join(process.cwd(), "data", "telegram-study-bot-state.json");
+const lockPath = path.join(process.cwd(), "data", "telegram-study-bot.lock");
+
+function buildCliAskCommand(rawQuery: string) {
+  const safeQuery = rawQuery.replace(/"/g, '\\"');
+  const provider = TELEGRAM_TEXT_PROVIDER === "gemini"
+    ? "gemini"
+    : TELEGRAM_TEXT_PROVIDER === "groq"
+      ? "groq"
+      : TELEGRAM_TEXT_PROVIDER === "ollama"
+        ? "ollama"
+        : "";
+
+  const modelArg = provider === "gemini" && GEMINI_MODEL
+    ? ` --model "${GEMINI_MODEL.replace(/"/g, '\\"')}"`
+    : "";
+
+  const providerArg = provider ? ` --provider ${provider}` : "";
+  return `npx tsx cli/index.ts ask "${safeQuery}"${providerArg}${modelArg}`;
+}
+
+function formatExecError(err: unknown): string {
+  const anyErr = err as { message?: string; stderr?: string; stdout?: string };
+  const base = String(anyErr?.message || err || "Erro desconhecido");
+  const stderr = String(anyErr?.stderr || "").trim();
+  const stdout = String(anyErr?.stdout || "").trim();
+
+  const details: string[] = [base];
+  if (stderr) details.push(`stderr: ${stderr.slice(0, 800)}`);
+  if (stdout) details.push(`stdout: ${stdout.slice(0, 800)}`);
+  return details.join("\n");
+}
+
+function parseAllowedChatIds(raw: string): Set<string> {
+  return new Set(
+    String(raw || "")
+      .split(/[;,\s]+/g)
+      .map((v) => v.trim())
+      .filter(Boolean)
+  );
+}
+
+const ALLOWED_CHAT_IDS = parseAllowedChatIds(TELEGRAM_CHAT_ID);
 
 function assertConfig() {
   if (!TELEGRAM_BOT_TOKEN) {
@@ -72,6 +114,46 @@ async function readState(): Promise<BotState> {
 async function writeState(state: BotState) {
   await fs.mkdir(path.dirname(statePath), { recursive: true });
   await fs.writeFile(statePath, JSON.stringify(state, null, 2), "utf-8");
+}
+
+function isPidRunning(pid: number): boolean {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function acquireSingleInstanceLock() {
+  await fs.mkdir(path.dirname(lockPath), { recursive: true });
+
+  let existingPid = 0;
+  try {
+    const existingRaw = await fs.readFile(lockPath, "utf-8");
+    existingPid = Number(existingRaw.trim());
+  } catch {
+    // lock ausente ou invalido
+  }
+
+  if (Number.isFinite(existingPid) && existingPid > 0 && isPidRunning(existingPid)) {
+    throw new Error(
+      `Ja existe outra instancia ativa do telegramStudyBot (pid=${existingPid}). Finalize a instancia anterior antes de iniciar outra.`
+    );
+  }
+
+  await fs.writeFile(lockPath, String(process.pid), "utf-8");
+}
+
+async function releaseSingleInstanceLock() {
+  try {
+    const current = await fs.readFile(lockPath, "utf-8");
+    if (String(process.pid) === current.trim()) {
+      await fs.unlink(lockPath);
+    }
+  } catch {
+    // lock ja removido
+  }
 }
 
 async function telegramGetUpdates(offset: number): Promise<TelegramUpdate[]> {
@@ -268,12 +350,25 @@ async function invokeGemini(prompt: string, expectJson = false): Promise<string>
 
 async function invokeTextModel(prompt: string, expectJson = false): Promise<string> {
   if (TELEGRAM_TEXT_PROVIDER === "gemini") {
-    return invokeGemini(prompt, expectJson);
+    try {
+      return await invokeGemini(prompt, expectJson);
+    } catch (err: any) {
+      const msg = String(err?.message || err || "");
+      console.warn(`[telegram-study-bot] Gemini direto falhou, ativando fallback de providers: ${msg}`);
+    }
   }
 
+  const selectedProvider =
+    TELEGRAM_TEXT_PROVIDER === "gemini" ||
+    TELEGRAM_TEXT_PROVIDER === "groq" ||
+    TELEGRAM_TEXT_PROVIDER === "ollama" ||
+    TELEGRAM_TEXT_PROVIDER === "forge"
+      ? TELEGRAM_TEXT_PROVIDER
+      : LLM_PROVIDER;
+
   const result = await invokeLLM({
-    provider: LLM_PROVIDER,
-    model: LLM_MODEL,
+    provider: selectedProvider,
+    model: selectedProvider === "gemini" ? GEMINI_MODEL : LLM_MODEL,
     messages: [{ role: "user", content: prompt }],
     timeoutMs: 90000,
     responseFormat: expectJson ? { type: "json_object" } : undefined,
@@ -500,7 +595,14 @@ function parseCommand(text: string) {
 }
 
 async function handleIncomingMessage(chatId: string, text: string, firstName?: string) {
-  if (TELEGRAM_CHAT_ID && chatId !== TELEGRAM_CHAT_ID) {
+  if (ALLOWED_CHAT_IDS.size > 0 && !ALLOWED_CHAT_IDS.has(chatId)) {
+    console.warn(
+      `[telegram-study-bot] chat nao autorizado ignorado: recebido=${chatId} permitido=${Array.from(ALLOWED_CHAT_IDS).join(",")}`
+    );
+    await telegramSendMessage(
+      chatId,
+      "Este chat nao esta autorizado para este bot. Configure TELEGRAM_CHAT_ID com este chat_id no .env e reinicie o bot."
+    );
     return;
   }
 
@@ -537,8 +639,9 @@ async function handleIncomingMessage(chatId: string, text: string, firstName?: s
     }
     await telegramSendMessage(chatId, `⏳ Agente CLI acionado localmente. Processando a tarefa: "${arg}"...`);
     try {
+      const cliCommand = buildCliAskCommand(arg);
       // Execução Nativa de alta performance ignorando o Docker devido as falhas de VHD do Windows
-      const { stdout, stderr } = await execAsync(`npx tsx cli/index.ts ask "${arg.replace(/"/g, '\\"')}"`, { 
+      const { stdout, stderr } = await execAsync(cliCommand, {
         timeout: 120000 
       });
       
@@ -556,7 +659,7 @@ async function handleIncomingMessage(chatId: string, text: string, firstName?: s
       }
       await telegramSendMessage(chatId, responseMsg);
     } catch (err) {
-      const errorMsg = String((err as Error).message);
+      const errorMsg = formatExecError(err);
       await telegramSendMessage(chatId, `❌ Erro de execucao no Proxy Nativo CLI: ${errorMsg}`);
     }
     return;
@@ -659,7 +762,8 @@ async function handleIncomingMessage(chatId: string, text: string, firstName?: s
 
   await telegramSendMessage(chatId, `⏳ Analisando sua solicitação...`);
   try {
-    const { stdout, stderr } = await execAsync(`npx tsx cli/index.ts ask "${normalized.replace(/"/g, '\\"')}"`, { 
+    const cliCommand = buildCliAskCommand(normalized);
+    const { stdout, stderr } = await execAsync(cliCommand, {
       timeout: 120000 
     });
     
@@ -682,7 +786,7 @@ async function handleIncomingMessage(chatId: string, text: string, firstName?: s
     
     await telegramSendMessage(chatId, responseMsg);
   } catch (err) {
-    const errorMsg = String((err as Error).message);
+    const errorMsg = formatExecError(err);
     await telegramSendMessage(chatId, `❌ Erro de processamento: ${errorMsg}`);
   }
 }
@@ -725,10 +829,14 @@ async function runNotifier(state: BotState) {
 
 async function start() {
   assertConfig();
+  await acquireSingleInstanceLock();
   const state = await readState();
 
   console.log("[telegram-study-bot] iniciado");
   console.log(`[telegram-study-bot] userId=${TELEGRAM_STUDY_USER_ID}`);
+  console.log(
+    `[telegram-study-bot] chatIdsPermitidos=${ALLOWED_CHAT_IDS.size > 0 ? Array.from(ALLOWED_CHAT_IDS).join(",") : "(todos)"}`
+  );
   
   // GARANTIR QUE NENHUM WEBHOOK (ex: n8n) ESTEJA ATIVO CONFLITANDO COM O POLLING
   try {
@@ -756,7 +864,16 @@ async function start() {
       }
       await writeState(state);
     } catch (err) {
-      console.error("[telegram-study-bot] erro no polling:", err);
+      const msg = String((err as Error)?.message || err || "");
+      if (msg.includes("HTTP 409") || msg.toLowerCase().includes("terminated by other getupdates request")) {
+        console.error(
+          "[telegram-study-bot] conflito 409: outra instancia do bot (ou outro consumidor de getUpdates) esta ativa com o mesmo token. Mantenha apenas UMA instancia em execucao."
+        );
+        await releaseSingleInstanceLock();
+        process.exit(1);
+      } else {
+        console.error("[telegram-study-bot] erro no polling:", err);
+      }
       await new Promise(resolve => setTimeout(resolve, 3000));
     }
   }
@@ -765,4 +882,12 @@ async function start() {
 start().catch(err => {
   console.error("[telegram-study-bot] falha fatal:", err);
   process.exit(1);
+});
+
+process.on("SIGINT", () => {
+  releaseSingleInstanceLock().finally(() => process.exit(0));
+});
+
+process.on("SIGTERM", () => {
+  releaseSingleInstanceLock().finally(() => process.exit(0));
 });

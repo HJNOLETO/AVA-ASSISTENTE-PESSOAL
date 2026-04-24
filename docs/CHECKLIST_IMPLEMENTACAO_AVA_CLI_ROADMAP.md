@@ -15,15 +15,26 @@ Legenda:
 - [~] em andamento
 - [x] concluido
 
+Atualizacao de progresso (2026-04-23):
+
+- Implementado: correcao do `ask-ava.bat`, conexao de `gerenciar_agenda`, `criar_lembrete`, `listar_lembretes` e `registrar_historico_estudo` no `cli/index.ts`, exposicao de `listar_lembretes` e `registrar_historico_estudo` em `server/agents.ts`, e criacao de `docs/STATUS_AVA_CLI_ROADMAP.md` com padrao de evidencias.
+- Implementado (continuidade): sandbox inicial de File CRUD no `cli/index.ts` com `AVA_WORKSPACE_DIRS`/`AVA_READONLY_DIRS`, validacao de escrita/delecao por whitelist e conexao das tools `criar_arquivo`, `mover_arquivo`, `copiar_arquivo`, `renomear_arquivo`, `apagar_arquivo`, `criar_pasta` em `server/agents.ts` + `cli/index.ts`.
+- Implementado (continuidade): tools de web `buscar_web`, `navegar_pagina` e `extrair_conteudo_estruturado` no `cli/index.ts` + `server/agents.ts`, com timeout de 30s, limite de retorno textual e tratamento de erros HTTP/rede (fallback HTTP; Playwright ainda pendente).
+- Implementado (continuidade): roteamento de skills com prioridade configuravel (`AVA_SKILLS_MODE`) entre `.agent` e `.opencode` em `server/agents.ts`, e tool `criar_skill_customizada` para permitir criacao de novas skills em `.agent/skills/<slug>/SKILL.md` quando necessario.
+- Implementado (continuidade): configuracao de `.env` para `AVA_SKILLS_MODE`, `AVA_WORKSPACE_DIRS` e `AVA_READONLY_DIRS`, e guia de homologacao com cenarios praticos em `docs/GUIA_TESTES_PRATICOS_AVA_CLI.md`.
+- Executado: rodada de testes praticos com relatorio em `docs/RELATORIO_TESTES_PRATICOS_2026-04-23.md` e ajustes corretivos no `ask-ava.bat` + `cli/index.ts`.
+- Validado: `npx tsx cli/index.ts --help`.
+- Pendente de homologacao operacional: testes manuais completos no Telegram e execucao real via Docker/Windows.
+
 ---
 
 ## 0) Preparacao geral (antes das fases)
 
 - [ ] Criar branch de implementacao do roadmap (ex: `feature/ava-cli-roadmap-phase0`)
   - Pronto quando: branch criada e publicada no remoto.
-- [ ] Definir arquivo de controle de status por fase (ex: `docs/STATUS_AVA_CLI_ROADMAP.md`)
+- [x] Definir arquivo de controle de status por fase (ex: `docs/STATUS_AVA_CLI_ROADMAP.md`)
   - Pronto quando: status inicial com todas as tarefas pendentes.
-- [ ] Definir padrao de evidencia por tarefa (commit, screenshot, log, teste)
+- [x] Definir padrao de evidencia por tarefa (commit, screenshot, log, teste)
   - Pronto quando: padrao documentado no topo do arquivo de status.
 
 ---
@@ -32,8 +43,8 @@ Legenda:
 
 ### 1.1 Corrigir `ask-ava.bat`
 
-- [ ] Alterar comando para usar ENTRYPOINT do container
-  - Implementacao alvo: `docker-compose -f docker-compose.cli.yml run --rm ava-cli ask "%*"`
+- [x] Alterar comando para usar ENTRYPOINT do container
+  - Implementacao alvo: `docker compose -f docker-compose.cli.yml run --rm --no-deps ava-cli-runtime ask "%*"` (com fallback para `--provider gemini` se o provider padrao falhar)
   - Arquivo: `ask-ava.bat`
 - [ ] Validar execucao no Windows com 3 prompts reais
   - Pronto quando: respostas retornam sem erro de argumento duplicado.
@@ -42,7 +53,7 @@ Legenda:
 
 ### 1.2 Habilitar conversa livre no Telegram
 
-- [ ] Implementar fallback para mensagem sem prefixo `/`
+- [x] Implementar fallback para mensagem sem prefixo `/`
   - Arquivo: `server/telegramStudyBot.ts`
 - [ ] Garantir que comandos `/` existentes continuam funcionando
   - Comandos minimos: `/novidades`, `/resumo`, `/quiz`, `/cli`.
@@ -51,23 +62,23 @@ Legenda:
 
 ### 1.3 Conectar tools faltantes no CLI
 
-- [ ] Mapear tools declaradas em `server/agents.ts` vs `switch` de `cli/index.ts`
-- [ ] Implementar no `switch` as tools priorizadas:
-  - [ ] `gerenciar_agenda`
-  - [ ] `criar_lembrete`
-  - [ ] `listar_lembretes` (se mantida no contrato)
-  - [ ] `registrar_historico_estudo` (se mantida no contrato)
-- [ ] Definir fallback consistente para tools ainda nao suportadas
-- [ ] Atualizar documentacao de tools realmente operacionais
+- [x] Mapear tools declaradas em `server/agents.ts` vs `switch` de `cli/index.ts`
+- [x] Implementar no `switch` as tools priorizadas:
+  - [x] `gerenciar_agenda`
+  - [x] `criar_lembrete`
+  - [x] `listar_lembretes` (se mantida no contrato)
+  - [x] `registrar_historico_estudo` (se mantida no contrato)
+- [x] Definir fallback consistente para tools ainda nao suportadas
+- [x] Atualizar documentacao de tools realmente operacionais
   - Arquivo sugerido: `docs/ANALISE_AVA_CLI_ASK_AVA_TELEGRAM.md` ou novo doc dedicado.
 
 ### 1.4 Gate de saida da Fase 0
 
 - [ ] Executar checklist de smoke test:
-  - [ ] `ask-ava.bat "que horas sao?"`
-  - [ ] Telegram comando com `/resumo`
-  - [ ] Telegram mensagem livre sem `/`
-  - [ ] Tool de agenda/lembrete disparada com sucesso
+  - [~] `ask-ava.bat "que horas sao?"` (roteiro definido em `docs/GUIA_TESTES_PRATICOS_AVA_CLI.md`)
+  - [~] Telegram comando com `/resumo` (roteiro definido em `docs/GUIA_TESTES_PRATICOS_AVA_CLI.md`)
+  - [~] Telegram mensagem livre sem `/` (roteiro definido em `docs/GUIA_TESTES_PRATICOS_AVA_CLI.md`)
+  - [~] Tool de agenda/lembrete disparada com sucesso (roteiro definido em `docs/GUIA_TESTES_PRATICOS_AVA_CLI.md`)
 - [ ] Publicar changelog da fase
 
 ---
@@ -79,25 +90,25 @@ Legenda:
 - [ ] Definir politica de diretorios em `.env`
   - [ ] `AVA_WORKSPACE_DIRS`
   - [ ] `AVA_READONLY_DIRS`
-- [ ] Implementar validacao de escrita/delecao por whitelist
-- [ ] Implementar tools de arquivos:
-  - [ ] `criar_arquivo`
-  - [ ] `mover_arquivo`
-  - [ ] `copiar_arquivo`
-  - [ ] `renomear_arquivo`
-  - [ ] `apagar_arquivo` com confirmacao explicita
-  - [ ] `criar_pasta`
-- [ ] Auditar todas as operacoes no log do CLI
+- [x] Implementar validacao de escrita/delecao por whitelist
+- [x] Implementar tools de arquivos:
+  - [x] `criar_arquivo`
+  - [x] `mover_arquivo`
+  - [x] `copiar_arquivo`
+  - [x] `renomear_arquivo`
+  - [x] `apagar_arquivo` com confirmacao explicita
+  - [x] `criar_pasta`
+- [x] Auditar todas as operacoes no log do CLI
 
 ### 2.2 Busca web e navegacao
 
-- [ ] Implementar `buscar_web(query)`
-- [ ] Implementar `navegar_pagina(url)` com Playwright headless
-- [ ] Implementar `extrair_conteudo_estruturado(url)`
-- [ ] Aplicar limites operacionais
-  - [ ] timeout 30s
-  - [ ] retorno maximo de texto
-  - [ ] tratamento de erros de rede
+- [x] Implementar `buscar_web(query)`
+- [~] Implementar `navegar_pagina(url)` com Playwright headless
+- [x] Implementar `extrair_conteudo_estruturado(url)`
+- [x] Aplicar limites operacionais
+  - [x] timeout 30s
+  - [x] retorno maximo de texto
+  - [x] tratamento de erros de rede
 
 ### 2.3 Execucao de codigo em sandbox
 

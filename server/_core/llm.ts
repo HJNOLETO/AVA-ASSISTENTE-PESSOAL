@@ -16,6 +16,7 @@ export type Message = {
   content: MessageContent | MessageContent[];
   name?: string;
   tool_call_id?: string;
+  tool_calls?: ToolCall[];
 };
 
 export type Tool = {
@@ -50,6 +51,8 @@ export type InvokeParams = {
   signal?: AbortSignal; // ✅ Adicionado para timeout/cancelamento
   timeoutMs?: number;
 };
+
+type LlmProvider = "forge" | "ollama" | "groq" | "gemini";
 
 export type ToolCall = {
   id: string;
@@ -236,13 +239,76 @@ export async function generateEmbedding(text: string, provider?: "forge" | "olla
 }
 
 export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
-  const provider = params.provider || (process.env.LLM_PROVIDER as "forge" | "ollama" | "groq" | "gemini" | undefined) || "ollama";
-  const queue = provider === "ollama" ? ollamaTaskQueue : cloudTaskQueue;
+  const provider = (params.provider || (process.env.LLM_PROVIDER as LlmProvider | undefined) || "ollama") as LlmProvider;
+  const providersToTry = buildProviderAttempts(provider);
+  const failoverEnabled = String(process.env.LLM_AUTO_FAILOVER ?? "true").toLowerCase() !== "false";
+  const errors: string[] = [];
 
-  return queue.enqueue(
-    () => invokeLLMInternal({ ...params, provider }),
-    { taskType: "invokeLLM", provider },
+  for (let i = 0; i < providersToTry.length; i++) {
+    const selectedProvider = providersToTry[i];
+    const queue = selectedProvider === "ollama" ? ollamaTaskQueue : cloudTaskQueue;
+
+    try {
+      const fallbackSafeModel = selectedProvider === provider ? params.model : undefined;
+      return await queue.enqueue(
+        () => invokeLLMInternal({ ...params, provider: selectedProvider, model: fallbackSafeModel }),
+        { taskType: "invokeLLM", provider: selectedProvider },
+      );
+    } catch (error: any) {
+      const message = String(error?.message || error || "Erro desconhecido");
+      errors.push(`${selectedProvider}: ${message}`);
+      const hasNext = i < providersToTry.length - 1;
+      const canFallback = failoverEnabled && hasNext && shouldFallbackToNextProvider(message);
+
+      if (!canFallback) {
+        throw error;
+      }
+
+      const nextProvider = providersToTry[i + 1];
+      console.warn(`[LLM] Failover ativado: ${selectedProvider} -> ${nextProvider} | motivo: ${message}`);
+    }
+  }
+
+  throw new Error(`Falha em todos os provedores LLM testados: ${errors.join(" | ")}`);
+}
+
+function shouldFallbackToNextProvider(message: string): boolean {
+  const m = message.toLowerCase();
+  return (
+    m.includes("429") ||
+    m.includes("quota") ||
+    m.includes("resource_exhausted") ||
+    m.includes("rate limit") ||
+    m.includes("timeout") ||
+    m.includes("tempo esgotado") ||
+    m.includes("econrefused") ||
+    m.includes("não foi possível conectar") ||
+    m.includes("nao foi possivel conectar") ||
+    m.includes("503") ||
+    m.includes("sobrecarregado") ||
+    m.includes("not configured")
   );
+}
+
+function isProviderConfigured(provider: LlmProvider): boolean {
+  if (provider === "ollama") return true;
+  if (provider === "gemini") return Boolean((process.env.GEMINI_API_KEY || "").trim());
+  if (provider === "groq") return Boolean((process.env.GROQ_API_KEY || "").trim());
+  if (provider === "forge") return Boolean((ENV.forgeApiKey || "").trim());
+  return false;
+}
+
+function buildProviderAttempts(primary: LlmProvider): LlmProvider[] {
+  const rawChain = String(process.env.LLM_FALLBACK_CHAIN || "ollama,gemini,groq,forge");
+  const parsed = rawChain
+    .split(/[;,\s]+/g)
+    .map((item) => item.trim().toLowerCase())
+    .filter(Boolean)
+    .filter((item): item is LlmProvider => ["ollama", "gemini", "groq", "forge"].includes(item));
+
+  const ordered = [primary, ...parsed.filter((p) => p !== primary)];
+  const deduped = Array.from(new Set(ordered));
+  return deduped.filter((p) => isProviderConfigured(p));
 }
 
 async function invokeLLMInternal(params: InvokeParams & { provider: "forge" | "ollama" | "groq" | "gemini" }): Promise<InvokeResult> {

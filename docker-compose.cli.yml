@@ -19,3 +19,22 @@ services:
       # Mapeamento confidencial dos diretórios externos (dados e backup)
       - ../ava-assistant-v3-main-dados:/app/data
       - ../ava-assistant-v3-main-backup:/app/backup
+
+  ava-cli-runtime:
+    build:
+      context: .
+      dockerfile: cli.Dockerfile
+    env_file:
+      - .env
+    environment:
+      # Dentro do container, localhost aponta para o proprio container.
+      # Para acessar Ollama no host Windows use host.docker.internal.
+      OLLAMA_BASE_URL: http://host.docker.internal:11434
+    user: "0:0"
+    working_dir: /app
+    command: ["--help"]
+    volumes:
+      # Runtime sem bind completo do projeto para evitar travamentos em "Creating"
+      - ./sqlite_v2.db:/app/sqlite_v2.db
+      - ../ava-assistant-v3-main-dados:/app/data
+      - ../ava-assistant-v3-main-backup:/app/backup

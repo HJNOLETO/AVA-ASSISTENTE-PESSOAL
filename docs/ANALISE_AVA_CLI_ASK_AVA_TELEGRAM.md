@@ -22,15 +22,33 @@ Conteudo atual:
 
 ```bat
 @echo off
-docker-compose -f docker-compose.cli.yml run --rm ava-cli npx tsx cli/index.ts ask "%*"
+set "OLLAMA_PROBE_URL=%OLLAMA_BASE_URL%"
+if "%OLLAMA_PROBE_URL%"=="" set "OLLAMA_PROBE_URL=http://localhost:11434"
+if "%ASK_AVA_OLLAMA_TIMEOUT_MS%"=="" set "ASK_AVA_OLLAMA_TIMEOUT_MS=300000"
+powershell -NoProfile -Command "$u='%OLLAMA_PROBE_URL%'; try { $r=Invoke-WebRequest -UseBasicParsing -Uri ($u.TrimEnd('/') + '/api/tags') -TimeoutSec 4; if ($r.StatusCode -ge 200 -and $r.StatusCode -lt 500) { exit 0 } else { exit 1 } } catch { exit 1 }"
+if not %errorlevel%==0 goto :fallback
+docker compose -f docker-compose.cli.yml run --rm --no-deps -e OLLAMA_CHAT_TIMEOUT_MS=%ASK_AVA_OLLAMA_TIMEOUT_MS% -e OLLAMA_TIMEOUT_MS=%ASK_AVA_OLLAMA_TIMEOUT_MS% ava-cli-runtime ask %*
+if %errorlevel%==0 goto :eof
+echo [ask-ava] Ollama padrao falhou. Tentando modelo local mais leve (llama3.2:latest)...
+docker compose -f docker-compose.cli.yml run --rm --no-deps -e OLLAMA_CHAT_TIMEOUT_MS=180000 -e OLLAMA_TIMEOUT_MS=180000 ava-cli-runtime ask %* --provider ollama --model llama3.2:latest
+if %errorlevel%==0 goto :eof
+:fallback
+echo [ask-ava] Falha no provider padrao. Tentando fallback com Gemini...
+docker compose -f docker-compose.cli.yml run --rm --no-deps ava-cli-runtime ask %* --provider gemini
 ```
 
 Interpretacao tecnica:
 
 - `@echo off`: oculta eco dos comandos no terminal.
-- `docker-compose -f docker-compose.cli.yml run --rm ava-cli ...`: sobe um container efemero do servico `ava-cli`.
+- `docker compose -f docker-compose.cli.yml run --rm --no-deps ava-cli-runtime ...`: sobe um container efemero do servico runtime otimizado.
 - `--rm`: remove o container apos finalizar a execucao.
 - `ask "%*"`: repassa a frase do usuario para o comando `ask` do CLI.
+- probe rapido no endpoint `OLLAMA_BASE_URL/api/tags` para detectar indisponibilidade antes da chamada principal.
+- timeout do primeiro ciclo Ollama configuravel por `ASK_AVA_OLLAMA_TIMEOUT_MS` (padrao 300000 ms), para permitir aquecimento de modelos locais mais lentos.
+- fallback automatico em cadeia:
+  1. Ollama padrao (modelo do `.env`)
+  2. Ollama com `--model llama3.2:latest` (mais leve)
+  3. Gemini (`--provider gemini`)
 
 Em termos praticos, o BAT transforma uma chamada simples no Windows (ex.: `ask-ava.bat "resuma o arquivo README"`) em execucao do AVA CLI dentro de container.
 
@@ -88,7 +106,22 @@ Esse padrao e um "agente com ferramentas" (tool-using loop), nao um prompt unico
 - `ler_codigo_fonte`
 - `explorar_diretorio_projeto`
 - `buscar_documentos_rag`
+- `buscar_web`
+- `navegar_pagina`
+- `extrair_conteudo_estruturado`
 - `gerenciar_produtos` (modo busca textual no trecho atual do switch)
+- `gerenciar_agenda` (listar, detalhar, criar, atualizar, deletar com confirmacao)
+- `criar_lembrete`
+- `listar_lembretes`
+- `registrar_historico_estudo`
+- `criar_arquivo`
+- `mover_arquivo`
+- `copiar_arquivo`
+- `renomear_arquivo`
+- `apagar_arquivo` (com `confirmado: true`)
+- `criar_pasta`
+- `criar_skill_customizada`
+- `sistema_de_arquivos` (`listar`, `ler_arquivo`, `criar_arquivo`, `editar_arquivo`)
 
 ### Ferramentas declaradas em `server/agents.ts`
 
@@ -97,6 +130,14 @@ O orquestrador expoe uma lista maior de tools (CRM, agenda, juridico, lembretes 
 - "Ferramenta nao suportada remotamente no modo CLI confinado..."
 
 Ou seja: capacidade declarada no orquestrador != capacidade realmente executavel no CLI local.
+
+### Uso de skills (`.agent` vs `.opencode`)
+
+- O AVA CLI agora aceita modo de prioridade por variavel de ambiente `AVA_SKILLS_MODE`.
+- Valores:
+  - `agent` (padrao): prioriza `.agent/skills` e usa `.opencode/skills` como fallback.
+  - `opencode`: prioriza `.opencode/skills` e usa `.agent/skills` como fallback.
+  - `auto`: tenta detectar automaticamente a pasta existente e priorizar a detectada.
 
 ---
 
@@ -109,6 +150,10 @@ Camadas de protecao atuais:
 - Limites de volume de dados:
   - lista de arquivos truncada (max 50 itens),
   - leitura de arquivo truncada (janela de ate 300 linhas).
+- Limites de navegacao web no CLI:
+  - timeout de requisicao: 30s,
+  - retorno textual com limite de caracteres,
+  - validacao de URL apenas `http/https`.
 - Auditoria em log (`data/ava-cli-audit.log`) para respostas e tool calls.
 - Limite anti-loop de autonomia (15 ciclos).
 
@@ -173,17 +218,10 @@ Conclusao: existe convergencia no nucleo da automacao (`cli/index.ts`), com dois
 
 ## 10) Pontos tecnicos de atencao
 
-1. `cli.Dockerfile` ja define `ENTRYPOINT ["npx", "tsx", "cli/index.ts"]`.
-2. O `ask-ava.bat` envia de novo `npx tsx cli/index.ts ask ...` como comando do `docker-compose run`.
-3. Dependendo de como o Docker Compose combinar `ENTRYPOINT + command`, pode haver duplicacao de argumentos.
-
-Recomendacao tecnica: validar se o BAT nao deveria ser simplificado para:
-
-```bat
-docker-compose -f docker-compose.cli.yml run --rm ava-cli ask "%*"
-```
-
-Isso aproveita o `ENTRYPOINT` ja definido e reduz risco de chamada redundante.
+1. `cli.Dockerfile` define `ENTRYPOINT ["npx", "tsx", "cli/index.ts"]`.
+2. O `ask-ava.bat` usa `ava-cli-runtime`, evitando bind mount completo do projeto e reduzindo risco de travar em `Creating` no Docker Desktop (Windows).
+3. O runtime define `OLLAMA_BASE_URL=http://host.docker.internal:11434` dentro do container para acesso ao host.
+4. Ainda e recomendada validacao operacional no Windows com prompts reais para fechar homologacao da fase.
 
 ---
 
