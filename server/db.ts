@@ -71,9 +71,28 @@ import {
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 import { extractKeywords } from "./utils/memoryUtils";
+import { redactSensitiveText, routeMemoryPersistence } from "./security/memoryGuard";
 
 let _db: ReturnType<typeof drizzle> | null = null;
 let _initialized = false;
+
+export type MemoryGuardResult = {
+  blocked?: boolean;
+  skipped?: boolean;
+  policyMessage?: string;
+  classification?: string;
+  destination?: string;
+};
+
+export function isMemoryGuardResult(value: unknown): value is MemoryGuardResult {
+  if (!value || typeof value !== "object") return false;
+  const v = value as Record<string, unknown>;
+  return (
+    typeof v.blocked === "boolean" ||
+    typeof v.skipped === "boolean" ||
+    typeof v.policyMessage === "string"
+  );
+}
 
 async function initializeDatabase(db: ReturnType<typeof drizzle>) {
   if (_initialized) return;
@@ -718,13 +737,40 @@ export async function addMemoryEntry(
   content: string,
   keywords?: string,
   type: "fact" | "preference" | "context" | "command" = "fact"
-) {
+): Promise<unknown> {
+  const route = routeMemoryPersistence(content);
+  const blockSensitiveByDefault = String(process.env.AVA_MEMORY_BLOCK_SENSITIVE ?? "true").toLowerCase() !== "false";
+
+  if (route.blocked && blockSensitiveByDefault) {
+    console.warn(
+      `[MemoryGuard] Persistencia bloqueada para user=${userId} class=${route.classification.classification} destination=${route.classification.destination} motivo=${route.policyMessage}`
+    );
+    return {
+      blocked: true,
+      policyMessage: route.policyMessage,
+      classification: route.classification.classification,
+      destination: route.classification.destination,
+    };
+  }
+
+  if (!route.persist && !route.blocked) {
+    return {
+      blocked: false,
+      skipped: true,
+      policyMessage: route.policyMessage,
+      classification: route.classification.classification,
+      destination: route.classification.destination,
+    };
+  }
+
+  const safeContent = redactSensitiveText(route.sanitizedContent || content);
+
   // ✅ Autogerar keywords se não fornecidas
-  const finalKeywords = keywords || extractKeywords(content).join(", ");
+  const finalKeywords = keywords || extractKeywords(safeContent).join(", ");
   let embeddingJson: string | undefined;
 
   try {
-    const vector = await generateEmbedding(content);
+    const vector = await generateEmbedding(safeContent);
     embeddingJson = JSON.stringify(vector);
   } catch (error) {
     console.warn("[Memory] Embedding generation failed, continuing with keyword-only memory:", error);
@@ -736,7 +782,7 @@ export async function addMemoryEntry(
     const row = {
       id: ++memMemoryEntryId,
       userId,
-      content,
+      content: safeContent,
       keywords: finalKeywords,
       embedding: embeddingJson,
       type,
@@ -749,7 +795,7 @@ export async function addMemoryEntry(
 
   return db.insert(memoryEntries).values({
     userId,
-    content,
+    content: safeContent,
     keywords: finalKeywords,
     embedding: embeddingJson,
     type,

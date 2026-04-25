@@ -25,6 +25,7 @@
     "telegram:study-bot": "tsx server/telegramStudyBot.ts",
     "collector:study": "tsx server/studyCollector.ts",
     "check": "tsc --noEmit",
+    "test:ava-cli:exaustivo": "tsx scripts/test-ava-cli-exaustivo.ts",
     "format": "prettier --write .",
     "lint": "prettier --check .",
     "test": "vitest run",

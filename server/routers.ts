@@ -78,6 +78,7 @@ import {
   getUserSettings,
   createOrUpdateUserSettings,
   addMemoryEntry,
+  isMemoryGuardResult,
   searchMemoryByKeywords,
   addHardwareSnapshot,
   getRecentHardwareSnapshots,
@@ -1104,17 +1105,23 @@ export const appRouter = router({
         }
 
         // Add to memory
-        await addMemoryEntry(
+        const memoryResult = await addMemoryEntry(
           ctx.user.id,
           `Gerada peça jurídica (${input.type}) sobre "${input.title}".`,
           `juridico, ${input.type}, ${input.title}`,
           "fact"
         );
 
+        const memoryWarning =
+          isMemoryGuardResult(memoryResult) && (memoryResult.blocked || memoryResult.skipped)
+            ? memoryResult.policyMessage || "Memoria nao persistida por policy de seguranca."
+            : null;
+
         return {
           success: true,
           title: input.title,
           outputs,
+          memoryWarning,
         };
       }),
   }),
@@ -2031,14 +2038,22 @@ export const appRouter = router({
         const summary = `Conversa: ${conv.title}\n\n${conversationText}`;
         const keywords = extractKeywords(conv.title + " " + conversationText).join(", ");
 
-        await addMemoryEntry(
+        const memoryResult = await addMemoryEntry(
           ctx.user.id,
           summary,
           keywords,
           "context"
         );
 
-        return { success: true };
+        if (isMemoryGuardResult(memoryResult) && (memoryResult.blocked || memoryResult.skipped)) {
+          return {
+            success: true,
+            memorySaved: false,
+            memoryMessage: memoryResult.policyMessage || "Memoria bloqueada pela policy.",
+          };
+        }
+
+        return { success: true, memorySaved: true };
       }),
 
     // Export conversation in various formats (json/md/html/pdf)
@@ -3770,12 +3785,21 @@ Você agora tem acesso de leitura e escrita ao computador local do usuário e à
         })
       )
       .mutation(async ({ ctx, input }) => {
-        await addMemoryEntry(
+        const memoryResult = await addMemoryEntry(
           ctx.user.id,
           input.content,
           input.keywords,
           input.type as any
         );
+
+        if (isMemoryGuardResult(memoryResult) && (memoryResult.blocked || memoryResult.skipped)) {
+          return {
+            success: false,
+            blockedByPolicy: true,
+            message: memoryResult.policyMessage || "Entrada bloqueada pela policy de memoria segura.",
+          };
+        }
+
         return { success: true };
       }),
 
@@ -4479,7 +4503,7 @@ Você agora tem acesso de leitura e escrita ao computador local do usuário e à
         }
 
         // 4. Register in memory as a knowledge entry
-        await addMemoryEntry(
+        const memoryResult = await addMemoryEntry(
           ctx.user.id,
           `Processado conhecimento sobre "${input.title}". Materiais gerados: ${Object.keys(
             outputs
@@ -4488,11 +4512,17 @@ Você agora tem acesso de leitura e escrita ao computador local do usuário e à
           "fact"
         );
 
+        const memoryWarning =
+          isMemoryGuardResult(memoryResult) && (memoryResult.blocked || memoryResult.skipped)
+            ? memoryResult.policyMessage || "Memoria nao persistida por policy de seguranca."
+            : null;
+
         return {
           success: true,
           title: input.title,
           outputs,
           analysis,
+          memoryWarning,
         };
       }),
   }),

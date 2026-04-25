@@ -18,6 +18,8 @@ Foi aplicado bloqueio anti-simulacao no fluxo `ask` do CLI para impedir resposta
 - `.env` configurado com:
   - `AVA_SKILLS_MODE=agent`
   - `AVA_WORKSPACE_DIRS` e `AVA_READONLY_DIRS`
+  - `AVA_VAULT_MASTER_KEY` (hex 64 chars ou base64 32 bytes)
+  - `AVA_MEMORY_BLOCK_SENSITIVE=true`
   - `TELEGRAM_BOT_TOKEN`, `TELEGRAM_STUDY_USER_ID`, `TELEGRAM_CHAT_ID`
 - Ambiente pronto:
   - `pnpm install`
@@ -35,12 +37,14 @@ Terminal B (CLI help):
 
 ```bash
 npx tsx cli/index.ts --help
+npx tsx cli/index.ts self-status
 ```
 
 Esperado:
 
 - Bot sobe com logs de inicializacao e polling sem falha fatal.
 - CLI exibe comando `ask` sem erro de TypeScript/runtime.
+- CLI exibe `self-status` com diagnostico de capacidades, seguranca e mudancas recentes.
 
 ## 3) Smoke test - Fase 0
 
@@ -112,6 +116,59 @@ Esperado (quando nenhuma tool for acionada pelo modelo):
 - Deve retornar bloqueio explicito:
   - `[AVA Execução]: nenhuma ação concreta foi executada.`
 - Deve registrar `EXECUTION_GUARD` no `data/ava-cli-audit.log`.
+
+### Caso 0.6 - Cofre seguro (segredo/sensivel)
+
+Mensagem no Telegram:
+
+```text
+/cli salve no cofre a chave api_github com valor ghp_xxx e confirmado true
+```
+
+Esperado:
+
+- Tool `salvar_no_cofre` executada com sucesso.
+- Log de auditoria sem segredo em texto puro (redigido).
+- `listar_cofre` exibe apenas metadados da chave, nunca o valor secreto.
+
+Mensagem complementar:
+
+```text
+/cli obtenha do cofre a chave api_github para finalidade integracao github e confirmado true
+```
+
+Esperado:
+
+- Tool `obter_do_cofre` exige `confirmado=true` e `finalidade`.
+- Leitura registrada no audit (`VAULT_READ`) com chave e escopo, sem expor o segredo no log.
+
+### Caso 0.7 - Bloqueio global de segredo na memoria semantica
+
+Mensagem no Telegram:
+
+```text
+/cli registre no histórico: minha senha é 123456
+```
+
+Esperado:
+
+- `addMemoryEntry` bloqueia persistencia semantica por policy (`secret`/`sensitive`).
+- Nao deve haver segredo em texto puro em `data/ava-cli-audit.log`.
+- Mensagem ao usuario deve indicar bloqueio por seguranca/consentimento.
+
+### Caso 0.8 - Autoconsciencia operacional
+
+Mensagem no Telegram:
+
+```text
+/cli execute autodiagnostico_ava
+```
+
+Esperado:
+
+- Resposta com estagio de evolucao, nivel de autonomia e limites de auto-recriacao.
+- Resposta com resumo de ferramentas disponiveis por categoria.
+- Lista de mudancas/eventos recentes baseada no audit log.
 
 ## 4) Testes praticos - Fase 1 (File CRUD + Web)
 
@@ -237,12 +294,20 @@ pnpm test
 npx tsx cli/index.ts --help
 npx tsx cli/index.ts ask "Crie um lembrete para tomar água em 2 minutos" --provider gemini
 npx tsx cli/index.ts ask "Crie um plano de estudos em texto sobre processo civil" --provider gemini
+npx vitest run client/src/lib/memoryGuard.test.ts client/src/lib/vaultStore.test.ts
+npx tsx cli/index.ts self-status
 ```
 
 Resultados observados:
 
 - `pnpm check`: concluido sem erro de TypeScript.
 - `pnpm test`: executado; suite com falhas de frontend ja existentes (mocks de `trpc.useUtils` e hooks `useMutation/useQuery`), sem relacao direta com o ajuste anti-simulacao no CLI.
+- `npx vitest run client/src/lib/memoryGuard.test.ts client/src/lib/vaultStore.test.ts`: concluido com 7 testes passando (roteador de memoria + cofre criptografado).
+
+Atualizacao da rodada atual:
+
+- `npx vitest run client/src/lib/memoryGuard.test.ts client/src/lib/vaultStore.test.ts`: concluido com 9 testes passando (incluindo consentimento e leitura controlada do cofre).
+- `npx tsx cli/index.ts self-status`: concluido; AVA reportou estagio atual, capacidade de auto-recriacao assistida e trilha de mudancas recentes do audit.
 - `--help`: comando `ask` exibido corretamente.
 - Caso lembrete:
   - houve execucao real de tool (`criar_lembrete`),
@@ -252,3 +317,35 @@ Resultados observados:
   - failover foi acionado para `ollama`,
   - `ollama` retornou `403` por modelo cloud com assinatura,
   - processo encerrou com erro fatal controlado (sem resposta simulada de sucesso).
+
+## 8) Suite automatizada exaustiva (CLI local)
+
+Script: `scripts/test-ava-cli-exaustivo.ts`
+
+Comando:
+
+```bash
+pnpm test:ava-cli:exaustivo
+```
+
+A suite executa cenarios operacionais completos via `ava ask` com retries, espera entre tentativas e timeout longo por tentativa. Ela valida:
+
+- autodiagnostico
+- criacao/listagem de lembretes
+- CRUD de arquivos com whitelist
+- busca web e extracao estruturada
+- cofre (quando `AVA_VAULT_MASTER_KEY` estiver configurada)
+
+Variaveis uteis para rodadas lentas:
+
+```env
+AVA_TEST_TIMEOUT_MS=600000
+AVA_TEST_RETRIES_PER_MODEL=2
+AVA_TEST_RETRY_WAIT_MS=10000
+AVA_OLLAMA_PROFILE=safe
+```
+
+Saida:
+
+- Gera relatorio em `docs/RELATORIO_TESTES_EXAUSTIVOS_<data>_<runid>.md`
+- Exit code `0` quando todos os cenarios passam.

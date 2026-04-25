@@ -84,6 +84,28 @@ function suggestSkillsByMessage(content: string, limit = 2): string[] {
   return scored.map((item) => item.name);
 }
 
+function getOperationalMemoryPaths(): string[] {
+  return [
+    path.join(process.cwd(), ".agent", "memory", "operacao-feedback.md"),
+    path.join(process.cwd(), ".opencode", "memory", "operacao-feedback.md"),
+  ];
+}
+
+function loadOperationalMemory(limitChars = 5000): string {
+  for (const filePath of getOperationalMemoryPaths()) {
+    try {
+      if (!fs.existsSync(filePath)) continue;
+      const raw = fs.readFileSync(filePath, "utf-8").trim();
+      if (!raw) continue;
+      if (raw.length <= limitChars) return raw;
+      return raw.slice(raw.length - limitChars);
+    } catch {
+      // ignore memory read errors
+    }
+  }
+  return "";
+}
+
 /**
  * Carrega as instruções de uma skill específica da pasta de agentes
  */
@@ -548,6 +570,62 @@ export function getAvailableTools(): Tool[] {
     {
       type: "function",
       function: {
+        name: "git_status",
+        description: "Exibe o estado atual do repositorio Git (branch, arquivos alterados e staged).",
+        parameters: {
+          type: "object",
+          properties: {},
+        }
+      }
+    },
+    {
+      type: "function",
+      function: {
+        name: "git_add",
+        description: "Adiciona arquivos ao stage do Git com validacao de caminhos sensiveis.",
+        parameters: {
+          type: "object",
+          properties: {
+            caminhos: { type: "array", items: { type: "string" }, description: "Lista de caminhos para adicionar ao stage." },
+            caminho: { type: "string", description: "Caminho unico alternativo para adicionar ao stage." }
+          }
+        }
+      }
+    },
+    {
+      type: "function",
+      function: {
+        name: "git_commit",
+        description: "Cria commit com mensagem explicita para as alteracoes staged.",
+        parameters: {
+          type: "object",
+          properties: {
+            mensagem: { type: "string", description: "Mensagem do commit." }
+          },
+          required: ["mensagem"]
+        }
+      }
+    },
+    {
+      type: "function",
+      function: {
+        name: "git_push",
+        description: "Realiza push para remoto/branch com confirmacao explicita e bloqueio de force.",
+        parameters: {
+          type: "object",
+          properties: {
+            remoto: { type: "string", description: "Remoto Git. Padrao: origin." },
+            branch: { type: "string", description: "Branch de destino. Opcional: usa branch atual." },
+            set_upstream: { type: "boolean", description: "Se true, usa -u no push." },
+            confirmado: { type: "boolean", description: "Obrigatorio true para autorizar push." }
+          },
+          required: ["confirmado"]
+        }
+      }
+    },
+    {
+      type: "function",
+      function: {
         name: "criar_skill_customizada",
         description: "Cria uma nova skill em .agent/skills/<nome>/SKILL.md quando nao existir skill adequada para o objetivo.",
         parameters: {
@@ -565,15 +643,33 @@ export function getAvailableTools(): Tool[] {
       type: "function",
       function: {
         name: "sistema_de_arquivos",
-        description: "[Gestor de Arquivos] Permite acessar, criar ou modificar arquivos reais no computador local do usuário.",
+        description: "[Gestor de Arquivos] Ferramenta unificada para listar, ler, criar, editar, copiar, mover, renomear e apagar arquivos no workspace permitido.",
         parameters: {
           type: "object",
           properties: {
-            acao: { type: "string", enum: ["listar", "ler_arquivo", "criar_arquivo", "editar_arquivo"] },
-            caminho: { type: "string", description: "Caminho absoluto ou relativo no PC local." },
-            conteudo: { type: "string", description: "O conteúdo a ser salvo (para criar) ou modificado." }
+            acao: {
+              type: "string",
+              enum: [
+                "listar",
+                "listar_arquivos",
+                "ler_arquivo",
+                "criar_arquivo",
+                "editar_arquivo",
+                "criar_pasta",
+                "copiar_arquivo",
+                "mover_arquivo",
+                "renomear_arquivo",
+                "apagar_arquivo"
+              ]
+            },
+            caminho: { type: "string", description: "Caminho alvo para listar, ler, criar, editar, renomear ou apagar." },
+            origem: { type: "string", description: "Caminho de origem para copiar/mover arquivo." },
+            destino: { type: "string", description: "Caminho de destino para copiar/mover arquivo." },
+            novo_nome: { type: "string", description: "Novo nome para renomear arquivo no mesmo diretorio." },
+            conteudo: { type: "string", description: "Conteudo a ser salvo (criar/editar arquivo)." },
+            confirmado: { type: "boolean", description: "Obrigatorio true para apagar_arquivo." }
           },
-          required: ["acao", "caminho"]
+          required: ["acao"]
         }
       }
     },
@@ -650,6 +746,77 @@ export function getAvailableTools(): Tool[] {
           required: ["tema", "tipo"]
         }
       }
+    },
+    {
+      type: "function",
+      function: {
+        name: "autodiagnostico_ava",
+        description: "Retorna status de autoconsciencia operacional do AVA (capabilidades, seguranca, memoria, cofre e trilha recente de mudancas).",
+        parameters: {
+          type: "object",
+          properties: {}
+        }
+      }
+    },
+    {
+      type: "function",
+      function: {
+        name: "salvar_no_cofre",
+        description: "Armazena segredo/dado sensivel no cofre criptografado. Exige consentimento explicito (confirmado=true).",
+        parameters: {
+          type: "object",
+          properties: {
+            chave: { type: "string", description: "Identificador da entrada no cofre (ex: api_github, senha_email)." },
+            valor: { type: "string", description: "Valor secreto/sensivel a guardar no cofre." },
+            observacao: { type: "string", description: "Opcional. Contexto de uso sem expor o segredo em si." },
+            finalidade: { type: "string", description: "Finalidade/escopo do consentimento para armazenar o segredo." },
+            confirmado: { type: "boolean", description: "Obrigatorio true para consentimento explicito." }
+          },
+          required: ["chave", "valor", "confirmado", "finalidade"]
+        }
+      }
+    },
+    {
+      type: "function",
+      function: {
+        name: "listar_cofre",
+        description: "Lista metadados das chaves salvas no cofre (sem exibir valores secretos).",
+        parameters: {
+          type: "object",
+          properties: {}
+        }
+      }
+    },
+    {
+      type: "function",
+      function: {
+        name: "remover_do_cofre",
+        description: "Remove uma chave do cofre com confirmacao explicita.",
+        parameters: {
+          type: "object",
+          properties: {
+            chave: { type: "string", description: "Chave a remover do cofre." },
+            confirmado: { type: "boolean", description: "Obrigatorio true para confirmar remocao." }
+          },
+          required: ["chave", "confirmado"]
+        }
+      }
+    },
+    {
+      type: "function",
+      function: {
+        name: "obter_do_cofre",
+        description: "Lê um segredo do cofre com confirmacao explicita e finalidade declarada de uso.",
+        parameters: {
+          type: "object",
+          properties: {
+            chave: { type: "string", description: "Chave a consultar no cofre." },
+            finalidade: { type: "string", description: "Motivo de uso do segredo neste momento." },
+            confirmado: { type: "boolean", description: "Obrigatorio true para confirmar leitura do segredo." }
+          },
+          required: ["chave", "finalidade", "confirmado"]
+        }
+      }
     }
   ];
 }
@@ -693,6 +860,7 @@ export async function orchestrateAgentResponse(
   const capabilities = compactMode ? `
 [CAPABILITIES AND AUTHORIZATION - IMPORTANT]
 - Use as tools para CRUD, agenda, lembretes, memoria e arquivos quando necessario.
+- Para tarefas de versionamento, use tools Git (git_status, git_add, git_commit, git_push) em vez de apenas descrever passos.
 - Nao afirme que executou acao sem tool call real.
 - Priorize skills em .agent/skills; se nao houver skill adequada, proponha criar em .agent/skills/<nome>/SKILL.md.
 ` : `
@@ -715,6 +883,7 @@ Se o usuário pedir para você criar um lembrete, você DEVE gerar um "tool call
 - Você deve priorizar o uso das skills disponíveis em .agent/skills (ou caminhos equivalentes configurados).
 - Quando uma task não tiver skill adequada, proponha e, se autorizado na tarefa, crie uma nova skill em .agent/skills/<nome-da-skill>/SKILL.md usando as tools de arquivo disponíveis.
 - Antes de ignorar uma capacidade, considere combinar skill + tool call para resolver a tarefa de ponta a ponta.
+- Para versionamento de codigo (status/add/commit/push), use tools Git nativas quando a solicitacao for operacional.
 `;
 
   const now = new Date();
@@ -727,6 +896,11 @@ Se o usuário pedir para você criar um lembrete, você DEVE gerar um "tool call
     capabilities +
     currentDateTimeContext;
 
+  const operationalMemory = loadOperationalMemory();
+  if (operationalMemory) {
+    systemPrompt += `\n\n[MEMORIA OPERACIONAL - ACERTOS E ERROS RECENTES]\n${operationalMemory}`;
+  }
+
   const lower = contentStr.toLowerCase();
   const selectedSkills: Array<{ name: string; roleLabel: string }> = [];
 
@@ -735,6 +909,8 @@ Se o usuário pedir para você criar um lembrete, você DEVE gerar um "tool call
       selectedSkills.push({ name, roleLabel });
     }
   };
+
+  includeSkill("execucao-confiavel", "MEMORIA DE EXECUCAO CONFIAVEL");
 
   // Lógica de roteamento baseada em palavras-chave
   if (lower.includes("criar app") || lower.includes("build app")) {

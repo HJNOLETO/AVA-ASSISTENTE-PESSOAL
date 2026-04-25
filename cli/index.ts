@@ -5,6 +5,8 @@ import { orchestrateAgentResponse, getAvailableTools } from "../server/agents";
 import fs from "fs/promises";
 import path from "path";
 import os from "os";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
 import {
   searchDocumentChunks,
   searchProducts,
@@ -19,8 +21,10 @@ import {
   createProactiveTask,
 } from "../server/db";
 import { redactSensitiveText, routeMemoryPersistence } from "../server/security/memoryGuard";
+import { getVaultSecret, listVaultSecrets, removeVaultSecret, saveVaultSecret } from "../server/security/vaultStore";
 
 const program = new Command();
+const execFileAsync = promisify(execFile);
 
 program
   .name("ava")
@@ -64,6 +68,7 @@ const AVA_WORKSPACE_DIRS = parseEnvDirList(process.env.AVA_WORKSPACE_DIRS, [proc
 const AVA_READONLY_DIRS = parseEnvDirList(process.env.AVA_READONLY_DIRS, []);
 
 const CLI_SUPPORTED_TOOL_NAMES = new Set([
+  "autodiagnostico_ava",
   "obter_data_hora",
   "listar_arquivos",
   "ler_arquivo",
@@ -87,7 +92,35 @@ const CLI_SUPPORTED_TOOL_NAMES = new Set([
   "sistema_de_arquivos",
   "criar_skill_customizada",
   "registrar_historico_estudo",
+  "salvar_no_cofre",
+  "listar_cofre",
+  "remover_do_cofre",
+  "obter_do_cofre",
+  "git_status",
+  "git_add",
+  "git_commit",
+  "git_push",
 ]);
+
+type SelfStatusReport = {
+  generatedAt: string;
+  evolutionStage: string;
+  autonomyLevel: string;
+  canSelfRecreate: string;
+  capabilities: {
+    totalTools: number;
+    toolNames: string[];
+    categories: Record<string, number>;
+  };
+  security: {
+    antiSimulation: boolean;
+    memoryGuard: boolean;
+    vaultEnabled: boolean;
+    memoryBlockSensitive: boolean;
+    workspaceRoots: string[];
+  };
+  recentChanges: Array<{ action: string; details: string; at: string }>;
+};
 
 function getCliAvailableTools() {
   return getAvailableTools().filter((tool) => {
@@ -132,6 +165,93 @@ async function logAudit(action: string, details: string) {
   } catch (err) {
     // Falha silenciosa de log para não derrubar execução
   }
+}
+
+async function readRecentAuditEntries(limit = 12): Promise<Array<{ action: string; details: string; at: string }>> {
+  const logPath = path.resolve(process.cwd(), "data", "ava-cli-audit.log");
+  try {
+    const raw = await fs.readFile(logPath, "utf-8");
+    const lines = raw.split(/\r?\n/).filter(Boolean);
+    const out: Array<{ action: string; details: string; at: string }> = [];
+    for (let i = lines.length - 1; i >= 0 && out.length < limit; i--) {
+      const line = lines[i];
+      const match = line.match(/^\[([^\]]+)\]\s+([A-Z_]+)\s*\|\s*(.*)$/);
+      if (!match) continue;
+      const action = match[2];
+      if (!/(FILE_OP|TOOL_CALL|VAULT_|MEMORY_|EXECUTION_GUARD)/.test(action)) continue;
+      out.push({ at: match[1], action, details: match[3] });
+    }
+    return out;
+  } catch {
+    return [];
+  }
+}
+
+function classifyToolCategory(name: string): string {
+  if (/^git_/.test(name)) return "git";
+  if (/cofre|vault/.test(name)) return "vault";
+  if (/arquivo|pasta|diretorio|sistema_de_arquivos/.test(name)) return "filesystem";
+  if (/agenda|lembrete/.test(name)) return "scheduling";
+  if (/web|pagina|conteudo/.test(name)) return "web";
+  if (/memoria|historico/.test(name)) return "memory";
+  if (/produto/.test(name)) return "business";
+  if (/diagnostico/.test(name)) return "self-awareness";
+  return "general";
+}
+
+async function buildSelfStatusReport(): Promise<SelfStatusReport> {
+  const toolNames = Array.from(CLI_SUPPORTED_TOOL_NAMES.values()).sort((a, b) => a.localeCompare(b));
+  const categories: Record<string, number> = {};
+  for (const name of toolNames) {
+    const category = classifyToolCategory(name);
+    categories[category] = (categories[category] || 0) + 1;
+  }
+
+  const recentChanges = await readRecentAuditEntries(12);
+
+  return {
+    generatedAt: new Date().toISOString(),
+    evolutionStage: "Fase 2 - Governanca de memoria segura e autoconsciencia operacional",
+    autonomyLevel: "assistida-com-guardrails",
+    canSelfRecreate: "parcialmente: cria/edita skills e fluxos com supervisao; sem autonomia irrestrita",
+    capabilities: {
+      totalTools: toolNames.length,
+      toolNames,
+      categories,
+    },
+    security: {
+      antiSimulation: true,
+      memoryGuard: true,
+      vaultEnabled: Boolean(String(process.env.AVA_VAULT_MASTER_KEY || "").trim()),
+      memoryBlockSensitive: String(process.env.AVA_MEMORY_BLOCK_SENSITIVE ?? "true").toLowerCase() !== "false",
+      workspaceRoots: AVA_WORKSPACE_DIRS,
+    },
+    recentChanges,
+  };
+}
+
+function formatSelfStatusReport(report: SelfStatusReport): string {
+  const categoryText = Object.entries(report.capabilities.categories)
+    .map(([k, v]) => `${k}: ${v}`)
+    .join(", ");
+
+  const changesText = report.recentChanges.length > 0
+    ? report.recentChanges
+      .map((item, idx) => `${idx + 1}. [${item.action}] ${item.details} (${new Date(item.at).toLocaleString("pt-BR")})`)
+      .join("\n")
+    : "Sem eventos recentes no audit log.";
+
+  return [
+    `Autodiagnostico AVA CLI (${new Date(report.generatedAt).toLocaleString("pt-BR")})`,
+    `- Estagio de evolucao: ${report.evolutionStage}`,
+    `- Nivel de autonomia: ${report.autonomyLevel}`,
+    `- Capaz de se recriar: ${report.canSelfRecreate}`,
+    `- Ferramentas ativas: ${report.capabilities.totalTools} (${categoryText})`,
+    `- Seguranca: anti-simulacao=${report.security.antiSimulation} | memory-guard=${report.security.memoryGuard} | cofre=${report.security.vaultEnabled} | bloqueio-sensivel=${report.security.memoryBlockSensitive}`,
+    `- Workspace permitido: ${report.security.workspaceRoots.join(" ; ")}`,
+    "- Mudancas recentes (audit):",
+    changesText,
+  ].join("\n");
 }
 
 function isPathInside(targetPath: string, parentPath: string): boolean {
@@ -275,7 +395,8 @@ function requiresConcreteToolExecution(query: string): boolean {
   const imperativePatterns = [
     /\bcrie\b/, /\bfaca\b/, /\bfaça\b/, /\bagende\b/, /\blembre\b/, /\batualize\b/,
     /\bedite\b/, /\bapague\b/, /\bdelete\b/, /\bmova\b/, /\bcopie\b/, /\brenomeie\b/,
-    /\bliste\b/, /\bbusque\b/, /\bnavegue\b/, /\bextraia\b/, /\bregistre\b/, /\bexecute\b/
+    /\bliste\b/, /\bbusque\b/, /\bnavegue\b/, /\bextraia\b/, /\bregistre\b/, /\bexecute\b/,
+    /\bcommit\b/, /\bpush\b/
   ];
 
   if (isInformationalQuestion && !imperativePatterns.some((pattern) => pattern.test(text))) {
@@ -288,10 +409,44 @@ function requiresConcreteToolExecution(query: string): boolean {
     /\bdeletar\b/, /\bdelete\b/, /\bapagar\b/, /\bapague\b/, /\bmover\b/, /\bmove\b/,
     /\bcopiar\b/, /\bcopie\b/, /\brenomear\b/, /\brenomeie\b/, /\bsalvar\b/, /\bsalve\b/,
     /\blistar\b/, /\bliste\b/, /\bbuscar\b/, /\bbusque\b/, /\bnavegar\b/, /\bnavegue\b/,
-    /\bextrair\b/, /\bextraia\b/, /\bregistrar\b/, /\bregistre\b/
+    /\bextrair\b/, /\bextraia\b/, /\bregistrar\b/, /\bregistre\b/, /\bcommit\b/, /\bpush\b/, /\bversionar\b/
   ];
 
   return actionPatterns.some((pattern) => pattern.test(text));
+}
+
+function ensureGitPathSafe(rawPath: string): string {
+  const value = String(rawPath || "").trim();
+  if (!value) throw new Error("Caminho Git invalido.");
+
+  const normalized = value.replace(/\\/g, "/");
+  if (/\.env/i.test(normalized) || /credentials\.json/i.test(normalized) || /secret/i.test(normalized)) {
+    throw new Error("Path sensivel bloqueado para git add (.env/secret/credentials).");
+  }
+
+  const absolute = ensureReadPath(value);
+  return path.relative(process.cwd(), absolute).split(path.sep).join("/");
+}
+
+async function runGitCommand(args: string[], timeoutMs = 120000): Promise<{ stdout: string; stderr: string }> {
+  try {
+    const { stdout, stderr } = await execFileAsync("git", args, {
+      cwd: process.cwd(),
+      timeout: timeoutMs,
+      windowsHide: true,
+      maxBuffer: 1024 * 1024 * 4,
+    });
+    return {
+      stdout: String(stdout || "").trim(),
+      stderr: String(stderr || "").trim(),
+    };
+  } catch (err: any) {
+    const stdout = String(err?.stdout || "").trim();
+    const stderr = String(err?.stderr || "").trim();
+    const msg = String(err?.message || err || "Falha ao executar Git");
+    const details = [msg, stdout, stderr].filter(Boolean).join("\n");
+    throw new Error(details || "Falha ao executar Git.");
+  }
 }
 
 async function buscarWebDuckDuckGo(query: string, limit = 5): Promise<Array<{ titulo: string; url: string; snippet: string }>> {
@@ -487,6 +642,12 @@ program
                 case "obter_data_hora":
                   toolOutput = new Date().toISOString();
                   break;
+
+                case "autodiagnostico_ava": {
+                  const report = await buildSelfStatusReport();
+                  toolOutput = formatSelfStatusReport(report);
+                  break;
+                }
 
                 case "listar_arquivos": {
                   const dirPath = ensureReadPath(args.caminho || ".");
@@ -807,7 +968,7 @@ program
 
                 case "sistema_de_arquivos": {
                   const acao = String(args.acao || "").trim().toLowerCase();
-                  if (acao === "listar") {
+                  if (acao === "listar" || acao === "listar_arquivos") {
                     const dirPath = ensureReadPath(args.caminho || ".");
                     const items = await fs.readdir(dirPath);
                     toolOutput = items.slice(0, 50).join("\n");
@@ -844,7 +1005,136 @@ program
                     break;
                   }
 
+                  if (acao === "criar_pasta") {
+                    const folderPath = ensureWritePath(args.caminho || args.path || "");
+                    await fs.mkdir(folderPath, { recursive: true });
+                    await logAudit("FILE_OP", `sistema_de_arquivos.criar_pasta | ${folderPath}`);
+                    toolOutput = `Pasta criada com sucesso: ${folderPath}`;
+                    break;
+                  }
+
+                  if (acao === "copiar_arquivo") {
+                    const sourcePath = ensureReadPath(args.origem || args.source || "");
+                    const targetPath = ensureWritePath(args.destino || args.target || "");
+                    await fs.mkdir(path.dirname(targetPath), { recursive: true });
+                    await fs.copyFile(sourcePath, targetPath);
+                    await logAudit("FILE_OP", `sistema_de_arquivos.copiar_arquivo | ${sourcePath} -> ${targetPath}`);
+                    toolOutput = `Arquivo copiado com sucesso para: ${targetPath}`;
+                    break;
+                  }
+
+                  if (acao === "mover_arquivo") {
+                    const sourcePath = ensureWritePath(args.origem || args.source || "");
+                    const targetPath = ensureWritePath(args.destino || args.target || "");
+                    await fs.mkdir(path.dirname(targetPath), { recursive: true });
+                    await fs.rename(sourcePath, targetPath);
+                    await logAudit("FILE_OP", `sistema_de_arquivos.mover_arquivo | ${sourcePath} -> ${targetPath}`);
+                    toolOutput = `Arquivo movido com sucesso para: ${targetPath}`;
+                    break;
+                  }
+
+                  if (acao === "renomear_arquivo") {
+                    const sourcePath = ensureWritePath(args.caminho || args.path || "");
+                    const rawName = String(args.novo_nome || "").trim();
+                    if (!rawName) throw new Error("'novo_nome' e obrigatorio para renomear_arquivo.");
+                    if (rawName.includes("/") || rawName.includes("\\")) {
+                      throw new Error("'novo_nome' nao deve conter separadores de diretorio.");
+                    }
+
+                    const targetPath = ensureWritePath(path.join(path.dirname(sourcePath), rawName));
+                    await fs.rename(sourcePath, targetPath);
+                    await logAudit("FILE_OP", `sistema_de_arquivos.renomear_arquivo | ${sourcePath} -> ${targetPath}`);
+                    toolOutput = `Arquivo renomeado com sucesso para: ${path.basename(targetPath)}`;
+                    break;
+                  }
+
+                  if (acao === "apagar_arquivo") {
+                    const confirmado = Boolean((args as Record<string, unknown>).confirmado);
+                    const userConfirmed = /\b(confirmo|confirmada|confirmado|tenho certeza|autorizo apagar|pode apagar)\b/i.test(query);
+                    if (!confirmado || !userConfirmed) {
+                      throw new Error("Para apagar_arquivo, o usuario deve confirmar explicitamente na mensagem (ex.: 'confirmo apagar') e enviar 'confirmado: true'.");
+                    }
+
+                    const targetPath = ensureWritePath(args.caminho || args.path || "");
+                    await fs.rm(targetPath, { recursive: true, force: false });
+                    await logAudit("FILE_OP", `sistema_de_arquivos.apagar_arquivo | ${targetPath}`);
+                    toolOutput = `Arquivo/pasta removido com sucesso: ${targetPath}`;
+                    break;
+                  }
+
                   toolOutput = "Acao invalida para sistema_de_arquivos.";
+                  break;
+                }
+
+                case "git_status": {
+                  const check = await runGitCommand(["rev-parse", "--is-inside-work-tree"], 30000);
+                  if (check.stdout !== "true") {
+                    throw new Error("Diretorio atual nao e um repositorio Git valido.");
+                  }
+
+                  const branchInfo = await runGitCommand(["status", "--short", "--branch"], 60000);
+                  await logAudit("GIT_OP", "git_status");
+                  toolOutput = branchInfo.stdout || "Repositorio sem alteracoes pendentes.";
+                  break;
+                }
+
+                case "git_add": {
+                  const rawPaths: string[] = Array.isArray(args.caminhos)
+                    ? args.caminhos.map((p: unknown) => String(p || "").trim()).filter(Boolean)
+                    : [String(args.caminho || args.path || ".").trim()].filter(Boolean);
+
+                  const uniquePaths = Array.from(new Set(rawPaths.map(ensureGitPathSafe)));
+                  if (uniquePaths.length === 0) {
+                    throw new Error("Informe ao menos um caminho para git_add.");
+                  }
+
+                  await runGitCommand(["add", "--", ...uniquePaths], 120000);
+                  await logAudit("GIT_OP", `git_add | paths=${uniquePaths.join(",")}`);
+                  toolOutput = `Arquivos adicionados ao stage: ${uniquePaths.join(", ")}`;
+                  break;
+                }
+
+                case "git_commit": {
+                  const message = String(args.mensagem || args.message || "").trim();
+                  if (!message) {
+                    throw new Error("'mensagem' e obrigatoria para git_commit.");
+                  }
+                  if (/--amend/i.test(message)) {
+                    throw new Error("Mensagem invalida: nao use marcacoes de comando no texto do commit.");
+                  }
+
+                  const result = await runGitCommand(["commit", "-m", message], 120000);
+                  await logAudit("GIT_OP", `git_commit | message=${message}`);
+                  toolOutput = result.stdout || "Commit criado com sucesso.";
+                  break;
+                }
+
+                case "git_push": {
+                  const confirmado = Boolean((args as Record<string, unknown>).confirmado);
+                  if (!confirmado) {
+                    throw new Error("Para git_push, envie 'confirmado: true'.");
+                  }
+
+                  const force = Boolean((args as Record<string, unknown>).force || (args as Record<string, unknown>).forcar);
+                  if (force) {
+                    throw new Error("git_push com force e bloqueado por seguranca.");
+                  }
+
+                  const remote = String(args.remoto || args.remote || "origin").trim();
+                  let branch = String(args.branch || args.ramo || "").trim();
+                  if (!branch) {
+                    const current = await runGitCommand(["rev-parse", "--abbrev-ref", "HEAD"], 30000);
+                    branch = current.stdout.trim();
+                  }
+                  if (!branch || branch === "HEAD") {
+                    throw new Error("Nao foi possivel determinar branch atual para push.");
+                  }
+
+                  const useUpstream = Boolean((args as Record<string, unknown>).set_upstream || (args as Record<string, unknown>).upstream);
+                  const pushArgs = useUpstream ? ["push", "-u", remote, branch] : ["push", remote, branch];
+                  const result = await runGitCommand(pushArgs, 180000);
+                  await logAudit("GIT_OP", `git_push | remote=${remote} branch=${branch} upstream=${useUpstream}`);
+                  toolOutput = result.stdout || `Push concluido para ${remote}/${branch}.`;
                   break;
                 }
 
@@ -947,6 +1237,77 @@ program
                   break;
                 }
 
+                case "salvar_no_cofre": {
+                  const chave = String(args.chave || args.key || "").trim();
+                  const valor = String(args.valor || args.value || "").trim();
+                  const observacao = args.observacao !== undefined ? String(args.observacao) : args.note !== undefined ? String(args.note) : undefined;
+                  const finalidade = args.finalidade !== undefined ? String(args.finalidade) : args.scope !== undefined ? String(args.scope) : "armazenamento seguro";
+                  const confirmado = Boolean((args as Record<string, unknown>).confirmado);
+
+                  if (!confirmado) {
+                    throw new Error("Para salvar_no_cofre, envie 'confirmado: true' para consentimento explicito.");
+                  }
+
+                  const routing = routeMemoryPersistence(`${chave}: ${valor}${observacao ? ` | ${observacao}` : ""}`);
+                  if (routing.classification.classification !== "secret" && routing.classification.classification !== "sensitive") {
+                    throw new Error("Use salvar_no_cofre apenas para segredo/dado sensivel. Para conteudo util comum, use memoria semantica.");
+                  }
+
+                  await saveVaultSecret(CLI_USER_ID, chave, valor, observacao, {
+                    given: true,
+                    scope: finalidade,
+                    givenAt: new Date().toISOString(),
+                  });
+                  await logAudit("VAULT_WRITE", `key=${chave} class=${routing.classification.classification} scope=${finalidade}`);
+                  toolOutput = `Cofre atualizado com sucesso para a chave '${chave}'.`;
+                  break;
+                }
+
+                case "listar_cofre": {
+                  const items = await listVaultSecrets(CLI_USER_ID);
+                  if (items.length === 0) {
+                    toolOutput = "Cofre vazio.";
+                    break;
+                  }
+                  toolOutput = items
+                    .map((item, idx) => `${idx + 1}. ${item.key} | atualizado: ${new Date(item.updatedAt).toLocaleString("pt-BR")} | consentimento: ${new Date(item.consentGivenAt).toLocaleString("pt-BR")}${item.consentScope ? ` | escopo: ${item.consentScope}` : ""}${item.note ? ` | nota: ${item.note}` : ""}`)
+                    .join("\n");
+                  break;
+                }
+
+                case "remover_do_cofre": {
+                  const chave = String(args.chave || args.key || "").trim();
+                  const confirmado = Boolean((args as Record<string, unknown>).confirmado);
+                  if (!confirmado) {
+                    throw new Error("Para remover_do_cofre, envie 'confirmado: true'.");
+                  }
+                  const removed = await removeVaultSecret(CLI_USER_ID, chave);
+                  await logAudit("VAULT_DELETE", `key=${chave} removed=${removed}`);
+                  toolOutput = removed
+                    ? `Chave '${chave}' removida do cofre.`
+                    : `Chave '${chave}' nao encontrada no cofre.`;
+                  break;
+                }
+
+                case "obter_do_cofre": {
+                  const chave = String(args.chave || args.key || "").trim();
+                  const finalidade = String(args.finalidade || args.scope || "").trim();
+                  const confirmado = Boolean((args as Record<string, unknown>).confirmado);
+                  if (!confirmado) {
+                    throw new Error("Para obter_do_cofre, envie 'confirmado: true'.");
+                  }
+                  if (!finalidade) {
+                    throw new Error("Para obter_do_cofre, informe a 'finalidade' de uso do segredo.");
+                  }
+
+                  const secret = await getVaultSecret(CLI_USER_ID, chave);
+                  await logAudit("VAULT_READ", `key=${chave} scope=${finalidade} found=${Boolean(secret)}`);
+                  toolOutput = secret
+                    ? `Cofre -> chave '${secret.key}' | valor: ${secret.value} | atualizado: ${new Date(secret.updatedAt).toLocaleString("pt-BR")}${secret.note ? ` | nota: ${secret.note}` : ""}`
+                    : `Chave '${chave}' nao encontrada no cofre.`;
+                  break;
+                }
+
                 default:
                   // Para ferramentas complexas (backend puro CRM/Agenda/Etc..), interceptamos controladamente
                   toolOutput = "ATENÇÃO: Ferramenta não suportada remotamente no modo CLI confinado ainda. Você deve indicar ao usuário que ele deve acessar a interface WEB para realizar essa ação.";
@@ -1001,6 +1362,19 @@ program
       console.error(`\n[Erro Fatal do Sistema]: ${(error as Error).message}\n`);
       process.exitCode = 1;
     }
+  });
+
+program
+  .command("self-status")
+  .description("Exibe o autodiagnostico operacional e de seguranca do AVA CLI.")
+  .option("--json", "Retorna em JSON")
+  .action(async (options: { json?: boolean }) => {
+    const report = await buildSelfStatusReport();
+    if (options.json) {
+      console.log(JSON.stringify(report, null, 2));
+      return;
+    }
+    console.log(`\n${formatSelfStatusReport(report)}\n`);
   });
 
 program.parseAsync(process.argv).catch((error) => {

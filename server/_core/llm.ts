@@ -2,6 +2,7 @@ import { ENV } from "./env";
 import axios from "axios";
 import { nanoid } from "nanoid";
 import { TaskQueue } from "../utils/TaskQueue";
+import os from "os";
 
 export type Role = "system" | "user" | "assistant" | "tool" | "function";
 
@@ -53,6 +54,88 @@ export type InvokeParams = {
 };
 
 type LlmProvider = "forge" | "ollama" | "groq" | "gemini";
+
+type OllamaAdaptiveTier = "full" | "balanced" | "safe";
+
+type OllamaAdaptiveProfile = {
+  tier: OllamaAdaptiveTier;
+  reason: string;
+  totalMemGb: number;
+  freeMemGb: number;
+  cpuCount: number;
+};
+
+const clampNumber = (value: number, min: number, max: number): number => {
+  if (!Number.isFinite(value)) return min;
+  return Math.min(max, Math.max(min, value));
+};
+
+const degradeTier = (tier: OllamaAdaptiveTier): OllamaAdaptiveTier => {
+  if (tier === "full") return "balanced";
+  if (tier === "balanced") return "safe";
+  return "safe";
+};
+
+const detectOllamaAdaptiveProfile = (): OllamaAdaptiveProfile => {
+  const mode = String(process.env.AVA_OLLAMA_PROFILE || "auto").trim().toLowerCase();
+  const totalMemGb = Number((os.totalmem() / (1024 ** 3)).toFixed(1));
+  const freeMemGb = Number((os.freemem() / (1024 ** 3)).toFixed(1));
+  const cpuCount = os.cpus().length;
+  const freeRatio = os.totalmem() > 0 ? os.freemem() / os.totalmem() : 0;
+
+  if (mode === "full" || mode === "balanced" || mode === "safe") {
+    return {
+      tier: mode,
+      reason: `forcado por AVA_OLLAMA_PROFILE=${mode}`,
+      totalMemGb,
+      freeMemGb,
+      cpuCount,
+    };
+  }
+
+  let tier: OllamaAdaptiveTier;
+  if (totalMemGb >= 24 && cpuCount >= 10) {
+    tier = "full";
+  } else if (totalMemGb >= 12 && cpuCount >= 6) {
+    tier = "balanced";
+  } else {
+    tier = "safe";
+  }
+
+  const reasons: string[] = [
+    `auto totalMem=${totalMemGb}GB`,
+    `freeMem=${freeMemGb}GB`,
+    `cpu=${cpuCount}`,
+  ];
+
+  if (freeRatio < 0.12) {
+    tier = degradeTier(tier);
+    reasons.push("degradado por memoria livre < 12% do total");
+  }
+
+  return {
+    tier,
+    reason: reasons.join(" | "),
+    totalMemGb,
+    freeMemGb,
+    cpuCount,
+  };
+};
+
+const resolveAdaptiveModel = (selectedModel: string, profile: OllamaAdaptiveProfile, explicitModelProvided: boolean): string => {
+  const allowForcedModel = String(process.env.AVA_OLLAMA_FORCE_PROFILE_MODEL || "false").toLowerCase() === "true";
+  if (explicitModelProvided && !allowForcedModel) return selectedModel;
+
+  const envModelByTier =
+    profile.tier === "full"
+      ? process.env.OLLAMA_MODEL_FULL
+      : profile.tier === "balanced"
+        ? process.env.OLLAMA_MODEL_BALANCED
+        : process.env.OLLAMA_MODEL_SAFE;
+
+  const normalized = String(envModelByTier || "").trim();
+  return normalized.length > 0 ? normalized : selectedModel;
+};
 
 export type ToolCall = {
   id: string;
@@ -353,24 +436,52 @@ async function invokeLLMInternal(params: InvokeParams & { provider: "forge" | "o
       const parsedRepeatPenalty = Number(process.env.OLLAMA_REPEAT_PENALTY ?? "0");
       const thinkEnv = (process.env.OLLAMA_THINK ?? "").trim().toLowerCase();
       const thinkValue = thinkEnv === "true" ? true : thinkEnv === "false" ? false : undefined;
-      const selectedModel = model || process.env.OLLAMA_MODEL || "llama3.2:latest";
+      const baseModel = model || process.env.OLLAMA_MODEL || "llama3.2:latest";
+      const adaptiveProfile = detectOllamaAdaptiveProfile();
+      const selectedModel = resolveAdaptiveModel(baseModel, adaptiveProfile, Boolean(model));
       const isQwen25 = selectedModel.toLowerCase().includes("qwen2.5");
       const maxNumCtx = isQwen25 ? 4096 : 8192;
-      const safeNumCtx =
+      let safeNumCtx =
         Number.isFinite(parsedNumCtx) && parsedNumCtx > 0
           ? Math.min(parsedNumCtx, maxNumCtx)
           : 4096;
 
+      if (adaptiveProfile.tier === "balanced") {
+        safeNumCtx = clampNumber(safeNumCtx, 1024, Math.min(4096, maxNumCtx));
+      }
+
+      if (adaptiveProfile.tier === "safe") {
+        safeNumCtx = clampNumber(safeNumCtx, 768, Math.min(2048, maxNumCtx));
+      }
+
+      let safeNumPredict = Number.isFinite(parsedNumPredict) && parsedNumPredict > 0
+        ? Math.floor(parsedNumPredict)
+        : 0;
+
+      if (adaptiveProfile.tier === "balanced") {
+        safeNumPredict = safeNumPredict > 0 ? Math.min(safeNumPredict, 768) : 768;
+      }
+
+      if (adaptiveProfile.tier === "safe") {
+        safeNumPredict = safeNumPredict > 0 ? Math.min(safeNumPredict, 384) : 384;
+      }
+
+      const safeTemperature = adaptiveProfile.tier === "safe"
+        ? Math.min(Number.isFinite(parsedTemperature) ? parsedTemperature : 0.3, 0.2)
+        : adaptiveProfile.tier === "balanced"
+          ? Math.min(Number.isFinite(parsedTemperature) ? parsedTemperature : 0.3, 0.25)
+          : (Number.isFinite(parsedTemperature) ? parsedTemperature : 0.3);
+
       const ollamaOptions: Record<string, number> = {
-        temperature: Number.isFinite(parsedTemperature) ? parsedTemperature : 0.3,
+        temperature: safeTemperature,
         num_ctx: safeNumCtx,
       };
 
       if (Number.isFinite(parsedTopP) && parsedTopP > 0 && parsedTopP <= 1) {
         ollamaOptions.top_p = parsedTopP;
       }
-      if (Number.isFinite(parsedNumPredict) && parsedNumPredict > 0) {
-        ollamaOptions.num_predict = parsedNumPredict;
+      if (safeNumPredict > 0) {
+        ollamaOptions.num_predict = safeNumPredict;
       }
       if (Number.isFinite(parsedRepeatPenalty) && parsedRepeatPenalty > 0) {
         ollamaOptions.repeat_penalty = parsedRepeatPenalty;
@@ -392,50 +503,78 @@ async function invokeLLMInternal(params: InvokeParams & { provider: "forge" | "o
             300000
         );
 
-      const response = await axios.post(
-        url,
-        {
-          model: selectedModel,
-          messages: chatMessages,
-          stream: false,
-          ...(tools && tools.length > 0 ? { tools } : {}),
-          ...(ollamaKeepAlive !== undefined ? { keep_alive: ollamaKeepAlive } : {}),
-          ...(typeof thinkValue === "boolean" ? { think: thinkValue } : {}),
-          options: ollamaOptions,
-        },
-        {
-        headers: {
-          "content-type": "application/json",
-          ...(params.ollamaAuthToken ? { authorization: `Bearer ${params.ollamaAuthToken}` } : {}),
-        },
-          signal,
-          timeout: ollamaTimeout,
-          validateStatus: () => true,
-        }
+      console.log(
+        `[LLM][Adaptive] perfil=${adaptiveProfile.tier} | modelo=${selectedModel} | num_ctx=${safeNumCtx} | num_predict=${safeNumPredict > 0 ? safeNumPredict : "padrao"} | motivo=${adaptiveProfile.reason}`
       );
 
-      if (response.status < 200 || response.status >= 300) {
-        const errorText =
-          typeof response.data === "string"
-            ? response.data
-            : JSON.stringify(response.data ?? {});
-        console.error(`[LLM] Erro Ollama ${response.status}: ${errorText}`);
-        
-        // ✅ Mensagens de erro traduzidas e específicas
-        if (response.status === 401) {
-          throw new Error(`Ollama retornou 401 (Não autorizado). Verifique se o token de autenticação está correto.`);
-        } else if (response.status === 404) {
-          throw new Error(`Modelo não encontrado no Ollama. Execute: ollama pull ${model || "llama3.2:latest"}`);
-        } else if (response.status === 503) {
-          throw new Error(`Ollama está carregando o modelo ou sobrecarregado. Aguarde um momento e tente novamente.`);
+      const sendOllamaChat = async (modelName: string) => {
+        const response = await axios.post(
+          url,
+          {
+            model: modelName,
+            messages: chatMessages,
+            stream: false,
+            ...(tools && tools.length > 0 ? { tools } : {}),
+            ...(ollamaKeepAlive !== undefined ? { keep_alive: ollamaKeepAlive } : {}),
+            ...(typeof thinkValue === "boolean" ? { think: thinkValue } : {}),
+            options: ollamaOptions,
+          },
+          {
+            headers: {
+              "content-type": "application/json",
+              ...(params.ollamaAuthToken ? { authorization: `Bearer ${params.ollamaAuthToken}` } : {}),
+            },
+            signal,
+            timeout: ollamaTimeout,
+            validateStatus: () => true,
+          }
+        );
+
+        if (response.status < 200 || response.status >= 300) {
+          const errorText =
+            typeof response.data === "string"
+              ? response.data
+              : JSON.stringify(response.data ?? {});
+          console.error(`[LLM] Erro Ollama ${response.status} (modelo ${modelName}): ${errorText}`);
+
+          if (response.status === 401) {
+            throw new Error("Ollama retornou 401 (Nao autorizado). Verifique se o token de autenticacao esta correto.");
+          }
+          if (response.status === 404) {
+            throw new Error(`Modelo nao encontrado no Ollama. Execute: ollama pull ${modelName}`);
+          }
+          if (response.status === 503) {
+            throw new Error("Ollama esta carregando o modelo ou sobrecarregado. Aguarde um momento e tente novamente.");
+          }
+
+          throw new Error(`Erro Ollama (${response.status}): ${errorText || response.statusText}`);
+        }
+
+        return response.data;
+      };
+
+      const retryOnTimeout = String(process.env.AVA_OLLAMA_RETRY_ON_TIMEOUT || "true").toLowerCase() !== "false";
+      const fallbackModel = String(process.env.OLLAMA_MODEL_SAFE || "").trim();
+      let activeModel = selectedModel;
+      let data: any;
+
+      try {
+        data = await sendOllamaChat(activeModel);
+      } catch (firstError: any) {
+        const message = String(firstError?.message || firstError || "");
+        const isTimeoutLike =
+          /timeout|tempo esgotado|ETIMEDOUT|ECONNABORTED/i.test(message) ||
+          firstError?.code === "ECONNABORTED";
+
+        if (retryOnTimeout && isTimeoutLike && fallbackModel && fallbackModel !== activeModel) {
+          console.warn(`[LLM][Adaptive] Timeout detectado. Tentando fallback de modelo: ${activeModel} -> ${fallbackModel}`);
+          activeModel = fallbackModel;
+          data = await sendOllamaChat(activeModel);
         } else {
-          throw new Error(
-            `Erro Ollama (${response.status}): ${errorText || response.statusText}`
-          );
+          throw firstError;
         }
       }
 
-      const data = response.data;
       const content = data?.message?.content ?? (Array.isArray(data?.messages) ? data.messages.at(-1)?.content : "");
       const text = typeof content === "string" ? content : String(content ?? "");
       
@@ -444,7 +583,7 @@ async function invokeLLMInternal(params: InvokeParams & { provider: "forge" | "o
       return {
         id: String(Date.now()),
         created: Date.now(),
-        model: selectedModel,
+        model: activeModel,
         choices: [{
           index: 0,
           message: {

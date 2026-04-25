@@ -21,8 +21,26 @@ Primeira etapa implementada no codigo:
   - `logAudit` agora mascara segredos antes de escrever em `data/ava-cli-audit.log`;
   - tool `registrar_historico_estudo` passou a usar `routeMemoryPersistence`;
   - bloqueio de persistencia semantica quando conteudo for sensivel/segredo.
+- `server/security/vaultStore.ts`
+  - cofre criptografado por usuario usando AES-256-GCM;
+  - chave mestre via `AVA_VAULT_MASTER_KEY` (obrigatoria para operar o cofre);
+  - operacoes: salvar, listar metadados, ler e remover chaves.
+  - consentimento persistido por entrada (`consentGivenAt`, `consentScope`).
+- Novas tools do agente para governanca de cofre:
+  - `salvar_no_cofre`, `listar_cofre`, `obter_do_cofre`, `remover_do_cofre`.
+- Autoconsciencia operacional:
+  - tool `autodiagnostico_ava` para responder "potencial atual", "estagio de evolucao" e "mudancas recentes";
+  - comando CLI `ava self-status` (texto) e `ava self-status --json`.
+- `server/db.ts`
+  - `addMemoryEntry` agora aplica roteamento de memoria centralizado;
+  - bloqueia por padrao persistencia semantica de `secret`/`sensitive`;
+  - aplica redacao antes de embeddings e armazenamento;
+  - flag de controle: `AVA_MEMORY_BLOCK_SENSITIVE` (default: `true`).
+- `server/routers.ts`
+  - endpoints com feedback explicito quando `addMemoryEntry` e bloqueado/skipped por policy.
 - Testes automatizados adicionados:
   - `client/src/lib/memoryGuard.test.ts`.
+  - `client/src/lib/vaultStore.test.ts`.
 
 ## Estado atual (diagnostico)
 

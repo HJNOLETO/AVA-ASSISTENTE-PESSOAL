@@ -24,6 +24,10 @@ Atualizacao de progresso (2026-04-23):
 - Implementado (continuidade): configuracao de `.env` para `AVA_SKILLS_MODE`, `AVA_WORKSPACE_DIRS` e `AVA_READONLY_DIRS`, e guia de homologacao com cenarios praticos em `docs/GUIA_TESTES_PRATICOS_AVA_CLI.md`.
 - Executado: rodada de testes praticos com relatorio em `docs/RELATORIO_TESTES_PRATICOS_2026-04-23.md` e ajustes corretivos no `ask-ava.bat` + `cli/index.ts`.
 - Validado: `npx tsx cli/index.ts --help`.
+- Implementado (continuidade): baseline de adaptacao automatica ao hardware no caminho Ollama (`server/_core/llm.ts`) com perfis `full|balanced|safe`, clamp de `num_ctx/num_predict/temperature`, logs de decisao e documentacao em `docs/ARQUITETURA_ADAPTACAO_HARDWARE_OLLAMA.md`.
+- Implementado (continuidade): suite automatizada de homologacao exaustiva em `scripts/test-ava-cli-exaustivo.ts` + script `pnpm test:ava-cli:exaustivo` + guia atualizado.
+- Executado (2026-04-25): rodada exaustiva local com relatorio em `docs/RELATORIO_TESTES_EXAUSTIVOS_2026-04-25_exaustivo-2026-04-25T19-19-52-324Z.md` (bloqueada por timeout no `/api/chat` do Ollama).
+- Executado (2026-04-25): rodada exaustiva Ollama cloud com aprovacao total 11/11 em `docs/RELATORIO_TESTES_EXAUSTIVOS_2026-04-25_exaustivo-2026-04-25T22-37-39-466Z.md`.
 - Pendente de homologacao operacional: testes manuais completos no Telegram e execucao real via Docker/Windows.
 
 ---
@@ -166,6 +170,16 @@ Atualizacao de progresso (2026-04-23):
 - [ ] Fluxo ponta-a-ponta validado: URL -> Colab/Drive -> RAG -> Telegram
 - [ ] Log de rastreabilidade por `task_id`
 - [ ] Documento de arquitetura atualizado
+
+### 3.5 Adaptacao automatica ao hardware (Ollama)
+
+- [x] Implementar seletor de perfil (`auto|full|balanced|safe`) com deteccao de memoria/CPU
+- [x] Aplicar ajustes dinamicos de `num_ctx`, `num_predict` e `temperature` por perfil
+- [x] Adicionar log estruturado de perfil e motivos de decisao
+- [x] Documentar estrategia e variaveis em `docs/ARQUITETURA_ADAPTACAO_HARDWARE_OLLAMA.md`
+- [x] Implementar retry unico por timeout usando `OLLAMA_MODEL_SAFE` (opcional)
+- [ ] Validar em dois cenarios reais (maquina sob carga e maquina ociosa)
+- [ ] Implementar fallback em cascata (mais de um modelo) com politica de prioridade
 
 ---
 
