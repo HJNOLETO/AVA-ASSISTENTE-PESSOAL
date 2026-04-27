@@ -19,9 +19,16 @@ import {
   deleteAppointment,
   getProactiveTasks,
   createProactiveTask,
+  getAgentCycles,
+  getAgentCycleByCycleId,
+  getUserContext,
 } from "../server/db";
 import { redactSensitiveText, routeMemoryPersistence } from "../server/security/memoryGuard";
 import { getVaultSecret, listVaultSecrets, removeVaultSecret, saveVaultSecret } from "../server/security/vaultStore";
+import { evaluateToolExecution } from "../server/tool-registry";
+import { runAgentCycle } from "../server/agents/agent-loop";
+import { executeRegisteredTool } from "../server/tools/executor";
+import { compactUserContext } from "../server/context/manager";
 
 const program = new Command();
 const execFileAsync = promisify(execFile);
@@ -100,6 +107,10 @@ const CLI_SUPPORTED_TOOL_NAMES = new Set([
   "git_add",
   "git_commit",
   "git_push",
+  "file_ops",
+  "http_ops",
+  "memory_ops",
+  "db_ops",
 ]);
 
 type SelfStatusReport = {
@@ -564,6 +575,7 @@ program
   .argument("<query>", "A solicitação ou tarefa a ser feita")
   .option("-p, --provider <provider>", "Define o provedor LLM (ex: forge, ollama)", process.env.LLM_PROVIDER || "ollama")
   .option("-m, --model <model>", "Define um modelo específico a ser usado (apenas para o provedor selecionado)")
+  .option("--auto-confirm", "Auto confirma etapas com confirmacao humana no Agent Loop V2")
   .action(async (query: string, options) => {
     console.log(`\n[AVA Agent]: Iniciando loop autônomo. Provedor: ${options.provider.toUpperCase()}...`);
     console.log(`[AVA Agent]: Tarefa Recebida: "${query}"\n`);
@@ -571,12 +583,41 @@ program
     // Assegurar inicialização do Database (suporta as the ferramentas que o LLM usa e.g. gerenciar_produtos)
     await getDb();
 
+    const useAgentLoopV2 = String(process.env.AVA_AGENT_LOOP_V2 || "false").toLowerCase() === "true";
+    if (useAgentLoopV2) {
+      const cycle = await runAgentCycle(query, {
+        userId: CLI_USER_ID,
+        provider: options.provider as "forge" | "ollama" | "groq" | "gemini",
+        model: options.model,
+        executeTool: async (toolCall, args) => {
+          const name = toolCall.function.name;
+          if (name === "obter_data_hora") {
+            return { output: new Date().toISOString(), ok: true };
+          }
+          if (name === "file_ops" || name === "http_ops" || name === "memory_ops" || name === "db_ops") {
+            return { output: await executeRegisteredTool(name, args as Record<string, unknown>), ok: true };
+          }
+          return {
+            output: "ATENCAO: ferramenta ainda nao mapeada no agent-loop v2. Desative AVA_AGENT_LOOP_V2 para usar loop legado completo.",
+            ok: false,
+          };
+        },
+        requireConfirmation: async () => Boolean(options.autoConfirm),
+      });
+
+      console.log(`\n[AVA Responde - AgentLoopV2]:\n${cycle.finalResponse}\n`);
+      await logAudit("AGENT_LOOP_V2", `status=${cycle.status} toolCalls=${cycle.toolCalls} repeated=${cycle.repeatedIntentCount}`);
+      return;
+    }
+
     const messages: Message[] = [{ role: "user", content: query }];
     let finishReason: string | null = null;
     let fallbackCounter = 0; // Previne loops infinitos agressivos
     const requireToolExecution = requiresConcreteToolExecution(query);
     let executedToolCalls = 0;
     let successfulToolCalls = 0;
+    let previousToolBatchSignature: string | null = null;
+    let repeatedToolBatchCount = 0;
 
     try {
       while (finishReason !== "stop" && fallbackCounter < 15) {
@@ -627,9 +668,12 @@ program
         // Loop de ferramentas (Autonomia)
         if (message.tool_calls && message.tool_calls.length > 0) {
           finishReason = "tool_calls"; // Continuar conversando pós tool
+          const toolBatchSignatures: string[] = [];
+          const toolBatchOutputs: Array<{ name: string; output: string }> = [];
 
           for (const tc of message.tool_calls as ToolCall[]) {
             executedToolCalls++;
+            toolBatchSignatures.push(`${tc.function.name}:${tc.function.arguments}`);
             console.log(`[SYS] Executando Ferramenta Nativa: ==> ${tc.function.name}`);
             await logAudit("TOOL_CALL", `Instanciando: ${tc.function.name} com args: ${tc.function.arguments}`);
             let toolOutput = "";
@@ -637,8 +681,31 @@ program
 
             try {
               const args = JSON.parse(tc.function.arguments);
+              const decision = await evaluateToolExecution(tc.function.name, args, "cli");
+              if (!decision.allowed) {
+                toolOutput = `[TOOL REGISTRY] ${decision.reason}`;
+                toolSucceeded = true;
+              } else switch (tc.function.name) {
+                case "file_ops": {
+                  toolOutput = await executeRegisteredTool("file_ops", args);
+                  break;
+                }
 
-              switch (tc.function.name) {
+                case "http_ops": {
+                  toolOutput = await executeRegisteredTool("http_ops", args);
+                  break;
+                }
+
+                case "memory_ops": {
+                  toolOutput = await executeRegisteredTool("memory_ops", args);
+                  break;
+                }
+
+                case "db_ops": {
+                  toolOutput = await executeRegisteredTool("db_ops", args);
+                  break;
+                }
+
                 case "obter_data_hora":
                   toolOutput = new Date().toISOString();
                   break;
@@ -1332,6 +1399,42 @@ program
               tool_call_id: tc.id,
               content: toolOutput
             });
+
+            toolBatchOutputs.push({
+              name: tc.function.name,
+              output: toolOutput,
+            });
+          }
+
+          const currentToolBatchSignature = toolBatchSignatures.join("||");
+          if (currentToolBatchSignature && currentToolBatchSignature === previousToolBatchSignature) {
+            repeatedToolBatchCount += 1;
+          } else {
+            repeatedToolBatchCount = 0;
+          }
+          previousToolBatchSignature = currentToolBatchSignature;
+
+          if (repeatedToolBatchCount >= 2 && toolBatchOutputs.length > 0) {
+            const firstOutput = toolBatchOutputs[0];
+            let guardMessage: string;
+
+            if (firstOutput.name === "obter_data_hora") {
+              const iso = firstOutput.output.trim();
+              const dt = new Date(iso);
+              guardMessage = Number.isFinite(dt.getTime())
+                ? `Foram detectadas repeticoes de tool call. Resultado consolidado: sao ${dt.toLocaleTimeString("pt-BR")} do dia ${dt.toLocaleDateString("pt-BR")}.`
+                : "Foram detectadas repeticoes de tool call. A ferramenta ja foi executada, mas o modelo repetiu a chamada sem concluir a resposta textual.";
+            } else {
+              const compactOutput = firstOutput.output.replace(/\s+/g, " ").trim().slice(0, 220);
+              guardMessage = compactOutput.length > 0
+                ? `Foram detectadas repeticoes de tool call. Resultado consolidado da ferramenta ${firstOutput.name}: ${compactOutput}`
+                : `Foram detectadas repeticoes de tool call na ferramenta ${firstOutput.name}.`;
+            }
+
+            console.log(`\n[AVA Responde]:\n${guardMessage}\n`);
+            await logAudit("EXECUTION_GUARD", `Loop de tool call interrompido | tool=${firstOutput.name} | repeticoes=${repeatedToolBatchCount + 1}`);
+            await logAudit("LLM_RESPONSE", guardMessage.slice(0, 150).replace(/\n/g, " "));
+            finishReason = "stop";
           }
         } else {
           if (requireToolExecution && successfulToolCalls === 0) {
@@ -1359,9 +1462,114 @@ program
       }
 
     } catch (error) {
-      console.error(`\n[Erro Fatal do Sistema]: ${(error as Error).message}\n`);
+      const rawMessage = (error as Error).message || "Erro desconhecido.";
+      console.error(`\n[Erro Fatal do Sistema]: ${rawMessage}\n`);
+
+      const lower = rawMessage.toLowerCase();
+      const isOllamaModelAccessIssue =
+        lower.includes("modelo ollama sem acesso") ||
+        lower.includes("requires a subscription") ||
+        lower.includes("upgrade for access") ||
+        lower.includes("403");
+      const isOllamaTimeoutIssue =
+        lower.includes("tempo esgotado") ||
+        lower.includes("timeout") ||
+        lower.includes("econna") ||
+        lower.includes("econnaborted");
+
+      if (String(options.provider).toLowerCase() === "ollama" && (isOllamaModelAccessIssue || isOllamaTimeoutIssue)) {
+        console.error(
+          [
+            "[AVA Aviso]: Nao foi possivel usar o modelo Ollama solicitado nesta execucao.",
+            "Sugestao 1: testar um modelo local validado (ex.: --model llama3.2:3b).",
+            "Sugestao 2: aumentar timeout para modelos lentos (OLLAMA_CHAT_TIMEOUT_MS / OLLAMA_TIMEOUT_MS).",
+            "Sugestao 3: se for modelo cloud, verificar permissao/assinatura do modelo.",
+          ].join("\n") + "\n"
+        );
+      }
       process.exitCode = 1;
     }
+  });
+
+program
+  .command("context")
+  .description("Gerencia resumo de contexto de longo prazo")
+  .option("--compact", "Compacta memoria de contexto")
+  .option("--show", "Mostra contexto atual")
+  .option("--query <text>", "Consulta de referencia para compactacao", "contexto geral")
+  .action(async (options: { compact?: boolean; show?: boolean; query?: string }) => {
+    if (options.compact) {
+      const out = await compactUserContext(CLI_USER_ID, String(options.query || "contexto geral"));
+      console.log(`Contexto compactado. tokens=${out.tokenCount}`);
+      return;
+    }
+
+    if (options.show) {
+      const ctx = await getUserContext(CLI_USER_ID);
+      if (!ctx) {
+        console.log("Nenhum contexto consolidado encontrado.");
+        return;
+      }
+      console.log([
+        `user_id: ${ctx.userId}`,
+        `token_count: ${ctx.tokenCount}`,
+        `last_compacted: ${new Date(ctx.lastCompacted).toLocaleString("pt-BR")}`,
+        `summary: ${ctx.summary}`,
+      ].join("\n"));
+      return;
+    }
+
+    console.log("Use --compact ou --show.");
+  });
+
+program
+  .command("stats")
+  .description("Exibe estatisticas recentes do ciclo do agente")
+  .option("--last <n>", "Quantidade de ciclos", "10")
+  .action(async (options: { last?: string }) => {
+    const limit = Math.max(1, Math.min(100, Number(options.last || 10)));
+    const cycles = await getAgentCycles(limit);
+    if (cycles.length === 0) {
+      console.log("Nenhum ciclo registrado ainda.");
+      return;
+    }
+
+    const lines = cycles.map((c: any, idx: number) => {
+      const createdAt = c.createdAt ? new Date(c.createdAt).toLocaleString("pt-BR") : "sem data";
+      return `${idx + 1}. ${c.cycleId} | status=${c.finalStatus} | toolMs=${c.toolExecMs} | ragHits=${c.ragHitCount} | ${createdAt}`;
+    });
+    console.log(lines.join("\n"));
+  });
+
+program
+  .command("trace")
+  .description("Exibe detalhes de um ciclo especifico")
+  .requiredOption("--cycle <id>", "ID do ciclo")
+  .action(async (options: { cycle: string }) => {
+    const cycle = await getAgentCycleByCycleId(String(options.cycle).trim());
+    if (!cycle) {
+      console.log("Ciclo nao encontrado.");
+      return;
+    }
+
+    let transitions = cycle.stateTransitions;
+    try {
+      transitions = JSON.stringify(JSON.parse(String(cycle.stateTransitions)), null, 2);
+    } catch {
+      // keep raw
+    }
+
+    console.log([
+      `cycle_id: ${cycle.cycleId}`,
+      `status: ${cycle.finalStatus}`,
+      `tool_exec_ms: ${cycle.toolExecMs}`,
+      `rag_min_score_applied: ${cycle.ragMinScoreApplied ?? "n/a"}`,
+      `rag_hit_count: ${cycle.ragHitCount}`,
+      `llm_tokens_in/out: ${cycle.llmTokensIn}/${cycle.llmTokensOut}`,
+      `confirmation_required: ${cycle.confirmationRequired}`,
+      `state_transitions: ${transitions}`,
+      `created_at: ${cycle.createdAt ? new Date(cycle.createdAt).toLocaleString("pt-BR") : "n/a"}`,
+    ].join("\n"));
   });
 
 program

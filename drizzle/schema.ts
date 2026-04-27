@@ -600,6 +600,24 @@ export const userPreferences = sqliteTable("user_preferences", {
 export type UserPreference = typeof userPreferences.$inferSelect;
 export type InsertUserPreference = typeof userPreferences.$inferInsert;
 
+export const userContext = sqliteTable("user_context", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  userId: integer("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  summary: text("summary").notNull(),
+  tokenCount: integer("tokenCount").default(0),
+  lastCompacted: integer("lastCompacted", { mode: "timestamp_ms" })
+    .notNull()
+    .defaultNow(),
+  updatedAt: integer("updatedAt", { mode: "timestamp_ms" })
+    .notNull()
+    .defaultNow(),
+});
+
+export type UserContext = typeof userContext.$inferSelect;
+export type InsertUserContext = typeof userContext.$inferInsert;
+
 // Password reset tokens for auth flow
 export const passwordResetTokens = sqliteTable(
   "password_reset_tokens",
@@ -690,6 +708,27 @@ export const agents = sqliteTable("agents", {
 
 export type Agent = typeof agents.$inferSelect;
 export type InsertAgent = typeof agents.$inferInsert;
+
+export const agentCycles = sqliteTable("agent_cycles", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  userId: integer("userId").references(() => users.id, { onDelete: "set null" }),
+  cycleId: text("cycleId").notNull().unique(),
+  finalStatus: text("finalStatus", { enum: ["completed", "aborted", "error"] }).notNull(),
+  stateTransitions: text("stateTransitions").notNull(),
+  toolExecMs: integer("toolExecMs").notNull().default(0),
+  ragMinScoreApplied: real("ragMinScoreApplied"),
+  ragHitCount: integer("ragHitCount").default(0),
+  llmTokensIn: integer("llmTokensIn").default(0),
+  llmTokensOut: integer("llmTokensOut").default(0),
+  confirmationRequired: integer("confirmationRequired").default(0),
+  metadata: text("metadata"),
+  createdAt: integer("createdAt", { mode: "timestamp_ms" })
+    .notNull()
+    .defaultNow(),
+});
+
+export type AgentCycle = typeof agentCycles.$inferSelect;
+export type InsertAgentCycle = typeof agentCycles.$inferInsert;
 
 // Automação Proativa (Proactive Tasks / Cron)
 export const proactiveTasks = sqliteTable("proactiveTasks", {

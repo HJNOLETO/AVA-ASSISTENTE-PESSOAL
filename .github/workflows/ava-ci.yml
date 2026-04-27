@@ -1,0 +1,49 @@
+name: ava-ci
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+
+jobs:
+  backend-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Type check
+        run: pnpm check
+
+      - name: Backend tests
+        run: pnpm vitest run tests/tool-registry.test.ts tests/rag-retriever.test.ts tests/agent-loop.test.ts tests/guard-audit.test.ts
+
+      - name: Backend E2E
+        run: pnpm test:e2e:cli
+
+      - name: Backend coverage report
+        run: pnpm test:coverage:backend
+
+      - name: Build
+        run: pnpm build
+
+      - name: Security audit (high)
+        run: pnpm audit --audit-level high
+
+      - name: Outdated report (optional)
+        continue-on-error: true
+        run: pnpm outdated

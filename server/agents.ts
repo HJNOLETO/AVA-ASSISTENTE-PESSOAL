@@ -1,6 +1,7 @@
 import { Message, InvokeParams, invokeLLM, Tool } from "./_core/llm";
 import fs from "fs";
 import path from "path";
+import { getRegistryAsTools } from "./tool-registry";
 
 export interface AgentConfig {
   name: string;
@@ -167,6 +168,15 @@ export function sanitizePath(caminho: string): string | null {
  * Define as ferramentas (tools) disponíveis para o AVA
  */
 export function getAvailableTools(): Tool[] {
+  const dynamicRegistryEnabled = String(process.env.AVA_TOOL_REGISTRY_DYNAMIC || "false").toLowerCase() === "true";
+  if (dynamicRegistryEnabled) {
+    const dynamicTools = getRegistryAsTools();
+    if (dynamicTools.length > 0) {
+      return dynamicTools;
+    }
+    console.warn("[ToolRegistry] Registro dinamico habilitado, mas vazio/invalido. Aplicando fallback para tools legadas.");
+  }
+
   return [
     {
       type: "function",

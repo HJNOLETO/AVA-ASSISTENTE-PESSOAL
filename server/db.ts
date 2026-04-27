@@ -64,8 +64,12 @@ import {
   InsertProactiveTask,
   agents,
   InsertAgent,
+  agentCycles,
+  InsertAgentCycle,
   userPreferences,
   InsertUserPreference,
+  userContext,
+  InsertUserContext,
   products,
   InsertProduct,
 } from "../drizzle/schema";
@@ -210,12 +214,16 @@ let memUserSettingsId = 0;
 let memMemoryEntryId = 0;
 let memHardwareSnapshotId = 0;
 let memSystemLogId = 0;
+let memAgentCycleId = 0;
+let memUserContextId = 0;
 const memConversations: Array<typeof conversations.$inferSelect> = [];
 const memMessages: Array<typeof messages.$inferSelect> = [];
 const memUserSettings: Array<typeof userSettings.$inferSelect> = [];
 const memMemoryEntries: Array<typeof memoryEntries.$inferSelect> = [];
 const memHardwareSnapshots: Array<typeof hardwareSnapshots.$inferSelect> = [];
 const memSystemLogs: Array<typeof systemLogs.$inferSelect> = [];
+const memAgentCycles: Array<typeof agentCycles.$inferSelect> = [];
+const memUserContexts: Array<typeof userContext.$inferSelect> = [];
 
 // Lazily create the drizzle instance so local tooling can run without a DB.
 export async function getDb() {
@@ -989,6 +997,86 @@ export async function addSystemLog(
   });
 }
 
+export async function addAgentCycle(cycle: InsertAgentCycle) {
+  const db = await getDb();
+  if (!db) {
+    const row = {
+      id: ++memAgentCycleId,
+      userId: cycle.userId ?? null,
+      cycleId: cycle.cycleId,
+      finalStatus: cycle.finalStatus,
+      stateTransitions: cycle.stateTransitions,
+      toolExecMs: cycle.toolExecMs ?? 0,
+      ragMinScoreApplied: cycle.ragMinScoreApplied ?? null,
+      ragHitCount: cycle.ragHitCount ?? 0,
+      llmTokensIn: cycle.llmTokensIn ?? 0,
+      llmTokensOut: cycle.llmTokensOut ?? 0,
+      confirmationRequired: cycle.confirmationRequired ?? 0,
+      metadata: cycle.metadata ?? null,
+      createdAt: new Date(),
+    } as typeof agentCycles.$inferSelect;
+    memAgentCycles.push(row);
+    return row;
+  }
+
+  try {
+    return await db.insert(agentCycles).values(cycle);
+  } catch (error) {
+    if (String(error).toLowerCase().includes("no such table")) {
+      const row = {
+        id: ++memAgentCycleId,
+        userId: cycle.userId ?? null,
+        cycleId: cycle.cycleId,
+        finalStatus: cycle.finalStatus,
+        stateTransitions: cycle.stateTransitions,
+        toolExecMs: cycle.toolExecMs ?? 0,
+        ragMinScoreApplied: cycle.ragMinScoreApplied ?? null,
+        ragHitCount: cycle.ragHitCount ?? 0,
+        llmTokensIn: cycle.llmTokensIn ?? 0,
+        llmTokensOut: cycle.llmTokensOut ?? 0,
+        confirmationRequired: cycle.confirmationRequired ?? 0,
+        metadata: cycle.metadata ?? null,
+        createdAt: new Date(),
+      } as typeof agentCycles.$inferSelect;
+      memAgentCycles.push(row);
+      return row;
+    }
+    throw error;
+  }
+}
+
+export async function getAgentCycles(limit = 10) {
+  const db = await getDb();
+  if (!db) {
+    return [...memAgentCycles].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()).slice(0, limit);
+  }
+  try {
+    return await db.select().from(agentCycles).orderBy(sql`${agentCycles.createdAt} DESC`).limit(limit);
+  } catch (error) {
+    if (String(error).toLowerCase().includes("no such table")) {
+      return [...memAgentCycles].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()).slice(0, limit);
+    }
+    throw error;
+  }
+}
+
+export async function getAgentCycleByCycleId(cycleId: string) {
+  const db = await getDb();
+  if (!db) {
+    return memAgentCycles.find((c) => c.cycleId === cycleId) || null;
+  }
+
+  try {
+    const rows = await db.select().from(agentCycles).where(eq(agentCycles.cycleId, cycleId)).limit(1);
+    return rows[0] || null;
+  } catch (error) {
+    if (String(error).toLowerCase().includes("no such table")) {
+      return memAgentCycles.find((c) => c.cycleId === cycleId) || null;
+    }
+    throw error;
+  }
+}
+
 // Memory management functions for AVA Memory System V3.1
 
 // Soft delete expired memories based on TTL
@@ -1505,6 +1593,75 @@ export async function updateUserPreferences(userId: number, prefs: Partial<typeo
       .where(eq(userPreferences.userId, userId));
   } else {
     return db.insert(userPreferences).values({ userId, ...prefs });
+  }
+}
+
+export async function getUserContext(userId: number) {
+  const db = await getDb();
+  if (!db) {
+    return memUserContexts.find((ctx) => ctx.userId === userId) || null;
+  }
+
+  try {
+    const rows = await db.select().from(userContext).where(eq(userContext.userId, userId)).limit(1);
+    return rows[0] || null;
+  } catch (error) {
+    if (String(error).toLowerCase().includes("no such table")) {
+      return memUserContexts.find((ctx) => ctx.userId === userId) || null;
+    }
+    throw error;
+  }
+}
+
+export async function upsertUserContext(userId: number, payload: Omit<InsertUserContext, "userId">) {
+  const db = await getDb();
+  if (!db) {
+    const existing = memUserContexts.find((ctx) => ctx.userId === userId);
+    if (existing) {
+      Object.assign(existing, payload, { updatedAt: new Date() });
+      return existing;
+    }
+    const row = {
+      id: ++memUserContextId,
+      userId,
+      summary: payload.summary,
+      tokenCount: payload.tokenCount ?? 0,
+      lastCompacted: payload.lastCompacted ?? new Date(),
+      updatedAt: new Date(),
+    } as typeof userContext.$inferSelect;
+    memUserContexts.push(row);
+    return row;
+  }
+
+  try {
+    const existing = await getUserContext(userId);
+    if (existing) {
+      return await db
+        .update(userContext)
+        .set({ ...payload, updatedAt: new Date() })
+        .where(eq(userContext.userId, userId));
+    }
+
+    return await db.insert(userContext).values({ userId, ...payload });
+  } catch (error) {
+    if (String(error).toLowerCase().includes("no such table")) {
+      const existing = memUserContexts.find((ctx) => ctx.userId === userId);
+      if (existing) {
+        Object.assign(existing, payload, { updatedAt: new Date() });
+        return existing;
+      }
+      const row = {
+        id: ++memUserContextId,
+        userId,
+        summary: payload.summary,
+        tokenCount: payload.tokenCount ?? 0,
+        lastCompacted: payload.lastCompacted ?? new Date(),
+        updatedAt: new Date(),
+      } as typeof userContext.$inferSelect;
+      memUserContexts.push(row);
+      return row;
+    }
+    throw error;
   }
 }
 
@@ -2104,16 +2261,23 @@ export async function searchDocumentChunksByVector(
   if (!db) return [];
 
   const legalStatusFilter = filters?.legalStatus || "vigente";
+  const legalStatusCondition =
+    legalStatusFilter === "any"
+      ? undefined
+      : legalStatusFilter === "vigente"
+        ? or(eq(documents.legalStatus, "vigente"), isNull(documents.legalStatus)) ||
+          eq(documents.legalStatus, "vigente")
+        : eq(documents.legalStatus, legalStatusFilter);
   
   const whereConditions = [
     eq(documents.userId, userId),
     eq(documents.status, "indexed"),
-    legalStatusFilter === "vigente"
-      ? or(eq(documents.legalStatus, "vigente"), isNull(documents.legalStatus)) ||
-        eq(documents.legalStatus, "vigente")
-      : eq(documents.legalStatus, legalStatusFilter),
     isNotNull(documentChunks.embedding),
   ];
+
+  if (legalStatusCondition) {
+    whereConditions.push(legalStatusCondition);
+  }
 
   if (filters?.documentIds && filters.documentIds.length > 0) {
     whereConditions.push(inArray(documentChunks.documentId, filters.documentIds));
@@ -2164,6 +2328,13 @@ export async function searchDocumentChunksByKeyword(
   if (!db) return [] as SearchChunkResult[];
 
   const legalStatusFilter = filters?.legalStatus || "vigente";
+  const legalStatusCondition =
+    legalStatusFilter === "any"
+      ? undefined
+      : legalStatusFilter === "vigente"
+        ? or(eq(documents.legalStatus, "vigente"), isNull(documents.legalStatus)) ||
+          eq(documents.legalStatus, "vigente")
+        : eq(documents.legalStatus, legalStatusFilter);
 
   const terms = query
     .toLowerCase()
@@ -2181,10 +2352,7 @@ export async function searchDocumentChunksByKeyword(
     .where(and(
       eq(documents.userId, userId),
       eq(documents.status, "indexed"),
-      legalStatusFilter === "vigente"
-        ? or(eq(documents.legalStatus, "vigente"), isNull(documents.legalStatus)) ||
-          eq(documents.legalStatus, "vigente")
-        : eq(documents.legalStatus, legalStatusFilter)
+      ...(legalStatusCondition ? [legalStatusCondition] : [])
     ));
 
   if (filters?.documentIds && filters.documentIds.length > 0) {

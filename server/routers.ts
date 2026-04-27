@@ -49,6 +49,7 @@ import {
   searchRelevantChunks,
   getRAGStorageStats,
 } from "./rag";
+import { retrieveRelevantChunksPatched } from "./rag/retriever-patch";
 import {
   getDocumentsRAG,
   getDocumentByIdRAG,
@@ -2663,11 +2664,25 @@ export const appRouter = router({
               (parsedDomain.mode === "default" && sanitizedUserContent.trim().length >= 12));
           if (shouldAttemptRag) {
             try {
-              const ragChunkLimit = selectedProvider === "ollama" ? 1 : 5;
-              ragChunks = await searchRelevantChunks(sanitizedUserContent, ctx.user.id, ragChunkLimit, {
+              const memoryContext = "";
+              const preferencesContext = "";
+
+              const patched = await retrieveRelevantChunksPatched({
+                userId: ctx.user.id,
+                query: sanitizedUserContent,
+                provider: selectedProvider,
+                topK: selectedProvider === "ollama" ? 3 : 5,
+                memoryContext,
+                preferencesContext,
+                exploratory: /(busca ampla|vis[aã]o geral|panorama|todos os documentos|sem filtro)/i.test(sanitizedUserContent),
                 documentIds: requestedDocIds && requestedDocIds.length > 0 ? requestedDocIds : undefined,
-                minScore: 0.5,
               });
+              ragChunks = patched.chunks;
+
+              if (patched.userNotice) {
+                systemContent += `\n\n[Nota de retrieval]: ${patched.userNotice}`;
+              }
+
               console.log(
                 `[RAG] Found ${ragChunks.length} relevant chunks` +
                 (requestedDocIds && requestedDocIds.length > 0

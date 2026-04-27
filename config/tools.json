@@ -1,0 +1,82 @@
+[
+  {
+    "name": "file_ops",
+    "description": "Operacoes seguras de leitura/listagem/criacao em modo auditavel",
+    "risk_level": "medium",
+    "requires_confirmation": true,
+    "schema_json": {
+      "type": "object",
+      "properties": {
+        "path": { "type": "string", "description": "Caminho alvo" },
+        "action": { "type": "string", "enum": ["read", "list", "create"] },
+        "dry_run": { "type": "boolean", "description": "Executa somente simulacao" }
+      },
+      "required": ["path", "action"],
+      "additionalProperties": false
+    },
+    "schema_zod": "z.object({ path: z.string(), action: z.enum(['read','list','create']), dry_run: z.boolean().optional() })",
+    "dry_run_cmd": "echo [DRY-RUN] file_ops {action} {path}",
+    "exec_fn": "tools/fileOps.ts"
+  },
+  {
+    "name": "http_ops",
+    "description": "Operacoes HTTP simuladas com validacao de seguranca",
+    "risk_level": "medium",
+    "requires_confirmation": true,
+    "schema_json": {
+      "type": "object",
+      "properties": {
+        "method": { "type": "string", "enum": ["GET", "POST"] },
+        "url": { "type": "string" },
+        "payload": { "type": ["object", "null"] },
+        "dry_run": { "type": "boolean" }
+      },
+      "required": ["method", "url"],
+      "additionalProperties": false
+    },
+    "schema_zod": "z.object({ method: z.enum(['GET','POST']), url: z.string().url(), payload: z.record(z.any()).nullable().optional(), dry_run: z.boolean().optional() })",
+    "dry_run_cmd": "echo [DRY-RUN] http_ops {method} {url}",
+    "exec_fn": "tools/httpOps.ts"
+  },
+  {
+    "name": "memory_ops",
+    "description": "Operacoes de memoria contextual com namespace e chave",
+    "risk_level": "low",
+    "requires_confirmation": false,
+    "schema_json": {
+      "type": "object",
+      "properties": {
+        "action": { "type": "string", "enum": ["set", "get"] },
+        "namespace": { "type": "string" },
+        "key": { "type": "string" },
+        "value": { "type": ["string", "null"] }
+      },
+      "required": ["action", "namespace", "key"],
+      "additionalProperties": false
+    },
+    "schema_zod": "z.object({ action: z.enum(['set','get']), namespace: z.string(), key: z.string(), value: z.string().optional() })",
+    "dry_run_cmd": "echo [DRY-RUN] memory_ops {action} {namespace}:{key}",
+    "exec_fn": "tools/memoryOps.ts"
+  },
+  {
+    "name": "db_ops",
+    "description": "Operacoes SQL controladas (read-only por padrao)",
+    "risk_level": "high",
+    "requires_confirmation": true,
+    "schema_json": {
+      "type": "object",
+      "properties": {
+        "query": { "type": "string" },
+        "mode": { "type": "string", "enum": ["read", "write"] },
+        "sandbox": { "type": "boolean" },
+        "dry_run": { "type": "boolean" },
+        "confirmed": { "type": "boolean" }
+      },
+      "required": ["query"],
+      "additionalProperties": false
+    },
+    "schema_zod": "z.object({ query: z.string().min(1), mode: z.enum(['read','write']).default('read'), sandbox: z.boolean().optional(), dry_run: z.boolean().optional(), confirmed: z.boolean().optional() })",
+    "dry_run_cmd": "echo [DRY-RUN] db_ops {mode} <query>",
+    "exec_fn": "tools/dbOps.ts"
+  }
+]
