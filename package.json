@@ -30,10 +30,11 @@
     "lint": "prettier --check .",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "test:coverage:backend": "vitest run tests/tool-registry.test.ts tests/rag-retriever.test.ts tests/agent-loop.test.ts tests/guard-audit.test.ts tests/tools-executor.test.ts tests/agent-tracer.test.ts --coverage",
+    "test:coverage:backend": "vitest run tests/tool-registry.test.ts tests/rag-retriever.test.ts tests/agent-loop.test.ts tests/guard-audit.test.ts tests/tools-executor.test.ts tests/agent-tracer.test.ts tests/ingest-ops.test.ts tests/citation-validator.test.ts tests/retriever-legal.test.ts tests/unit/llm-router.test.ts tests/integration/rag-legal-real.test.ts tests/integration/citation-validator-real.test.ts --coverage --exclude **/*.tsx --exclude client/**",
     "test:e2e:cli": "vitest run tests/e2e/agent-cli.test.ts",
     "test:watch": "vitest",
     "test:stress:ollama": "tsx scripts/stress-ollama-queue.ts",
+    "test:stress:ava-cli": "tsx scripts/stress-test-ava-cli.ts",
     "db:push": "drizzle-kit generate && drizzle-kit migrate",
     "db:seed": "tsx server/_core/seed-admin.ts",
     "dev:sqlite": "pnpm dev"

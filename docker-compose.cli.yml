@@ -6,6 +6,9 @@ services:
     container_name: ava-cli
     env_file:
       - .env
+    environment:
+      AVA_WORKSPACE_DIRS: /app;/app/data
+      AVA_READONLY_DIRS: /app/docs;/app/.agent;/app/.opencode
     working_dir: /app
     # Como o cli.Dockerfile já possui ENTRYPOINT, enviaremos apenas o parametro padrão:
     command: ["--help"]
@@ -30,6 +33,8 @@ services:
       # Dentro do container, localhost aponta para o proprio container.
       # Para acessar Ollama no host Windows use host.docker.internal.
       OLLAMA_BASE_URL: http://host.docker.internal:11434
+      AVA_WORKSPACE_DIRS: /app;/app/data
+      AVA_READONLY_DIRS: /app/docs;/app/.agent;/app/.opencode
     user: "0:0"
     working_dir: /app
     command: ["--help"]

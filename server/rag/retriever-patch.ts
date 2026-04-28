@@ -18,6 +18,7 @@ export type PatchedRagOptions = {
   preferencesContext?: string;
   exploratory?: boolean;
   documentIds?: number[];
+  minScoreOverride?: number;
 };
 
 export type PatchedRagResult = {
@@ -83,7 +84,9 @@ export async function retrieveRelevantChunksPatched(options: PatchedRagOptions):
   const topK = options.topK ?? (options.provider === "ollama" ? 3 : 5);
 
   const userSettings = await getUserSettings(options.userId);
-  const minScore = parseUserMinScore(userSettings);
+  const minScore = typeof options.minScoreOverride === "number"
+    ? Math.max(0.1, Math.min(0.95, options.minScoreOverride))
+    : parseUserMinScore(userSettings);
 
   const exploratoryMode = options.exploratory ?? detectExploratoryIntent(options.query);
   const legalStatusMode = exploratoryMode ? "any" : "vigente";

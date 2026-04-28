@@ -1,0 +1,1 @@
+{"cycle_id":"cycle_UJ2z-7OpGRwu","user_id":1,"started_at":"2026-04-28T20:29:27.044Z","state_transitions":["INTENT_PARSE","PLAN"],"tool_exec_ms":35,"rag_hit_count":2,"llm_tokens_in":120,"llm_tokens_out":60,"confirmation_required":true,"final_status":"completed","rag_min_score_applied":0.35,"finished_at":"2026-04-28T20:29:27.050Z","metadata":{"note":"ok"}}

@@ -120,7 +120,9 @@ export const memoryEntries = sqliteTable("memoryEntries", {
     .notNull()
     .defaultNow(),
   accessedAt: integer("accessedAt", { mode: "timestamp_ms" }).defaultNow(),
-});
+}, (table) => ({
+  userIdIdx: index("idx_memory_entries_user_id").on(table.userId),
+}));
 
 export type MemoryEntry = typeof memoryEntries.$inferSelect;
 export type InsertMemoryEntry = typeof memoryEntries.$inferInsert;

@@ -1,7 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import type { Tool } from "../_core/llm";
-import { toLlmTool, toolRegistrySchema, type ToolRegistryItem } from "./types";
+import { toolRegistrySchema, type ToolRegistryItem } from "./types";
+import { compileToolForLLM } from "./zod-compiler";
 
 const DEFAULT_CONFIG_PATH = path.resolve(process.cwd(), "config", "tools.json");
 
@@ -34,7 +35,7 @@ export function loadToolRegistry(configPath = DEFAULT_CONFIG_PATH): ToolRegistry
 }
 
 export function getRegistryAsTools(configPath = DEFAULT_CONFIG_PATH): Tool[] {
-  return loadToolRegistry(configPath).map(toLlmTool);
+  return loadToolRegistry(configPath).map(compileToolForLLM);
 }
 
 export function findRegistryTool(name: string, configPath = DEFAULT_CONFIG_PATH): ToolRegistryItem | null {

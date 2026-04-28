@@ -27,6 +27,28 @@ LLM prompt final + resposta
 SQLite/Drizzle (audit_logs, memoryEntries, systemLogs)
 ```
 
+## Fluxo legal consolidado (Ingest -> RAG -> Agent Loop -> Audit)
+
+```text
+ava ingest [path]
+   |
+   +--> server/tools/ingest_ops.ts
+           |- valida markdown (# Titulo, >=500 chars)
+           |- dedup SHA-256 (externalId)
+           |- chunking hierarquico legal ou smartChunk
+           |- embedding Ollama (nomic-embed-text)
+           |- persistencia documents + documentChunks
+           |- audit JSONL (data/ingest-audit.jsonl)
+           |- move arquivo para processed/failed
+
+ava legal ask "..."
+   |
+   +--> server/rag/retriever-legal.ts (estende retriever-patch)
+   +--> prompt juridico restritivo + chunks
+   +--> citation-validator (<0.6 => bloqueio)
+   +--> audit_logs + resposta final
+```
+
 ## Componentes
 
 - `server/tool-registry/*`: loader, tipos, guard e auditoria JSONL.

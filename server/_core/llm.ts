@@ -540,6 +540,23 @@ async function invokeLLMInternal(params: InvokeParams & { provider: "forge" | "o
           if (response.status === 401) {
             throw new Error("Ollama retornou 401 (Nao autorizado). Verifique se o token de autenticacao esta correto.");
           }
+          if (response.status === 403) {
+            const rawLower = String(errorText || "").toLowerCase();
+            const isSubscriptionBlocked =
+              rawLower.includes("requires a subscription") ||
+              rawLower.includes("upgrade for access") ||
+              rawLower.includes("assinatura") ||
+              rawLower.includes("subscription");
+
+            if (isSubscriptionBlocked) {
+              throw new Error(
+                `Modelo Ollama sem acesso no plano atual (${modelName}). ` +
+                  "Use um modelo local disponivel (ex.: llama3.2:3b) ou ajuste para um modelo cloud autorizado."
+              );
+            }
+
+            throw new Error(`Ollama retornou 403 (Acesso negado ao modelo ${modelName}). Verifique permissoes e disponibilidade.`);
+          }
           if (response.status === 404) {
             throw new Error(`Modelo nao encontrado no Ollama. Execute: ollama pull ${modelName}`);
           }

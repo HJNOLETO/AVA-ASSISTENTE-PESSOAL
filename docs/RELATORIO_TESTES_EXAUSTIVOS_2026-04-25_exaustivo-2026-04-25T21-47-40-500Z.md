@@ -110,3 +110,4 @@ Retries por modelo: 2
 - Duracao: 0ms
 - Nota: Ignorado: AVA_VAULT_MASTER_KEY nao configurada.
 
+

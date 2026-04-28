@@ -22,6 +22,7 @@ import {
   getAgentCycles,
   getAgentCycleByCycleId,
   getUserContext,
+  getSystemLogs,
 } from "../server/db";
 import { redactSensitiveText, routeMemoryPersistence } from "../server/security/memoryGuard";
 import { getVaultSecret, listVaultSecrets, removeVaultSecret, saveVaultSecret } from "../server/security/vaultStore";
@@ -29,6 +30,8 @@ import { evaluateToolExecution } from "../server/tool-registry";
 import { runAgentCycle } from "../server/agents/agent-loop";
 import { executeRegisteredTool } from "../server/tools/executor";
 import { compactUserContext } from "../server/context/manager";
+import { registerLegalRagCommands } from "./commands/legal-rag";
+import { runIngestOps } from "../server/tools/ingest_ops";
 
 const program = new Command();
 const execFileAsync = promisify(execFile);
@@ -111,6 +114,8 @@ const CLI_SUPPORTED_TOOL_NAMES = new Set([
   "http_ops",
   "memory_ops",
   "db_ops",
+  "legal_rag_ops",
+  "ingest_ops",
 ]);
 
 type SelfStatusReport = {
@@ -594,7 +599,7 @@ program
           if (name === "obter_data_hora") {
             return { output: new Date().toISOString(), ok: true };
           }
-          if (name === "file_ops" || name === "http_ops" || name === "memory_ops" || name === "db_ops") {
+          if (name === "file_ops" || name === "http_ops" || name === "memory_ops" || name === "db_ops" || name === "ingest_ops") {
             return { output: await executeRegisteredTool(name, args as Record<string, unknown>), ok: true };
           }
           return {
@@ -703,6 +708,11 @@ program
 
                 case "db_ops": {
                   toolOutput = await executeRegisteredTool("db_ops", args);
+                  break;
+                }
+
+                case "ingest_ops": {
+                  toolOutput = await executeRegisteredTool("ingest_ops", args);
                   break;
                 }
 
@@ -1573,6 +1583,50 @@ program
   });
 
 program
+  .command("ingest")
+  .description("Executa pipeline de ingestao local (.md)")
+  .argument("[path]", "Diretorio de inbox", "ava_inbox")
+  .option("--dry-run", "Somente simula sem persistir")
+  .action(async (targetPath: string, options: { dryRun?: boolean }) => {
+    if (String(targetPath).trim().toLowerCase() === "status") {
+      const outStatus = await runIngestOps({ action: "status", path: "ava_inbox", userId: CLI_USER_ID });
+      console.log(outStatus);
+      return;
+    }
+    const out = await runIngestOps({
+      action: "run",
+      path: targetPath,
+      dry_run: Boolean(options.dryRun),
+      userId: CLI_USER_ID,
+    });
+    console.log(out);
+  });
+
+program
+  .command("ingest-status")
+  .description("Exibe status da inbox de ingestao")
+  .argument("[path]", "Diretorio de inbox", "ava_inbox")
+  .action(async (targetPath: string) => {
+    const out = await runIngestOps({ action: "status", path: targetPath, userId: CLI_USER_ID });
+    console.log(out);
+  });
+
+program
+  .command("rag")
+  .description("Exibe metricas de retrieval juridico")
+  .option("--last <n>", "Quantidade de eventos", "50")
+  .action(async (options: { last?: string }) => {
+    const limit = Math.max(1, Math.min(500, Number(options.last || 50)));
+    const logs = await getSystemLogs(limit);
+    const rag = logs.filter((l: any) => String(l.event || l.action || "").includes("RAG"));
+    if (rag.length === 0) {
+      console.log("Nenhuma metrica RAG encontrada.");
+      return;
+    }
+    console.log(JSON.stringify(rag.slice(-limit), null, 2));
+  });
+
+program
   .command("self-status")
   .description("Exibe o autodiagnostico operacional e de seguranca do AVA CLI.")
   .option("--json", "Retorna em JSON")
@@ -1584,6 +1638,8 @@ program
     }
     console.log(`\n${formatSelfStatusReport(report)}\n`);
   });
+
+registerLegalRagCommands(program, CLI_USER_ID);
 
 program.parseAsync(process.argv).catch((error) => {
   console.error(`\n[Erro Crítico do CLI]: ${(error as Error).message}\n`);

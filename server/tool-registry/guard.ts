@@ -1,12 +1,44 @@
 import { findRegistryTool } from "./loader";
 import { writeToolRegistryAudit } from "./audit";
 import type { ToolRegistryExecutionDecision } from "./types";
+import { detectInjectionAttempt } from "../security/memoryGuard";
 
 export async function evaluateToolExecution(
   toolName: string,
   args: Record<string, unknown>,
   source: "cli" | "api" | "unknown" = "unknown"
 ): Promise<ToolRegistryExecutionDecision> {
+  // ── C2: Pré-filtro de injeção — verificar todos os valores string dos args ──
+  const allStringArgs = Object.values(args)
+    .filter((v): v is string => typeof v === "string")
+    .join(" ");
+  if (allStringArgs) {
+    const injection = detectInjectionAttempt(allStringArgs);
+    if (injection.detected && (injection.severity === "critical" || injection.severity === "high")) {
+      const reason = `bloqueado: injecao detectada [${injection.type}] severity=${injection.severity}`;
+      await writeToolRegistryAudit({
+        tool_name: toolName,
+        risk_level: "high",
+        requires_confirmation: false,
+        dry_run_requested: false,
+        allowed: false,
+        reason,
+        source,
+        // @ts-ignore — campo extra para auditoria de segurança
+        injection_type: injection.type,
+        injection_severity: injection.severity,
+      });
+      return {
+        allowed: false,
+        reason,
+        riskLevel: "high",
+        requiresConfirmation: false,
+        requiresDryRun: false,
+        dryRunRequested: false,
+      };
+    }
+  }
+
   const registryTool = findRegistryTool(toolName);
 
   if (!registryTool) {

@@ -1,0 +1,16 @@
+{"at":"2026-04-28T17:53:41.120Z","arquivo":"curto.md","status":"failed","erro":"Formato invalido: minimo de 500 caracteres"}
+{"at":"2026-04-28T17:54:43.551Z","arquivo":"curto.md","status":"failed","erro":"Formato invalido: minimo de 500 caracteres"}
+{"at":"2026-04-28T17:55:10.382Z","arquivo":"curto.md","status":"failed","erro":"Formato invalido: minimo de 500 caracteres"}
+{"at":"2026-04-28T17:55:36.638Z","arquivo":"curto.md","status":"failed","erro":"Formato invalido: minimo de 500 caracteres"}
+{"at":"2026-04-28T17:55:56.706Z","arquivo":"curto.md","status":"failed","erro":"Formato invalido: minimo de 500 caracteres"}
+{"at":"2026-04-28T18:43:43.829Z","arquivo":"curto.md","status":"failed","erro":"Formato invalido: minimo de 500 caracteres"}
+{"at":"2026-04-28T18:44:49.706Z","arquivo":"curto.md","status":"failed","erro":"Formato invalido: minimo de 500 caracteres"}
+{"at":"2026-04-28T20:26:56.342Z","arquivo":"curto.md","status":"failed","erro":"Formato invalido: minimo de 500 caracteres"}
+{"at":"2026-04-28T20:29:28.774Z","arquivo":"curto.md","status":"failed","erro":"Formato invalido: minimo de 500 caracteres"}
+{"at":"2026-04-28T21:00:20.663Z","arquivo":"resolucao-cns.md","status":"failed","erro":"Formato invalido: minimo de 500 caracteres"}
+{"at":"2026-04-28T21:00:20.687Z","arquivo":"tiny.md","status":"failed","erro":"Formato invalido: minimo de 500 caracteres"}
+{"at":"2026-04-28T21:01:22.852Z","arquivo":"resolucao-cns.md","status":"failed","erro":"Formato invalido: minimo de 500 caracteres"}
+{"at":"2026-04-28T21:01:22.874Z","arquivo":"tiny.md","status":"failed","erro":"Formato invalido: minimo de 500 caracteres"}
+{"at":"2026-04-28T21:29:22.611Z","arquivo":"tiny.md","status":"failed","erro":"Formato invalido: minimo de 200 caracteres de conteudo (atual: 61)","reason":"conteudo_abaixo_minimo","minChars":200}
+{"at":"2026-04-28T21:30:13.809Z","arquivo":"tiny.md","status":"failed","erro":"Formato invalido: minimo de 200 caracteres de conteudo (atual: 61)","reason":"conteudo_abaixo_minimo","minChars":200}
+{"at":"2026-04-28T21:30:48.821Z","arquivo":"tiny.md","status":"failed","erro":"Formato invalido: minimo de 200 caracteres de conteudo (atual: 61)","reason":"conteudo_abaixo_minimo","minChars":200}

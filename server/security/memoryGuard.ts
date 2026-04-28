@@ -10,6 +10,45 @@ export type MemoryClassification = {
   reason: string;
 };
 
+// ── C2: Pré-filtro de Injeção (Prompt/SQL/Shell) ────────────────────────────────
+export type InjectionType = "sql" | "prompt" | "shell" | "path_traversal";
+
+export type InjectionResult = {
+  detected: boolean;
+  type?: InjectionType;
+  pattern?: string;
+  severity: "critical" | "high" | "none";
+};
+
+const INJECTION_PATTERNS: Array<{ type: InjectionType; pattern: RegExp; severity: "critical" | "high" }> = [
+  // SQL — comandos destrutivos com cláusulas
+  { type: "sql", pattern: /\b(DELETE|DROP|TRUNCATE|UPDATE)\b.{0,60}\b(FROM|TABLE|WHERE|SET)\b/i, severity: "critical" },
+  { type: "sql", pattern: /\b(INSERT\s+INTO|ALTER\s+TABLE|CREATE\s+TABLE|EXEC\s*\()/i, severity: "high" },
+  // Prompt injection — tentativas de subverter instruções do sistema
+  { type: "prompt", pattern: /ignore\s+(all|todas|previous|anteriores|as)?\s*(rules?|regras?|instructions?|instru[çc][oõ]es)/i, severity: "critical" },
+  { type: "prompt", pattern: /\b(DAN\s*mode|jailbreak|you\s+are\s+now\s+a|act\s+as\s+if\s+you\s+are|pretend\s+you\s+are)\b/i, severity: "critical" },
+  { type: "prompt", pattern: /\b(system\s*prompt|instrução\s+do\s+sistema|ignore\s+your\s+(previous|last))\b/i, severity: "high" },
+  // Shell injection — comandos perigosos após separadores
+  { type: "shell", pattern: /[;|&`]\s*(rm|del|format|mkfs|dd|curl|wget|nc|netcat|bash|sh|cmd\.exe|powershell)\b/i, severity: "critical" },
+  { type: "shell", pattern: /\$\([^)]{0,80}\)|`[^`]{0,80}`/i, severity: "high" }, // command substitution
+  // Path traversal
+  { type: "path_traversal", pattern: /(\.\.[\/\\]){2,}/i, severity: "critical" },
+];
+
+/**
+ * C2: Detecta tentativas de injeção em inputs antes de execução de ferramentas.
+ * NÃO substitui o classifyMemoryInput — é uma camada adicional de defesa.
+ */
+export function detectInjectionAttempt(input: string): InjectionResult {
+  const text = String(input || "").trim();
+  for (const { type, pattern, severity } of INJECTION_PATTERNS) {
+    if (pattern.test(text)) {
+      return { detected: true, type, pattern: pattern.source, severity };
+    }
+  }
+  return { detected: false, severity: "none" };
+}
+
 const SECRET_PATTERNS: RegExp[] = [
   /\b(password|senha|passphrase)\b/i,
   /\b(api[_\s-]?key|token|bearer|secret|client[_\s-]?secret)\b/i,
