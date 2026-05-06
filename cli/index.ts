@@ -25,10 +25,15 @@ import {
   getSystemLogs,
   createLearningModule,
   getLearningModules,
+  getLearningModuleById,
   createLearningTopic,
   getLearningProgress,
   updateLearningProgress,
   getDueReviews,
+  pauseLearningModule,
+  resumeLearningModule,
+  deleteLearningModule,
+  deleteLearningTopic,
 } from "../server/db";
 import { redactSensitiveText, routeMemoryPersistence } from "../server/security/memoryGuard";
 import { getVaultSecret, listVaultSecrets, removeVaultSecret, saveVaultSecret } from "../server/security/vaultStore";
@@ -715,6 +720,49 @@ program
             const conteudo = codigoBase || `// Desafio: ${descricao}\n// Encontre e corrija o(s) bug(s) neste código:\n\nfunction calcularTotal(itens) {\n  let total = 0;\n  for (let i = 0; i <= itens.length; i++) { // BUG AQUI\n    total += itens[i].preco;\n  }\n  return total;\n}\n\n// Teste: calcularTotal([{ preco: 10 }, { preco: 20 }]) deve retornar 30\n`;
             await fs.writeFile(desktopPath, conteudo, "utf-8");
             return { output: `📡 Desafio prático criado na sua Área de Trabalho: "${nomeArq}"\n\nMissão: ${descricao}\nQuando concluir, me avise e farei a avaliação do seu código!`, ok: true };
+          }
+          // ========== CRUD DE MÓDULOS ==========
+          if (name === "gerenciar_modulo") {
+            const acao = String(args.acao || "").trim().toLowerCase();
+            const moduleId = args.modulo_id !== undefined ? Number(args.modulo_id) : 0;
+            if (acao === "listar") {
+              const modulos = await getLearningModules(CLI_USER_ID);
+              if (modulos.length === 0) return { output: "Nenhum módulo de estudo encontrado. Use 'iniciar_sessao_estudo' para começar!", ok: true };
+              const lista = modulos.map((m: any, i: number) => {
+                const bar = "█".repeat(Math.floor((m.masteredTopics / Math.max(m.totalTopics, 1)) * 10)) + "░".repeat(10 - Math.floor((m.masteredTopics / Math.max(m.totalTopics, 1)) * 10));
+                return `${i + 1}. [${m.status.toUpperCase()}] #${m.id} "${m.subject}" | ${bar} ${m.masteredTopics}/${m.totalTopics} tópicos`;
+              }).join("\n");
+              return { output: `📚 Seus Módulos de Estudo:\n\n${lista}`, ok: true };
+            }
+            if (acao === "pausar") {
+              if (!moduleId) throw new Error("'modulo_id' é obrigatório para pausar.");
+              const res = await pauseLearningModule(CLI_USER_ID, moduleId);
+              return { output: `⏸️ ${res.message}`, ok: true };
+            }
+            if (acao === "retomar") {
+              if (!moduleId) throw new Error("'modulo_id' é obrigatório para retomar.");
+              const res = await resumeLearningModule(CLI_USER_ID, moduleId);
+              return { output: `▶️ ${res.message}`, ok: true };
+            }
+            if (acao === "abandonar") {
+              if (!moduleId) throw new Error("'modulo_id' é obrigatório para abandonar.");
+              const modulo = await getLearningModuleById(CLI_USER_ID, moduleId);
+              if (!modulo) return { output: `Módulo #${moduleId} não encontrado.`, ok: false };
+              const res = await deleteLearningModule(CLI_USER_ID, moduleId);
+              return { output: `🗑️ Módulo "${modulo.subject}" abandonado e removido. ${res.message}`, ok: true };
+            }
+            if (acao === "progresso") {
+              if (!moduleId) throw new Error("'modulo_id' é obrigatório.");
+              const topicos = await getLearningProgress(CLI_USER_ID, moduleId);
+              if (topicos.length === 0) return { output: "Nenhum tópico encontrado neste módulo.", ok: true };
+              const lista = topicos.map((t: any, i: number) => {
+                const prox = t.nextReviewDate ? new Date(t.nextReviewDate).toLocaleDateString("pt-BR") : "sem revisão";
+                const feynman = t.feynmanUnlocked ? " 🏆 FEYNMAN" : "";
+                return `${i + 1}. #${t.id} [${t.status}] ${t.topic} | domínio: ${t.masteryLevel}% | próx: ${prox}${feynman}`;
+              }).join("\n");
+              return { output: `📊 Progresso do Módulo #${moduleId}:\n\n${lista}`, ok: true };
+            }
+            return { output: "Acao inválida. Use: listar | pausar | retomar | abandonar | progresso", ok: false };
           }
           return {
             output: "ATENCAO: ferramenta ainda nao mapeada no agent-loop v2. Desative AVA_AGENT_LOOP_V2 para usar loop legado completo.",

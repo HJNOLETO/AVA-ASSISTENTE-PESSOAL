@@ -2890,3 +2890,72 @@ export async function getDueReviews(userId: number) {
     )
     .orderBy(userLearningProgress.nextReviewDate);
 }
+
+/**
+ * Pausa um módulo de aprendizagem (o aluno decidiu pausar temporariamente).
+ */
+export async function pauseLearningModule(userId: number, moduleId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("[MentorSocratico] Database not available.");
+  await db
+    .update(learningModules)
+    .set({ status: "paused", updatedAt: new Date() })
+    .where(and(eq(learningModules.id, moduleId), eq(learningModules.userId, userId)));
+  return { ok: true, message: `Módulo ${moduleId} pausado. Você pode retomá-lo quando quiser.` };
+}
+
+/**
+ * Retoma um módulo pausado.
+ */
+export async function resumeLearningModule(userId: number, moduleId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("[MentorSocratico] Database not available.");
+  await db
+    .update(learningModules)
+    .set({ status: "active", updatedAt: new Date() })
+    .where(and(eq(learningModules.id, moduleId), eq(learningModules.userId, userId)));
+  return { ok: true, message: `Módulo ${moduleId} retomado. A persistência leva ao sucesso!` };
+}
+
+/**
+ * Abandona e deleta permanentemente um módulo e todo seu progresso.
+ */
+export async function deleteLearningModule(userId: number, moduleId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("[MentorSocratico] Database not available.");
+  // Deleta o progresso primeiro (CASCADE deve cobrir, mas garantindo)
+  await db
+    .delete(userLearningProgress)
+    .where(and(eq(userLearningProgress.moduleId, moduleId), eq(userLearningProgress.userId, userId)));
+  await db
+    .delete(learningModules)
+    .where(and(eq(learningModules.id, moduleId), eq(learningModules.userId, userId)));
+  return { ok: true, message: `Módulo ${moduleId} removido. Todo progresso apagado.` };
+}
+
+/**
+ * Deleta um tópico específico dentro de um módulo.
+ */
+export async function deleteLearningTopic(userId: number, topicId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("[MentorSocratico] Database not available.");
+  await db
+    .delete(userLearningProgress)
+    .where(and(eq(userLearningProgress.id, topicId), eq(userLearningProgress.userId, userId)));
+  return { ok: true };
+}
+
+/**
+ * Busca um módulo específico por ID.
+ */
+export async function getLearningModuleById(userId: number, moduleId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db
+    .select()
+    .from(learningModules)
+    .where(and(eq(learningModules.id, moduleId), eq(learningModules.userId, userId)))
+    .limit(1);
+  return result[0] ?? null;
+}
+
