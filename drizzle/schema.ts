@@ -1250,3 +1250,88 @@ export const products = sqliteTable(
 
 export type Product = typeof products.$inferSelect;
 export type InsertProduct = typeof products.$inferInsert;
+
+// ==========================================
+// MÓDULO: MENTOR SOCRÁTICO (Tutor de Alta Performance)
+// ==========================================
+
+/**
+ * learningModules: Representa uma "disciplina" ou "curso" que o usuário está estudando.
+ * Cada módulo é ancorado em uma fonte validada (caminho de arquivo, repositório GitHub, etc.)
+ */
+export const learningModules = sqliteTable(
+  "learning_modules",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    userId: integer("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    subject: text("subject").notNull(), // Ex: "PHP", "Direito Constitucional", "Filosofia Kantiana"
+    sourceReference: text("sourceReference"), // Caminho do arquivo .md ou repositório GitHub
+    sourceType: text("sourceType", {
+      enum: ["file", "github", "rag_document", "manual"],
+    }).default("manual"),
+    description: text("description"), // Descrição opcional do que será aprendido
+    status: text("status", {
+      enum: ["active", "paused", "completed"],
+    }).default("active"),
+    totalTopics: integer("totalTopics").default(0),
+    masteredTopics: integer("masteredTopics").default(0),
+    createdAt: integer("createdAt", { mode: "timestamp_ms" })
+      .notNull()
+      .defaultNow(),
+    updatedAt: integer("updatedAt", { mode: "timestamp_ms" })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => ({
+    userIdIdx: index("idx_learning_modules_user_id").on(table.userId),
+    statusIdx: index("idx_learning_modules_status").on(table.status),
+  })
+);
+
+export type LearningModule = typeof learningModules.$inferSelect;
+export type InsertLearningModule = typeof learningModules.$inferInsert;
+
+/**
+ * userLearningProgress: Rastreia o progresso de cada tópico dentro de um módulo.
+ * Implementa Repetição Espaçada (Spaced Repetition) via nextReviewDate.
+ */
+export const userLearningProgress = sqliteTable(
+  "user_learning_progress",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    userId: integer("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    moduleId: integer("moduleId")
+      .references(() => learningModules.id, { onDelete: "cascade" }),
+    topic: text("topic").notNull(), // Ex: "Arquitetura MVC", "Imperativo Categórico de Kant"
+    masteryLevel: integer("masteryLevel").default(0), // 0 a 100: % de domínio calculado
+    strengths: text("strengths"),     // JSON: ["raciocínio lógico forte", "boa analogia"]
+    weaknesses: text("weaknesses"),   // JSON: ["confunde Model com Controller"]
+    correctAnswers: integer("correctAnswers").default(0),
+    incorrectAnswers: integer("incorrectAnswers").default(0),
+    lastReviewed: integer("lastReviewed", { mode: "timestamp_ms" }),
+    nextReviewDate: integer("nextReviewDate", { mode: "timestamp_ms" }), // Repetição Espaçada
+    status: text("status", {
+      enum: ["learning", "review", "mastered"],
+    }).default("learning"),
+    feynmanUnlocked: integer("feynmanUnlocked").default(0), // 1 = modo Feynman ativo (masteryLevel >= 90)
+    createdAt: integer("createdAt", { mode: "timestamp_ms" })
+      .notNull()
+      .defaultNow(),
+    updatedAt: integer("updatedAt", { mode: "timestamp_ms" })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => ({
+    userIdIdx: index("idx_ulp_user_id").on(table.userId),
+    moduleIdIdx: index("idx_ulp_module_id").on(table.moduleId),
+    nextReviewIdx: index("idx_ulp_next_review").on(table.nextReviewDate),
+    statusIdx: index("idx_ulp_status").on(table.status),
+  })
+);
+
+export type UserLearningProgress = typeof userLearningProgress.$inferSelect;
+export type InsertUserLearningProgress = typeof userLearningProgress.$inferInsert;

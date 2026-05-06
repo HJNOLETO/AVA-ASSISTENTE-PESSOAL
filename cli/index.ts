@@ -23,6 +23,12 @@ import {
   getAgentCycleByCycleId,
   getUserContext,
   getSystemLogs,
+  createLearningModule,
+  getLearningModules,
+  createLearningTopic,
+  getLearningProgress,
+  updateLearningProgress,
+  getDueReviews,
 } from "../server/db";
 import { redactSensitiveText, routeMemoryPersistence } from "../server/security/memoryGuard";
 import { getVaultSecret, listVaultSecrets, removeVaultSecret, saveVaultSecret } from "../server/security/vaultStore";
@@ -655,6 +661,60 @@ program
               return { output: `Compromisso criado para ${startDate.toLocaleString("pt-BR")}.`, ok: true };
             }
             return { output: "Ação não implementada nativamente para AgentLoopV2 em gerenciar_agenda ou faltando dados.", ok: false };
+          }
+          // ========== MENTOR SOCRÁTICO: TOOLS ==========
+          if (name === "iniciar_sessao_estudo") {
+            const assunto = String(args.assunto || "").trim();
+            const userId = CLI_USER_ID;
+            // Verificar revisões vencidas primeiro
+            const due = await getDueReviews(userId);
+            if (due.length > 0) {
+              const topicos = due.slice(0, 3).map((t: any) => `- [${t.status}] ${t.topic} (domínio: ${t.masteryLevel}%)`).join("\n");
+              return { output: `Olá! Você tem ${due.length} tópico(s) com revisão pendente. Onde o foco vai, a energia flui! Vamos revisitar:\n${topicos}\n\nResponda com o ID do tópico para iniciar a revisão ou informe um novo assunto.`, ok: true };
+            }
+            if (!assunto) return { output: "Qual assunto você deseja estudar hoje? (Ex: 'Arquitetura MVC em PHP', 'Kant', 'Direito Constitucional')", ok: true };
+            // Criar novo módulo
+            const modulo = await createLearningModule(userId, {
+              subject: assunto,
+              sourceReference: args.fonte ? String(args.fonte) : null,
+              sourceType: args.tipo_fonte ? String(args.tipo_fonte) as any : "manual",
+              description: args.descricao ? String(args.descricao) : null,
+            });
+            // Criar primeiro tópico inicial
+            const topico = await createLearningTopic(userId, {
+              moduleId: modulo.id,
+              topic: `Introdução a ${assunto}`,
+              status: "learning",
+            });
+            return { output: `✨ Sessão de estudo iniciada! Módulo criado: "${assunto}" (ID ${modulo.id}). Primeiro tópico: Introdução (ID ${topico.id}).\n\nAntes de começar: o que já sabe sobre "${assunto}"? (Responda em uma frase, sem se preocupar em estar certo.)`, ok: true };
+          }
+          if (name === "atualizar_progresso_estudo") {
+            const progressId = Number(args.progresso_id);
+            const resultado = String(args.resultado || "").trim() as "correct" | "incorrect";
+            if (!progressId || !Number.isFinite(progressId)) throw new Error("'progresso_id' inválido.");
+            if (resultado !== "correct" && resultado !== "incorrect") throw new Error("'resultado' deve ser 'correct' ou 'incorrect'.");
+            const forcas = args.forcas ? (Array.isArray(args.forcas) ? args.forcas : [String(args.forcas)]) : undefined;
+            const fraquezas = args.fraquezas ? (Array.isArray(args.fraquezas) ? args.fraquezas : [String(args.fraquezas)]) : undefined;
+            const progresso = await updateLearningProgress(progressId, resultado, forcas, fraquezas);
+            let mensagem = "";
+            if (resultado === "correct") {
+              mensagem = progresso.feynmanUnlocked
+                ? `🏆 Domínio MASTER (${progresso.masteryLevel}%)! Você é imparável! Modo Feynman desbloqueado: agora me ensine este conceito como se eu fosse um iniciante.`
+                : `✅ Excelente! Domínio atualizado: ${progresso.masteryLevel}%. Próxima revisão agendada para daqui a ${progresso.intervalDays} dia(s). Acredite em si mesmo e você será imparável!`;
+            } else {
+              mensagem = `💪 Excelente tentativa! A persistência leva ao sucesso. Domínio atual: ${progresso.masteryLevel}%. Onde o foco vai, a energia flui - tente por este ângulo:`;
+            }
+            return { output: mensagem, ok: true };
+          }
+          if (name === "criar_desafio_pratico") {
+            const linguagem = String(args.linguagem || "typescript").trim();
+            const descricao = String(args.descricao || "exercicio de programacao").trim();
+            const codigoBase = String(args.codigo_base || "").trim();
+            const nomeArq = `desafio_${Date.now()}.${linguagem === "javascript" ? "js" : linguagem === "php" ? "php" : "ts"}`;
+            const desktopPath = path.join(os.homedir(), "Desktop", nomeArq);
+            const conteudo = codigoBase || `// Desafio: ${descricao}\n// Encontre e corrija o(s) bug(s) neste código:\n\nfunction calcularTotal(itens) {\n  let total = 0;\n  for (let i = 0; i <= itens.length; i++) { // BUG AQUI\n    total += itens[i].preco;\n  }\n  return total;\n}\n\n// Teste: calcularTotal([{ preco: 10 }, { preco: 20 }]) deve retornar 30\n`;
+            await fs.writeFile(desktopPath, conteudo, "utf-8");
+            return { output: `📡 Desafio prático criado na sua Área de Trabalho: "${nomeArq}"\n\nMissão: ${descricao}\nQuando concluir, me avise e farei a avaliação do seu código!`, ok: true };
           }
           return {
             output: "ATENCAO: ferramenta ainda nao mapeada no agent-loop v2. Desative AVA_AGENT_LOOP_V2 para usar loop legado completo.",

@@ -72,6 +72,10 @@ import {
   InsertUserContext,
   products,
   InsertProduct,
+  learningModules,
+  InsertLearningModule,
+  userLearningProgress,
+  InsertUserLearningProgress,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 import { extractKeywords } from "./utils/memoryUtils";
@@ -2731,4 +2735,158 @@ export async function upsertProduct(productData: Partial<InsertProduct>) {
 
   const result = await _db.insert(products).values(productData as InsertProduct).returning();
   return result[0];
+}
+
+// ==========================================
+// MÓDULO: MENTOR SOCRÁTICO
+// ==========================================
+
+/**
+ * Cria um novo módulo de aprendizagem para o usuário.
+ */
+export async function createLearningModule(
+  userId: number,
+  data: Omit<InsertLearningModule, "userId" | "id" | "createdAt" | "updatedAt">
+) {
+  const db = await getDb();
+  if (!db) throw new Error("[MentorSocratico] Database not available.");
+  const res = await db.insert(learningModules).values({
+    userId,
+    ...data,
+  } as InsertLearningModule);
+  return { id: Number((res as any)?.lastInsertRowid) };
+}
+
+/**
+ * Lista todos os módulos de aprendizagem de um usuário.
+ */
+export async function getLearningModules(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db
+    .select()
+    .from(learningModules)
+    .where(eq(learningModules.userId, userId))
+    .orderBy(learningModules.updatedAt);
+}
+
+/**
+ * Cria um novo tópico de progresso dentro de um módulo.
+ */
+export async function createLearningTopic(
+  userId: number,
+  data: Omit<InsertUserLearningProgress, "userId" | "id" | "createdAt" | "updatedAt">
+) {
+  const db = await getDb();
+  if (!db) throw new Error("[MentorSocratico] Database not available.");
+  const res = await db.insert(userLearningProgress).values({
+    userId,
+    ...data,
+  } as InsertUserLearningProgress);
+  return { id: Number((res as any)?.lastInsertRowid) };
+}
+
+/**
+ * Retorna os tópicos de um módulo, priorizando os que precisam de revisão.
+ */
+export async function getLearningProgress(userId: number, moduleId?: number) {
+  const db = await getDb();
+  if (!db) return [];
+  const conditions = [eq(userLearningProgress.userId, userId)];
+  if (moduleId) conditions.push(eq(userLearningProgress.moduleId, moduleId));
+  return db
+    .select()
+    .from(userLearningProgress)
+    .where(and(...conditions))
+    .orderBy(userLearningProgress.nextReviewDate);
+}
+
+/**
+ * Atualiza o progresso do aluno após um ciclo de avaliação.
+ * - Recalcula masteryLevel baseado em acertos/erros
+ * - Agenda a próxima revisão com base no nível de domínio (Repetição Espaçada)
+ * - Ativa o modo Feynman quando masteryLevel >= 90
+ */
+export async function updateLearningProgress(
+  progressId: number,
+  result: "correct" | "incorrect",
+  strengths?: string[],
+  weaknesses?: string[]
+) {
+  const db = await getDb();
+  if (!db) throw new Error("[MentorSocratico] Database not available.");
+
+  const existing = await db
+    .select()
+    .from(userLearningProgress)
+    .where(eq(userLearningProgress.id, progressId))
+    .limit(1);
+
+  if (!existing[0]) throw new Error(`Tópico de progresso ${progressId} não encontrado.`);
+  const current = existing[0];
+
+  const correct = (current.correctAnswers ?? 0) + (result === "correct" ? 1 : 0);
+  const incorrect = (current.incorrectAnswers ?? 0) + (result === "incorrect" ? 1 : 0);
+  const total = correct + incorrect;
+  const newMastery = Math.min(100, Math.round((correct / total) * 100));
+
+  // Repetição Espaçada: quanto maior o domínio, maior o intervalo de revisão
+  let reviewIntervalDays: number;
+  if (newMastery >= 90) reviewIntervalDays = 14;       // 2 semanas
+  else if (newMastery >= 70) reviewIntervalDays = 7;   // 1 semana
+  else if (newMastery >= 50) reviewIntervalDays = 3;   // 3 dias
+  else if (newMastery >= 30) reviewIntervalDays = 2;   // 2 dias
+  else reviewIntervalDays = 1;                          // amanhã
+
+  const nextReview = new Date();
+  nextReview.setDate(nextReview.getDate() + reviewIntervalDays);
+
+  const newStatus =
+    newMastery >= 90 ? "mastered" :
+    newMastery >= 50 ? "review" :
+    "learning";
+
+  await db
+    .update(userLearningProgress)
+    .set({
+      correctAnswers: correct,
+      incorrectAnswers: incorrect,
+      masteryLevel: newMastery,
+      status: newStatus,
+      feynmanUnlocked: newMastery >= 90 ? 1 : 0,
+      strengths: strengths ? JSON.stringify(strengths) : current.strengths,
+      weaknesses: weaknesses ? JSON.stringify(weaknesses) : current.weaknesses,
+      lastReviewed: new Date(),
+      nextReviewDate: nextReview,
+      updatedAt: new Date(),
+    })
+    .where(eq(userLearningProgress.id, progressId));
+
+  return {
+    masteryLevel: newMastery,
+    status: newStatus,
+    nextReviewDate: nextReview,
+    feynmanUnlocked: newMastery >= 90,
+    intervalDays: reviewIntervalDays,
+  };
+}
+
+/**
+ * Retorna tópicos com revisão vencida (nextReviewDate <= agora)
+ * para disparar lembretes proativos.
+ */
+export async function getDueReviews(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  const now = new Date();
+  return db
+    .select()
+    .from(userLearningProgress)
+    .where(
+      and(
+        eq(userLearningProgress.userId, userId),
+        lte(userLearningProgress.nextReviewDate, now)
+      )
+    )
+    .orderBy(userLearningProgress.nextReviewDate);
 }
