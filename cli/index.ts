@@ -602,6 +602,60 @@ program
           if (name === "file_ops" || name === "http_ops" || name === "memory_ops" || name === "db_ops" || name === "ingest_ops") {
             return { output: await executeRegisteredTool(name, args as Record<string, unknown>), ok: true };
           }
+          if (name === "criar_lembrete") {
+            const mensagem = String(args.mensagem || "").trim();
+            if (!mensagem) throw new Error("'mensagem' e obrigatoria para criar lembrete.");
+            const minutos = args.minutos_daqui !== undefined ? Number(args.minutos_daqui) : undefined;
+            const horario = args.horario ? String(args.horario).trim() : "";
+            const recorrencia = args.recorrencia ? String(args.recorrencia).trim() : null;
+            let nextRun = new Date();
+            if (minutos !== undefined) {
+              if (!Number.isFinite(minutos) || minutos <= 0) throw new Error("'minutos_daqui' deve ser um numero positivo.");
+              nextRun = new Date(Date.now() + Math.round(minutos) * 60 * 1000);
+            } else if (horario) {
+              if (horario.includes(":")) {
+                const [hRaw, mRaw] = horario.split(":");
+                const h = Number(hRaw), m = Number(mRaw);
+                nextRun = new Date(); nextRun.setHours(h, m, 0, 0);
+                if (nextRun.getTime() <= Date.now()) nextRun = new Date(nextRun.getTime() + 24 * 60 * 60 * 1000);
+              } else {
+                nextRun = coerceDate(horario, "horario");
+              }
+            }
+            await createProactiveTask(CLI_USER_ID, {
+              title: `Lembrete: ${mensagem}`, description: mensagem, type: "watcher", status: "active", schedule: recorrencia, nextRun,
+            });
+            return { output: `Lembrete criado para ${nextRun.toLocaleString("pt-BR")}${recorrencia ? ` (recorrencia: ${recorrencia})` : ""}.`, ok: true };
+          }
+          if (name === "listar_lembretes") {
+            const statusFilter = args.status ? String(args.status).trim() : "";
+            const limit = args.limite !== undefined ? Math.max(1, Math.min(50, Number(args.limite))) : 20;
+            const reminders = await getProactiveTasks(CLI_USER_ID);
+            const filtered = reminders.filter((t: any) => !statusFilter || t.status === statusFilter)
+              .sort((a: any, b: any) => (a.nextRun ? new Date(a.nextRun).getTime() : 0) - (b.nextRun ? new Date(b.nextRun).getTime() : 0)).slice(0, limit);
+            if (filtered.length === 0) return { output: "Nenhum lembrete encontrado.", ok: true };
+            return { output: filtered.map((t: any, i: number) => `${i + 1}. [${t.status}] ${t.title} | proximo: ${t.nextRun ? new Date(t.nextRun).toLocaleString("pt-BR") : "sem agendamento"}`).join("\n"), ok: true };
+          }
+          if (name === "gerenciar_agenda") {
+            const action = String(args.acao || "").trim().toLowerCase();
+            if (action === "criar") {
+              const data = (args.dados || {}) as any;
+              const title = String(data.title || "").trim();
+              if (!title) throw new Error("'dados.title' e obrigatorio.");
+              const startDate = coerceDate(data.startTime ?? data.start_time, "dados.startTime");
+              const endDate = coerceDate(data.endTime ?? data.end_time, "dados.endTime");
+              await createAppointment(CLI_USER_ID, {
+                title, description: data.description ? String(data.description) : null, startTime: startDate, endTime: endDate,
+                startDate: startDate.toISOString(), endDate: endDate.toISOString(), location: data.location ? String(data.location) : null,
+                type: (data.type) || "other", reminderMinutes: data.reminderMinutes !== undefined ? Number(data.reminderMinutes) : null,
+                recurrenceRule: data.recurrenceRule ? String(data.recurrenceRule) : null, participants: data.participants ? JSON.stringify(data.participants) : null,
+                customerId: data.customerId !== undefined ? Number(data.customerId) : null, isCompleted: Number(data.isCompleted || 0),
+                status: (data.status) || "scheduled", updatedAt: new Date(),
+              });
+              return { output: `Compromisso criado para ${startDate.toLocaleString("pt-BR")}.`, ok: true };
+            }
+            return { output: "Ação não implementada nativamente para AgentLoopV2 em gerenciar_agenda ou faltando dados.", ok: false };
+          }
           return {
             output: "ATENCAO: ferramenta ainda nao mapeada no agent-loop v2. Desative AVA_AGENT_LOOP_V2 para usar loop legado completo.",
             ok: false,
