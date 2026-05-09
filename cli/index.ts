@@ -39,6 +39,7 @@ import { redactSensitiveText, routeMemoryPersistence } from "../server/security/
 import { getVaultSecret, listVaultSecrets, removeVaultSecret, saveVaultSecret } from "../server/security/vaultStore";
 import { evaluateToolExecution } from "../server/tool-registry";
 import { runAgentCycle } from "../server/agents/agent-loop";
+import { processAvaRequest } from "../server/unified-engine";
 import { executeRegisteredTool } from "../server/tools/executor";
 import { compactUserContext } from "../server/context/manager";
 import { registerLegalRagCommands } from "./commands/legal-rag";
@@ -601,179 +602,15 @@ program
 
     const useAgentLoopV2 = String(process.env.AVA_AGENT_LOOP_V2 || "false").toLowerCase() === "true";
     if (useAgentLoopV2) {
-      const cycle = await runAgentCycle(query, {
+      const unified = await processAvaRequest(query, {
         userId: CLI_USER_ID,
         provider: options.provider as "forge" | "ollama" | "groq" | "gemini",
         model: options.model,
-        executeTool: async (toolCall, args) => {
-          const name = toolCall.function.name;
-          if (name === "obter_data_hora") {
-            return { output: new Date().toISOString(), ok: true };
-          }
-          if (name === "file_ops" || name === "http_ops" || name === "memory_ops" || name === "db_ops" || name === "ingest_ops") {
-            return { output: await executeRegisteredTool(name, args as Record<string, unknown>), ok: true };
-          }
-          if (name === "criar_lembrete") {
-            const mensagem = String(args.mensagem || "").trim();
-            if (!mensagem) throw new Error("'mensagem' e obrigatoria para criar lembrete.");
-            const minutos = args.minutos_daqui !== undefined ? Number(args.minutos_daqui) : undefined;
-            const horario = args.horario ? String(args.horario).trim() : "";
-            const recorrencia = args.recorrencia ? String(args.recorrencia).trim() : null;
-            let nextRun = new Date();
-            if (minutos !== undefined) {
-              if (!Number.isFinite(minutos) || minutos <= 0) throw new Error("'minutos_daqui' deve ser um numero positivo.");
-              nextRun = new Date(Date.now() + Math.round(minutos) * 60 * 1000);
-            } else if (horario) {
-              if (horario.includes(":")) {
-                const [hRaw, mRaw] = horario.split(":");
-                const h = Number(hRaw), m = Number(mRaw);
-                nextRun = new Date(); nextRun.setHours(h, m, 0, 0);
-                if (nextRun.getTime() <= Date.now()) nextRun = new Date(nextRun.getTime() + 24 * 60 * 60 * 1000);
-              } else {
-                nextRun = coerceDate(horario, "horario");
-              }
-            }
-            await createProactiveTask(CLI_USER_ID, {
-              title: `Lembrete: ${mensagem}`, description: mensagem, type: "watcher", status: "active", schedule: recorrencia, nextRun,
-            });
-            return { output: `Lembrete criado para ${nextRun.toLocaleString("pt-BR")}${recorrencia ? ` (recorrencia: ${recorrencia})` : ""}.`, ok: true };
-          }
-          if (name === "listar_lembretes") {
-            const statusFilter = args.status ? String(args.status).trim() : "";
-            const limit = args.limite !== undefined ? Math.max(1, Math.min(50, Number(args.limite))) : 20;
-            const reminders = await getProactiveTasks(CLI_USER_ID);
-            const filtered = reminders.filter((t: any) => !statusFilter || t.status === statusFilter)
-              .sort((a: any, b: any) => (a.nextRun ? new Date(a.nextRun).getTime() : 0) - (b.nextRun ? new Date(b.nextRun).getTime() : 0)).slice(0, limit);
-            if (filtered.length === 0) return { output: "Nenhum lembrete encontrado.", ok: true };
-            return { output: filtered.map((t: any, i: number) => `${i + 1}. [${t.status}] ${t.title} | proximo: ${t.nextRun ? new Date(t.nextRun).toLocaleString("pt-BR") : "sem agendamento"}`).join("\n"), ok: true };
-          }
-          if (name === "gerenciar_agenda") {
-            const action = String(args.acao || "").trim().toLowerCase();
-            if (action === "criar") {
-              const data = (args.dados || {}) as any;
-              const title = String(data.title || "").trim();
-              if (!title) throw new Error("'dados.title' e obrigatorio.");
-              const startDate = coerceDate(data.startTime ?? data.start_time, "dados.startTime");
-              const endDate = coerceDate(data.endTime ?? data.end_time, "dados.endTime");
-              await createAppointment(CLI_USER_ID, {
-                title, description: data.description ? String(data.description) : null, startTime: startDate, endTime: endDate,
-                startDate: startDate.toISOString(), endDate: endDate.toISOString(), location: data.location ? String(data.location) : null,
-                type: (data.type) || "other", reminderMinutes: data.reminderMinutes !== undefined ? Number(data.reminderMinutes) : null,
-                recurrenceRule: data.recurrenceRule ? String(data.recurrenceRule) : null, participants: data.participants ? JSON.stringify(data.participants) : null,
-                customerId: data.customerId !== undefined ? Number(data.customerId) : null, isCompleted: Number(data.isCompleted || 0),
-                status: (data.status) || "scheduled", updatedAt: new Date(),
-              });
-              return { output: `Compromisso criado para ${startDate.toLocaleString("pt-BR")}.`, ok: true };
-            }
-            return { output: "Ação não implementada nativamente para AgentLoopV2 em gerenciar_agenda ou faltando dados.", ok: false };
-          }
-          // ========== MENTOR SOCRÁTICO: TOOLS ==========
-          if (name === "iniciar_sessao_estudo") {
-            const assunto = String(args.assunto || "").trim();
-            const userId = CLI_USER_ID;
-            // Verificar revisões vencidas primeiro
-            const due = await getDueReviews(userId);
-            if (due.length > 0) {
-              const topicos = due.slice(0, 3).map((t: any) => `- [${t.status}] ${t.topic} (domínio: ${t.masteryLevel}%)`).join("\n");
-              return { output: `Olá! Você tem ${due.length} tópico(s) com revisão pendente. Onde o foco vai, a energia flui! Vamos revisitar:\n${topicos}\n\nResponda com o ID do tópico para iniciar a revisão ou informe um novo assunto.`, ok: true };
-            }
-            if (!assunto) return { output: "Qual assunto você deseja estudar hoje? (Ex: 'Arquitetura MVC em PHP', 'Kant', 'Direito Constitucional')", ok: true };
-            // Criar novo módulo
-            const modulo = await createLearningModule(userId, {
-              subject: assunto,
-              sourceReference: args.fonte ? String(args.fonte) : null,
-              sourceType: args.tipo_fonte ? String(args.tipo_fonte) as any : "manual",
-              description: args.descricao ? String(args.descricao) : null,
-            });
-            // Criar primeiro tópico inicial
-            const topico = await createLearningTopic(userId, {
-              moduleId: modulo.id,
-              topic: `Introdução a ${assunto}`,
-              status: "learning",
-            });
-            return { output: `✨ Sessão de estudo iniciada! Módulo criado: "${assunto}" (ID ${modulo.id}). Primeiro tópico: Introdução (ID ${topico.id}).\n\nAntes de começar: o que já sabe sobre "${assunto}"? (Responda em uma frase, sem se preocupar em estar certo.)`, ok: true };
-          }
-          if (name === "atualizar_progresso_estudo") {
-            const progressId = Number(args.progresso_id);
-            const resultado = String(args.resultado || "").trim() as "correct" | "incorrect";
-            if (!progressId || !Number.isFinite(progressId)) throw new Error("'progresso_id' inválido.");
-            if (resultado !== "correct" && resultado !== "incorrect") throw new Error("'resultado' deve ser 'correct' ou 'incorrect'.");
-            const forcas = args.forcas ? (Array.isArray(args.forcas) ? args.forcas : [String(args.forcas)]) : undefined;
-            const fraquezas = args.fraquezas ? (Array.isArray(args.fraquezas) ? args.fraquezas : [String(args.fraquezas)]) : undefined;
-            const progresso = await updateLearningProgress(progressId, resultado, forcas, fraquezas);
-            let mensagem = "";
-            if (resultado === "correct") {
-              mensagem = progresso.feynmanUnlocked
-                ? `🏆 Domínio MASTER (${progresso.masteryLevel}%)! Você é imparável! Modo Feynman desbloqueado: agora me ensine este conceito como se eu fosse um iniciante.`
-                : `✅ Excelente! Domínio atualizado: ${progresso.masteryLevel}%. Próxima revisão agendada para daqui a ${progresso.intervalDays} dia(s). Acredite em si mesmo e você será imparável!`;
-            } else {
-              mensagem = `💪 Excelente tentativa! A persistência leva ao sucesso. Domínio atual: ${progresso.masteryLevel}%. Onde o foco vai, a energia flui - tente por este ângulo:`;
-            }
-            return { output: mensagem, ok: true };
-          }
-          if (name === "criar_desafio_pratico") {
-            const linguagem = String(args.linguagem || "typescript").trim();
-            const descricao = String(args.descricao || "exercicio de programacao").trim();
-            const codigoBase = String(args.codigo_base || "").trim();
-            const nomeArq = `desafio_${Date.now()}.${linguagem === "javascript" ? "js" : linguagem === "php" ? "php" : "ts"}`;
-            const desktopPath = path.join(os.homedir(), "Desktop", nomeArq);
-            const conteudo = codigoBase || `// Desafio: ${descricao}\n// Encontre e corrija o(s) bug(s) neste código:\n\nfunction calcularTotal(itens) {\n  let total = 0;\n  for (let i = 0; i <= itens.length; i++) { // BUG AQUI\n    total += itens[i].preco;\n  }\n  return total;\n}\n\n// Teste: calcularTotal([{ preco: 10 }, { preco: 20 }]) deve retornar 30\n`;
-            await fs.writeFile(desktopPath, conteudo, "utf-8");
-            return { output: `📡 Desafio prático criado na sua Área de Trabalho: "${nomeArq}"\n\nMissão: ${descricao}\nQuando concluir, me avise e farei a avaliação do seu código!`, ok: true };
-          }
-          // ========== CRUD DE MÓDULOS ==========
-          if (name === "gerenciar_modulo") {
-            const acao = String(args.acao || "").trim().toLowerCase();
-            const moduleId = args.modulo_id !== undefined ? Number(args.modulo_id) : 0;
-            if (acao === "listar") {
-              const modulos = await getLearningModules(CLI_USER_ID);
-              if (modulos.length === 0) return { output: "Nenhum módulo de estudo encontrado. Use 'iniciar_sessao_estudo' para começar!", ok: true };
-              const lista = modulos.map((m: any, i: number) => {
-                const bar = "█".repeat(Math.floor((m.masteredTopics / Math.max(m.totalTopics, 1)) * 10)) + "░".repeat(10 - Math.floor((m.masteredTopics / Math.max(m.totalTopics, 1)) * 10));
-                return `${i + 1}. [${m.status.toUpperCase()}] #${m.id} "${m.subject}" | ${bar} ${m.masteredTopics}/${m.totalTopics} tópicos`;
-              }).join("\n");
-              return { output: `📚 Seus Módulos de Estudo:\n\n${lista}`, ok: true };
-            }
-            if (acao === "pausar") {
-              if (!moduleId) throw new Error("'modulo_id' é obrigatório para pausar.");
-              const res = await pauseLearningModule(CLI_USER_ID, moduleId);
-              return { output: `⏸️ ${res.message}`, ok: true };
-            }
-            if (acao === "retomar") {
-              if (!moduleId) throw new Error("'modulo_id' é obrigatório para retomar.");
-              const res = await resumeLearningModule(CLI_USER_ID, moduleId);
-              return { output: `▶️ ${res.message}`, ok: true };
-            }
-            if (acao === "abandonar") {
-              if (!moduleId) throw new Error("'modulo_id' é obrigatório para abandonar.");
-              const modulo = await getLearningModuleById(CLI_USER_ID, moduleId);
-              if (!modulo) return { output: `Módulo #${moduleId} não encontrado.`, ok: false };
-              const res = await deleteLearningModule(CLI_USER_ID, moduleId);
-              return { output: `🗑️ Módulo "${modulo.subject}" abandonado e removido. ${res.message}`, ok: true };
-            }
-            if (acao === "progresso") {
-              if (!moduleId) throw new Error("'modulo_id' é obrigatório.");
-              const topicos = await getLearningProgress(CLI_USER_ID, moduleId);
-              if (topicos.length === 0) return { output: "Nenhum tópico encontrado neste módulo.", ok: true };
-              const lista = topicos.map((t: any, i: number) => {
-                const prox = t.nextReviewDate ? new Date(t.nextReviewDate).toLocaleDateString("pt-BR") : "sem revisão";
-                const feynman = t.feynmanUnlocked ? " 🏆 FEYNMAN" : "";
-                return `${i + 1}. #${t.id} [${t.status}] ${t.topic} | domínio: ${t.masteryLevel}% | próx: ${prox}${feynman}`;
-              }).join("\n");
-              return { output: `📊 Progresso do Módulo #${moduleId}:\n\n${lista}`, ok: true };
-            }
-            return { output: "Acao inválida. Use: listar | pausar | retomar | abandonar | progresso", ok: false };
-          }
-          return {
-            output: "ATENCAO: ferramenta ainda nao mapeada no agent-loop v2. Desative AVA_AGENT_LOOP_V2 para usar loop legado completo.",
-            ok: false,
-          };
-        },
-        requireConfirmation: async () => Boolean(options.autoConfirm),
+        channel: "cli",
+        autoConfirm: Boolean(options.autoConfirm),
       });
-
-      console.log(`\n[AVA Responde - AgentLoopV2]:\n${cycle.finalResponse}\n`);
-      await logAudit("AGENT_LOOP_V2", `status=${cycle.status} toolCalls=${cycle.toolCalls} repeated=${cycle.repeatedIntentCount}`);
+      console.log(`\n[AVA Responde - AgentLoopV2]:\n${unified.response}\n`);
+      await logAudit("AGENT_LOOP_V2", `status=${unified.status} toolCalls=${unified.toolCalls} durationMs=${unified.durationMs}`);
       return;
     }
 

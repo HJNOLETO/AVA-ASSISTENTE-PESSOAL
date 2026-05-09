@@ -54,5 +54,10 @@ ava-assistant/
    pnpm dev
    ```
 
+## 📚 Guias Rápidos
+
+- **Catálogo de comandos por canal (CLI, Telegram e Web):** `docs/CATALOGO_COMANDOS_POR_CANAL.md`
+- **Integração entre AVA CLI, chat web e Telegram:** `docs/INTEGRACAO_AVA_CLI_CHAT_WEB_TELEGRAM.md`
+
 ## 👥 Autor
 Desenvolvido e aprimorado com ❤️ por TMJ Noleto

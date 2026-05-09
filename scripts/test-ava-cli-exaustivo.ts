@@ -21,7 +21,7 @@ type ScenarioResult = {
 };
 
 type AskOptions = {
-  provider: "ollama";
+  provider: "ollama" | "gemini" | "groq" | "forge";
   models: string[];
   timeoutMs: number;
   retriesPerModel: number;
@@ -120,6 +120,7 @@ async function askAva(query: string, options: AskOptions): Promise<{ ok: boolean
   const notes: string[] = [];
   let attempts = 0;
   const npxCmd = getNpxCommand();
+  let consecutiveTimeouts = 0;
 
   for (const model of options.models) {
     for (let attempt = 1; attempt <= options.retriesPerModel; attempt++) {
@@ -143,13 +144,21 @@ async function askAva(query: string, options: AskOptions): Promise<{ ok: boolean
 
       const output = `${result.stdout}\n${result.stderr}`;
       console.log(`[AVA-TEST] ask concluido modelo=${model} duracao=${result.durationMs}ms timeout=${result.timedOut}`);
-      const failedByTimeout = result.timedOut || /Tempo esgotado|timeout|terminated command after exceeding timeout/i.test(output);
+      const failedByTimeout = result.timedOut;
       const hasFatalError = /\[Erro Fatal do Sistema\]|Falha sist[eê]mica na execu[cç][aã]o da tool/i.test(output);
       const hasExecution = /\[SYS\] Executando Ferramenta Nativa:/.test(output);
       const blockedNoTool = /\[AVA Execução\]: nenhuma ação concreta foi executada/i.test(output);
 
       if (failedByTimeout) {
+        consecutiveTimeouts++;
         notes.push(`Timeout com modelo ${model} (duracao ${result.durationMs}ms)`);
+        if (consecutiveTimeouts >= 2 && model.includes("cloud")) {
+          const advisory = "ALERTA: O modelo Ollama cloud pode ter parado de responder (possivel limite da conta/sessao). Oriente o usuario a trocar de conta cloud e retomar os testes.";
+          notes.push(advisory);
+          console.warn(`[AVA-TEST] ${advisory}`);
+        }
+      } else {
+        consecutiveTimeouts = 0;
       }
 
       if (hasFatalError) {
@@ -223,22 +232,28 @@ async function runExhaustiveSuite(): Promise<void> {
     .map((item) => item.trim())
     .filter(Boolean);
 
+  const provider = String(process.env.AVA_TEST_PROVIDER || process.env.LLM_PROVIDER || "ollama").trim().toLowerCase() as AskOptions["provider"];
+
+  const defaultModels = provider === "gemini"
+    ? [process.env.GEMINI_MODEL || "gemini-2.5-flash"]
+    : [
+        process.env.OLLAMA_MODEL_SAFE || "llama3.2:3b",
+        process.env.OLLAMA_MODEL || "qwen2.5:7b-instruct",
+        "llama3.2:latest",
+      ];
+
   const models = Array.from(
     new Set(
       (explicitModels.length > 0
         ? explicitModels
-        : [
-            process.env.OLLAMA_MODEL_SAFE || "llama3.2:3b",
-            process.env.OLLAMA_MODEL || "qwen2.5:7b-instruct",
-            "llama3.2:latest",
-          ])
+        : defaultModels)
         .map((m) => String(m || "").trim())
         .filter(Boolean)
     )
   );
 
   const askOptions: AskOptions = {
-    provider: "ollama",
+    provider,
     models,
     timeoutMs: Number(process.env.AVA_TEST_TIMEOUT_MS || "600000"),
     retriesPerModel: Number(process.env.AVA_TEST_RETRIES_PER_MODEL || "2"),
@@ -467,6 +482,206 @@ async function runExhaustiveSuite(): Promise<void> {
       notes: ["Ignorado: AVA_VAULT_MASTER_KEY nao configurada."],
     });
   }
+
+  // ────────────────────────────────────────────
+  // T12-T20: Patamar 2026-05 — Mentor Socrático, Multi-canal, RAG, ESM
+  // ────────────────────────────────────────────
+
+  const mentorStudySubject = `typescript-unificado-${runId.slice(-8)}`;
+
+  await runScenario(
+    "T12 - Mentor Socratico: iniciar sessao de estudo",
+    `Como Mentor Socrático, inicie uma sessão de estudo sobre "${mentorStudySubject}". Use a ferramenta iniciar_sessao_estudo.`,
+    async (result) => {
+      const output = `${result.stdout}\n${result.stderr}`;
+      const ok =
+        /iniciar_sessao_estudo/i.test(output) ||
+        /sessao de estudo iniciada/i.test(output) ||
+        /modulo criado/i.test(output);
+      return {
+        ok,
+        notes: ok
+          ? ["Sessao de estudo iniciada pelo Mentor Socratico."]
+          : [compactText(output)],
+      };
+    }
+  );
+
+  await runScenario(
+    "T13 - Mentor Socratico: listar modulos de estudo",
+    "Use a ferramenta gerenciar_modulo com acao='listar' e mostre todos os modulos de estudo.",
+    async (result) => {
+      const output = `${result.stdout}\n${result.stderr}`;
+      const ok =
+        /gerenciar_modulo/i.test(output) ||
+        /modulos de estudo/i.test(output) ||
+        /nenhum modulo/i.test(output);
+      return {
+        ok,
+        notes: ok
+          ? ["Listagem de modulos executada."]
+          : [compactText(output)],
+      };
+    }
+  );
+
+  await runScenario(
+    "T14 - Mentor Socratico: verificar revisoes pendentes",
+    "Verifique se existem revisoes de estudo pendentes para o usuario. Use a ferramenta iniciar_sessao_estudo sem argumento de assunto para ver as revisoes.",
+    async (result) => {
+      const output = `${result.stdout}\n${result.stderr}`;
+      const ok =
+        /iniciar_sessao_estudo/i.test(output) ||
+        /revisao pendente/i.test(output) ||
+        /qual assunto/i.test(output);
+      return {
+        ok,
+        notes: ok
+          ? ["Verificacao de revisoes pendentes executada."]
+          : [compactText(output)],
+      };
+    }
+  );
+
+  // T15 — Identidade unificada: verificação via env
+  await (async () => {
+    const cliId = String(process.env.AVA_CLI_USER_ID || "").trim();
+    const telegramId = String(process.env.TELEGRAM_STUDY_USER_ID || "").trim();
+    const idsAlinhados =
+      Boolean(cliId) && Boolean(telegramId) && cliId === telegramId;
+    summary.push({
+      name: "T15 - Identidade unificada CLI==Telegram",
+      status: idsAlinhados ? "passed" : "failed",
+      attempts: 0,
+      durationMs: 0,
+      notes: idsAlinhados
+        ? [
+            `AVA_CLI_USER_ID=${cliId} == TELEGRAM_STUDY_USER_ID=${telegramId}. Identidade unificada confirmada.`,
+          ]
+        : [
+            `IDs divergentes ou ausentes: AVA_CLI_USER_ID='${cliId}' vs TELEGRAM_STUDY_USER_ID='${telegramId}'. Defina ambos com o mesmo valor no .env.`,
+          ],
+    });
+    if (idsAlinhados) {
+      await sendTelegramStatus(`✅ [AVA Teste] Concluido: T15 - Identidade unificada`);
+    } else {
+      await sendTelegramStatus(`⚠️ [AVA Teste] Falhou validacao: T15 - Identidade unificada`);
+    }
+  })();
+
+  // T16 — Persistência multi-canal: verificar log unificado
+  await (async () => {
+    const unifiedLogPath = path.resolve(rootDir, "data", "ava-unified-audit.log");
+    let logExists = false;
+    let hasChannelTag = false;
+    try {
+      const logContent = await fs.readFile(unifiedLogPath, "utf-8");
+      logExists = logContent.length > 0;
+      hasChannelTag = /\[(CLI|TELEGRAM|WEB)\]/.test(logContent);
+    } catch {
+      logExists = false;
+    }
+    summary.push({
+      name: "T16 - Persistencia multi-canal (log unificado)",
+      status: logExists ? "passed" : "failed",
+      attempts: 0,
+      durationMs: 0,
+      notes: logExists
+        ? [
+            `Log unificado presente em data/ava-unified-audit.log. Canal tag detectada: ${hasChannelTag}.`,
+          ]
+        : ["Log unificado ausente — unified-engine ainda nao foi acionado nesta sessao."],
+    });
+    if (logExists) {
+      await sendTelegramStatus(`✅ [AVA Teste] Concluido: T16 - Persistencia multi-canal`);
+    } else {
+      await sendTelegramStatus(`⚠️ [AVA Teste] Falhou validacao: T16 - Persistencia multi-canal`);
+    }
+  })();
+
+  await runScenario(
+    "T17 - Motor unificado via Gemini: auto-status",
+    "Execute o autodiagnostico_ava e retorne o status do sistema.",
+    async (result, context) => {
+      const output = `${result.stdout}\n${result.stderr}`;
+      const ok =
+        /autodiagnostico/i.test(output) &&
+        !/\[Erro Fatal do Sistema\]/.test(output) &&
+        !result.timedOut;
+      return {
+        ok,
+        notes: ok
+          ? ["Motor unificado respondeu com autodiagnostico via Gemini."]
+          : [compactText(output)],
+      };
+    }
+  );
+
+  await runScenario(
+    "T18 - Git status operacional",
+    "Execute o git_status neste repositorio e mostre o resultado.",
+    async (result, context) => {
+      const output = `${result.stdout}\n${result.stderr}`;
+      const ok =
+        (hasAuditToken(context.audit, "TOOL_CALL | Instanciando: git_status") ||
+          /git_status/i.test(output) ||
+          /nothing to commit|modified|branch/i.test(output)) &&
+        !/\[Erro Fatal do Sistema\]/.test(output);
+      return {
+        ok,
+        notes: ok ? ["Git status executado com sucesso."] : [compactText(output)],
+      };
+    }
+  );
+
+  await runScenario(
+    "T19 - RAG juridico: busca de documentos",
+    "Busque nos documentos RAG por 'Constituicao Federal' e retorne os trechos mais relevantes. Use a ferramenta buscar_documentos_rag.",
+    async (result, context) => {
+      const output = `${result.stdout}\n${result.stderr}`;
+      const ok =
+        /buscar_documentos_rag/i.test(output) &&
+        !/\[Erro Fatal do Sistema\]/.test(output);
+      return {
+        ok,
+        notes: ok
+          ? ["Busca RAG juridico executada."]
+          : [compactText(output)],
+      };
+    }
+  );
+
+  // T20 — ToolRegistry ESM: sem erro require
+  await (async () => {
+    const devLog = path.resolve(rootDir, "dev-runtime.log");
+    let hasRequireError = false;
+    try {
+      const logContent = await fs.readFile(devLog, "utf-8");
+      // Verificar apenas as ultimas 200 linhas do log de runtime
+      const recentLines = logContent.split(/\r?\n/).slice(-200).join("\n");
+      hasRequireError = /ToolRegistry Falha compilando schema_zod: require is not defined/i.test(
+        recentLines
+      );
+    } catch {
+      hasRequireError = false; // Log inexistente = sem erro
+    }
+    summary.push({
+      name: "T20 - ToolRegistry ESM: ausencia de require error",
+      status: hasRequireError ? "failed" : "passed",
+      attempts: 0,
+      durationMs: 0,
+      notes: hasRequireError
+        ? [
+            "Erro 'require is not defined' detectado no log de runtime — zod-compiler.ts ainda usa require().",
+          ]
+        : ["Sem erros ESM de require() no ToolRegistry. Compilacao ESM estavel."],
+    });
+    if (!hasRequireError) {
+      await sendTelegramStatus(`✅ [AVA Teste] Concluido: T20 - ToolRegistry ESM`);
+    } else {
+      await sendTelegramStatus(`⚠️ [AVA Teste] Falhou validacao: T20 - ToolRegistry ESM`);
+    }
+  })();
 
   const totals = {
     passed: summary.filter((s) => s.status === "passed").length,

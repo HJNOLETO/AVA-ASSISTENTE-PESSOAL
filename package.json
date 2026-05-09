@@ -35,6 +35,7 @@
     "test:watch": "vitest",
     "test:stress:ollama": "tsx scripts/stress-ollama-queue.ts",
     "test:stress:ava-cli": "tsx scripts/stress-test-ava-cli.ts",
+    "sync:agent-opencode": "tsx scripts/sync-agent-opencode.ts",
     "db:push": "drizzle-kit generate && drizzle-kit migrate",
     "db:seed": "tsx server/_core/seed-admin.ts",
     "dev:sqlite": "pnpm dev"
