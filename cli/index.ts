@@ -646,14 +646,19 @@ program
         // Chamada principal para o orquestrador que sabe como injetar "System Prompt" e Contexto de Identidade
         let response;
         for (let attempt = 0; ; attempt++) {
+          let attemptTimeout: ReturnType<typeof setTimeout> | null = null;
           try {
+            const attemptController = new AbortController();
+            attemptTimeout = setTimeout(() => {
+              attemptController.abort(new Error(`timeout CLI ${llmTimeoutMs}ms`));
+            }, llmTimeoutMs + 1000);
             response = await Promise.race([
               orchestrateAgentResponse(
                 messages,
                 options.provider as "forge" | "ollama" | "groq" | "gemini",
                 options.model,
                 getCliAvailableTools(),
-                undefined,
+                attemptController.signal,
                 llmTimeoutMs
               ),
               new Promise((_, reject) =>
@@ -665,6 +670,9 @@ program
             ] as const);
             break;
           } catch (err: any) {
+            if (String(err?.name || "") === "AbortError") {
+              throw new Error(`Tempo esgotado (abort CLI). Sem resposta em ${llmTimeoutMs}ms.`);
+            }
             const msg = String(err?.message || err || "");
             const isGemini429 = String(options.provider).toLowerCase() === "gemini" && /(429|RESOURCE_EXHAUSTED|rate limit)/i.test(msg);
             if (isGemini429 && attempt < 2) {
@@ -676,6 +684,8 @@ program
               continue;
             }
             throw err;
+          } finally {
+            if (attemptTimeout) clearTimeout(attemptTimeout);
           }
         }
 

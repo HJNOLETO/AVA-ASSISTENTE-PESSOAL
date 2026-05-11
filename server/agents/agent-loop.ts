@@ -113,42 +113,53 @@ export async function runAgentCycle(query: string, context: AgentContext): Promi
   for (let cycle = 0; cycle < maxCycles; cycle++) {
     states.push("GUARD_VALIDATE");
     tracer.pushState("GUARD_VALIDATE");
-    const llm: any = e2eMock
-      ? {
-          choices: [
-            cycle === 0
-              ? {
-                  message: {
-                    role: "assistant",
-                    content: "",
-                    tool_calls: [
-                      {
-                        id: `e2e_call_${cycle}`,
-                        type: "function",
-                        function: {
-                          name: "file_ops",
-                          arguments: JSON.stringify({ action: "list", path: ".", dry_run: true }),
+    const llmTimeoutMs = context.timeoutMs ?? runtimePolicy.llmTimeoutMs;
+    const llmAbortController = new AbortController();
+    const llmAbortTimeout = setTimeout(() => {
+      llmAbortController.abort(new Error(`agent-loop timeout ${llmTimeoutMs}ms`));
+    }, llmTimeoutMs + 1000);
+
+    let llm: any;
+    try {
+      llm = e2eMock
+        ? {
+            choices: [
+              cycle === 0
+                ? {
+                    message: {
+                      role: "assistant",
+                      content: "",
+                      tool_calls: [
+                        {
+                          id: `e2e_call_${cycle}`,
+                          type: "function",
+                          function: {
+                            name: "file_ops",
+                            arguments: JSON.stringify({ action: "list", path: ".", dry_run: true }),
+                          },
                         },
-                      },
-                    ],
+                      ],
+                    },
+                  }
+                : {
+                    message: {
+                      role: "assistant",
+                      content: "Resposta final simulada do ciclo E2E.",
+                    },
                   },
-                }
-              : {
-                  message: {
-                    role: "assistant",
-                    content: "Resposta final simulada do ciclo E2E.",
-                  },
-                },
-          ],
-        }
-      : await orchestrateAgentResponse(
-          messages,
-          context.provider,
-          context.model,
-          context.tools,
-          undefined,
-          context.timeoutMs ?? runtimePolicy.llmTimeoutMs
-        );
+            ],
+          }
+        : await orchestrateAgentResponse(
+            messages,
+            context.provider,
+            context.model,
+            context.tools,
+            llmAbortController.signal,
+            llmTimeoutMs
+          );
+    } finally {
+      clearTimeout(llmAbortTimeout);
+    }
     const choice = llm.choices?.[0];
     if (!choice) break;
 
