@@ -4,6 +4,11 @@ import { addAuditLog, addMemoryEntry, getUserSettings, searchMemoryByKeywords } 
 import { evaluateToolExecution } from "../tool-registry";
 import { createCycleTracer } from "../observability/agent-tracer";
 import { compactUserContext, inject, prioritize } from "../context/manager";
+import {
+  buildProactiveFollowUp,
+  resolveRuntimePolicy,
+  shouldForceProactiveContinuation,
+} from "../runtime/adaptive-policy";
 
 export type AgentState =
   | "INTENT_PARSE"
@@ -21,8 +26,10 @@ export type AgentContext = {
   model?: string;
   maxToolCalls?: number;
   maxCycles?: number;
+  timeoutMs?: number;
   requireConfirmation?: (toolName: string, args: Record<string, unknown>) => Promise<boolean>;
   executeTool: (toolCall: ToolCall, args: Record<string, unknown>) => Promise<{ output: string; ok: boolean; rollback?: () => Promise<void> }>;
+  tools?: any[]; // Array of Tool (imported from llm)
 };
 
 export type AgentResult = {
@@ -56,9 +63,11 @@ function buildPlanningPrompt(query: string, memory: string, prefs: string): stri
 export async function runAgentCycle(query: string, context: AgentContext): Promise<AgentResult> {
   const tracer = createCycleTracer(context.userId);
   const states: AgentState[] = [];
-  const maxToolCalls = context.maxToolCalls ?? 12;
-  const maxCycles = context.maxCycles ?? 12;
+  const runtimePolicy = resolveRuntimePolicy({ timeoutMs: context.timeoutMs });
+  const maxToolCalls = context.maxToolCalls ?? runtimePolicy.maxToolCalls;
+  const maxCycles = context.maxCycles ?? runtimePolicy.maxCycles;
   const needsConfirmation = context.requireConfirmation || requireConfirmation;
+  let proactiveContinuationCount = 0;
 
   states.push("INTENT_PARSE");
   tracer.pushState("INTENT_PARSE");
@@ -132,7 +141,14 @@ export async function runAgentCycle(query: string, context: AgentContext): Promi
                 },
           ],
         }
-      : await orchestrateAgentResponse(messages, context.provider, context.model);
+      : await orchestrateAgentResponse(
+          messages,
+          context.provider,
+          context.model,
+          context.tools,
+          undefined,
+          context.timeoutMs ?? runtimePolicy.llmTimeoutMs
+        );
     const choice = llm.choices?.[0];
     if (!choice) break;
 
@@ -147,6 +163,15 @@ export async function runAgentCycle(query: string, context: AgentContext): Promi
 
     const calls = (message.tool_calls || []) as ToolCall[];
     if (calls.length === 0) {
+      if (
+        proactiveContinuationCount < runtimePolicy.autoContinuationLimit &&
+        shouldForceProactiveContinuation(query, textContent || "", runtimePolicy.proactiveMode)
+      ) {
+        proactiveContinuationCount += 1;
+        messages.push({ role: "user", content: buildProactiveFollowUp(runtimePolicy.proactiveMode) });
+        continue;
+      }
+
       states.push("FEEDBACK");
       tracer.pushState("FEEDBACK");
       finalResponse = textContent || "Execucao concluida sem resposta textual adicional.";

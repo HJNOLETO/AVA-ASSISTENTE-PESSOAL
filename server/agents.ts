@@ -2,6 +2,7 @@ import { Message, InvokeParams, invokeLLM, Tool } from "./_core/llm";
 import fs from "fs";
 import path from "path";
 import { getRegistryAsTools } from "./tool-registry";
+import { resolveRuntimePolicy } from "./runtime/adaptive-policy";
 
 export interface AgentConfig {
   name: string;
@@ -168,16 +169,16 @@ export function sanitizePath(caminho: string): string | null {
  * Define as ferramentas (tools) disponíveis para o AVA
  */
 export function getAvailableTools(): Tool[] {
+  let dynamicTools: Tool[] = [];
   const dynamicRegistryEnabled = String(process.env.AVA_TOOL_REGISTRY_DYNAMIC || "false").toLowerCase() === "true";
   if (dynamicRegistryEnabled) {
-    const dynamicTools = getRegistryAsTools();
-    if (dynamicTools.length > 0) {
-      return dynamicTools;
+    dynamicTools = getRegistryAsTools();
+    if (dynamicTools.length === 0) {
+      console.warn("[ToolRegistry] Registro dinamico habilitado, mas vazio/invalido. Aplicando fallback para tools legadas apenas.");
     }
-    console.warn("[ToolRegistry] Registro dinamico habilitado, mas vazio/invalido. Aplicando fallback para tools legadas.");
   }
 
-  return [
+  const legacyTools: Tool[] = [
     {
       type: "function",
       function: {
@@ -827,8 +828,75 @@ export function getAvailableTools(): Tool[] {
           required: ["chave", "finalidade", "confirmado"]
         }
       }
+    },
+    // ========== MENTOR SOCRÁTICO ==========
+    {
+      type: "function",
+      function: {
+        name: "iniciar_sessao_estudo",
+        description: "Inicia ou retoma uma sessão de aprendizagem socrática. Verifica automaticamente se há tópicos com revisão pendente.",
+        parameters: {
+          type: "object",
+          properties: {
+            assunto: { type: "string", description: "Tema a ser estudado (se omitido, o sistema verifica os módulos atuais/pendentes)." },
+            fonte: { type: "string", description: "Opcional. Caminho de um arquivo .md com conteúdo validado." },
+            tipo_fonte: { type: "string", enum: ["file", "github", "rag_document", "manual"], description: "Tipo da fonte de aprendizado." },
+            descricao: { type: "string", description: "Opcional. Descrição do que será aprendido." }
+          }
+        }
+      }
+    },
+    {
+      type: "function",
+      function: {
+        name: "atualizar_progresso_estudo",
+        description: "Atualiza o nível de domínio do aluno após ele responder a um desafio e agenda a próxima revisão espaçada.",
+        parameters: {
+          type: "object",
+          properties: {
+            progresso_id: { type: "number", description: "ID do tópico de progresso." },
+            resultado: { type: "string", enum: ["correct", "incorrect"], description: "Se o aluno acertou ou errou o desafio." },
+            forcas: { type: "array", items: { type: "string" }, description: "Opcional. Habilidades demonstradas pelo aluno." },
+            fraquezas: { type: "array", items: { type: "string" }, description: "Opcional. Lacunas conceituais detectadas no erro." }
+          },
+          required: ["progresso_id", "resultado"]
+        }
+      }
+    },
+    {
+      type: "function",
+      function: {
+        name: "criar_desafio_pratico",
+        description: "Cria um arquivo físico de código com erros intencionais na Área de Trabalho para o aluno resolver.",
+        parameters: {
+          type: "object",
+          properties: {
+            descricao: { type: "string", description: "Missão ou objetivo do desafio (o que o código deveria fazer)." },
+            linguagem: { type: "string", enum: ["typescript", "javascript", "php"], description: "Linguagem do desafio." },
+            codigo_base: { type: "string", description: "O código com bug que será escrito no arquivo." }
+          },
+          required: ["descricao", "linguagem"]
+        }
+      }
+    },
+    {
+      type: "function",
+      function: {
+        name: "gerenciar_modulo",
+        description: "Gerencia os módulos de estudo (listar, pausar, retomar, abandonar, progresso).",
+        parameters: {
+          type: "object",
+          properties: {
+            acao: { type: "string", enum: ["listar", "pausar", "retomar", "abandonar", "progresso"], description: "Ação a ser executada no módulo." },
+            modulo_id: { type: "number", description: "ID do módulo. Necessário para pausar, retomar, abandonar e ver progresso." }
+          },
+          required: ["acao"]
+        }
+      }
     }
   ];
+
+  return [...dynamicTools, ...legacyTools];
 }
 
 /**
@@ -848,7 +916,11 @@ export async function orchestrateAgentResponse(
     typeof lastMessage === "string" ? lastMessage : JSON.stringify(lastMessage);
 
   // === DIRETRIZES DE SEGURANÇA (Anti-Injection e Privacy) ===
-  const compactMode = provider === "groq" || provider === "ollama";
+  // NOTE: Gemini usa compactMode para evitar overflow de tokens com system prompt longo.
+  // Forge (não usado - sem API key) suporta contexto extenso.
+  // Groq tem limite de 12k TPM no plano free - compactMode obrigatório.
+  // Ollama local - compactMode para preservar num_ctx.
+  const compactMode = provider === "groq" || provider === "ollama" || provider === "gemini";
 
   const securityGuidelines = compactMode ? `
 [SECURITY GUIDELINES - MANDATORY]
@@ -896,14 +968,75 @@ Se o usuário pedir para você criar um lembrete, você DEVE gerar um "tool call
 - Para versionamento de codigo (status/add/commit/push), use tools Git nativas quando a solicitacao for operacional.
 `;
 
+  const proactiveMode = compactMode ? `
+[MODO PROATIVO AVA CLI - OBRIGATORIO]
+- Nao pare no primeiro passo: execute o proximo passo tecnico obvio apos cada resultado.
+- So faca pergunta quando houver bloqueio real: ambiguidade critica, credencial ausente ou risco destrutivo/producao.
+- Em diagnostico, entregue: hipotese principal, evidencias, acao corretiva e validacao.
+- Evite "quer que eu continue?". Continue por padrao com seguranca.
+- Mantenha resposta curta com: o que fez, o que encontrou, proxima acao.
+` : `
+[MODO PROATIVO AVA CLI - OBRIGATORIO]
+Seu comportamento padrao deve ser de continuidade fluida: voce deve agir como operador tecnico proativo, nao apenas responder pontualmente.
+
+Regras de continuidade:
+1. Nao finalize no primeiro passo; apos cada execucao, realize automaticamente o proximo passo tecnico esperado.
+2. So interrompa para perguntar ao usuario se houver bloqueio real (ambiguidade critica que muda o resultado, credencial/segredo necessario, ou acao destrutiva/irreversivel).
+3. Nunca use perguntas de permissao desnecessarias como "deseja que eu continue?".
+4. Em pedidos de analise, assuma tambem investigacao de causa, proposta de correcao e validacao posterior.
+5. Nao declare sucesso sem evidencia verificavel da tool.
+
+Fluxo obrigatorio:
+A) entender objetivo tecnico real
+B) coletar sinais iniciais
+C) correlacionar causa provavel
+D) executar verificacao complementar sem ser solicitado
+E) propor ou executar mitigacao segura
+F) validar com metrica objetiva
+G) entregar proximos passos priorizados
+
+Heuristica interna obrigatoria:
+apos cada resultado, pergunte internamente "qual e o proximo passo que um SRE/engenheiro experiente faria agora?"; se a acao nao for de alto risco, execute.
+`;
+
+  const proactiveModeLevel = String(process.env.AVA_PROACTIVE_MODE_EFFECTIVE || process.env.AVA_PROACTIVE_MODE || "balanced")
+    .trim()
+    .toLowerCase();
+
+  const proactiveModeProfile = proactiveModeLevel === "proactive-max"
+    ? `
+[PROACTIVE PROFILE: proactive-max]
+- Nivel de iniciativa: maximo dentro de guardrails.
+- Execute automaticamente verificacoes complementares e fechamento em multiplas etapas.
+- Antes de concluir, faça uma checagem final de lacunas: causa raiz, mitigacao, validacao, proximos passos.
+`
+    : proactiveModeLevel === "safe"
+      ? `
+[PROACTIVE PROFILE: safe]
+- Nivel de iniciativa: conservador.
+- Execute continuidade apenas para passos tecnicos de baixo risco e com alta previsibilidade.
+`
+      : `
+[PROACTIVE PROFILE: balanced]
+- Nivel de iniciativa: medio-alto.
+- Avance nos proximos passos obvios e finalize com validacao objetiva.
+`;
+
   const now = new Date();
+  const runtimePolicy = resolveRuntimePolicy();
   const currentDateTimeContext = `\n[SYSTEM TIME CONTEXT]\nData e Hora Local do Sistema: ${now.toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })} (Horário de Brasília). Utilize este timestamp exato como sua referência de "agora" para qualquer criação de lembrete, agendamento, ou resposta sobre a hora atual. Não diga que não tem acesso ao relógio.`;
+  const runtimeAdaptiveContext = `\n[HARDWARE ADAPTIVE CONTEXT]\nTier de runtime: ${runtimePolicy.tier}. Memoria total: ${runtimePolicy.totalMemGb}GB. Memoria livre: ${runtimePolicy.freeMemGb}GB. CPU logica: ${runtimePolicy.cpuCount}. Ajuste profundidade e plano de execucao para manter estabilidade com qualidade.`;
 
   let systemPrompt =
     "Você é o AVA, um Assistente Virtual Adaptativo de alto desempenho. Seja prestativo, técnico e extremamente profissional.\n" +
     securityGuidelines +
     "\n" +
     capabilities +
+    "\n" +
+    proactiveMode +
+    "\n" +
+    proactiveModeProfile +
+    runtimeAdaptiveContext +
     currentDateTimeContext;
 
   const operationalMemory = loadOperationalMemory();
@@ -1001,6 +1134,20 @@ Se o usuário pedir para você criar um lembrete, você DEVE gerar um "tool call
     lower.includes("aula de ingles")
   ) {
     includeSkill("english-teacher", "PROFESSOR(A) DE INGLES");
+  }
+
+  // Mentor Socrático — ativa quando há contexto de aprendizado/estudo
+  if (
+    lower.includes("iniciar_sessao_estudo") ||
+    lower.includes("iniciar sessao") ||
+    lower.includes("mentor socratico") ||
+    lower.includes("sessao de estudo") ||
+    lower.includes("gerenciar_modulo") ||
+    lower.includes("modulo de estudo") ||
+    lower.includes("atualizar_progresso") ||
+    lower.includes("criar_desafio")
+  ) {
+    includeSkill("mentor-socratico", "MENTOR SOCRÁTICO");
   }
 
   if (!compactMode) {

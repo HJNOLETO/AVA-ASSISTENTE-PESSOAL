@@ -2,7 +2,7 @@ import { ENV } from "./env";
 import axios from "axios";
 import { nanoid } from "nanoid";
 import { TaskQueue } from "../utils/TaskQueue";
-import os from "os";
+import { resolveRuntimePolicy } from "../runtime/adaptive-policy";
 
 export type Role = "system" | "user" | "assistant" | "tool" | "function";
 
@@ -70,18 +70,12 @@ const clampNumber = (value: number, min: number, max: number): number => {
   return Math.min(max, Math.max(min, value));
 };
 
-const degradeTier = (tier: OllamaAdaptiveTier): OllamaAdaptiveTier => {
-  if (tier === "full") return "balanced";
-  if (tier === "balanced") return "safe";
-  return "safe";
-};
-
 const detectOllamaAdaptiveProfile = (): OllamaAdaptiveProfile => {
   const mode = String(process.env.AVA_OLLAMA_PROFILE || "auto").trim().toLowerCase();
-  const totalMemGb = Number((os.totalmem() / (1024 ** 3)).toFixed(1));
-  const freeMemGb = Number((os.freemem() / (1024 ** 3)).toFixed(1));
-  const cpuCount = os.cpus().length;
-  const freeRatio = os.totalmem() > 0 ? os.freemem() / os.totalmem() : 0;
+  const runtimePolicy = resolveRuntimePolicy();
+  const totalMemGb = runtimePolicy.totalMemGb;
+  const freeMemGb = runtimePolicy.freeMemGb;
+  const cpuCount = runtimePolicy.cpuCount;
 
   if (mode === "full" || mode === "balanced" || mode === "safe") {
     return {
@@ -93,29 +87,11 @@ const detectOllamaAdaptiveProfile = (): OllamaAdaptiveProfile => {
     };
   }
 
-  let tier: OllamaAdaptiveTier;
-  if (totalMemGb >= 24 && cpuCount >= 10) {
-    tier = "full";
-  } else if (totalMemGb >= 12 && cpuCount >= 6) {
-    tier = "balanced";
-  } else {
-    tier = "safe";
-  }
-
-  const reasons: string[] = [
-    `auto totalMem=${totalMemGb}GB`,
-    `freeMem=${freeMemGb}GB`,
-    `cpu=${cpuCount}`,
-  ];
-
-  if (freeRatio < 0.12) {
-    tier = degradeTier(tier);
-    reasons.push("degradado por memoria livre < 12% do total");
-  }
+  const tier: OllamaAdaptiveTier = runtimePolicy.tier;
 
   return {
     tier,
-    reason: reasons.join(" | "),
+    reason: runtimePolicy.reason,
     totalMemGb,
     freeMemGb,
     cpuCount,
@@ -408,6 +384,19 @@ async function invokeLLMInternal(params: InvokeParams & { provider: "forge" | "o
 
     try {
       const chatMessages = messages.map((m) => {
+        // Mensagens de resultado de tool — Ollama usa role "tool" com tool_call_id
+        if (m.role === "tool") {
+          const content = typeof m.content === "string"
+            ? m.content
+            : ensureArray(m.content).map((p) => (typeof p === "string" ? p : (p as any)?.text ?? "")).join("\n");
+          return {
+            role: "tool",
+            content,
+            ...(m.tool_call_id ? { tool_call_id: m.tool_call_id } : {}),
+            ...(m.name ? { name: m.name } : {}),
+          };
+        }
+
         const parts = ensureArray(m.content);
         const text = parts
           .map((p) => (typeof p === "string" ? p : (p as any)?.text ?? ""))
@@ -426,6 +415,19 @@ async function invokeLLMInternal(params: InvokeParams & { provider: "forge" | "o
           .filter((b64) => b64.length > 0);
         const msg: Record<string, any> = { role: m.role, content: text || "" };
         if (images.length > 0) msg.images = images;
+        // Incluir tool_calls para mensagens de assistant com tool calls
+        if (m.tool_calls && m.tool_calls.length > 0) {
+          msg.tool_calls = m.tool_calls.map((tc) => ({
+            id: tc.id,
+            type: "function",
+            function: {
+              name: tc.function.name,
+              arguments: typeof tc.function.arguments === "string"
+                ? JSON.parse(tc.function.arguments)  // Ollama espera objeto, não string
+                : tc.function.arguments,
+            },
+          }));
+        }
         return msg;
       });
 
@@ -594,6 +596,11 @@ async function invokeLLMInternal(params: InvokeParams & { provider: "forge" | "o
 
       const content = data?.message?.content ?? (Array.isArray(data?.messages) ? data.messages.at(-1)?.content : "");
       const text = typeof content === "string" ? content : String(content ?? "");
+      
+      // DEBUG — remover após diagnóstico
+      if (text.length === 0) {
+        console.warn(`[LLM][DEBUG] Ollama retornou content vazio. tool_calls presentes: ${JSON.stringify(data?.message?.tool_calls)}`);
+      }
       
       console.log(`[LLM] Resposta Ollama recebida (${text.length} caracteres)`);
 

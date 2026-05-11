@@ -44,6 +44,11 @@ import { executeRegisteredTool } from "../server/tools/executor";
 import { compactUserContext } from "../server/context/manager";
 import { registerLegalRagCommands } from "./commands/legal-rag";
 import { runIngestOps } from "../server/tools/ingest_ops";
+import {
+  buildProactiveFollowUp,
+  resolveRuntimePolicy,
+  shouldForceProactiveContinuation,
+} from "../server/runtime/adaptive-policy";
 
 const program = new Command();
 const execFileAsync = promisify(execFile);
@@ -593,9 +598,18 @@ program
   .option("-p, --provider <provider>", "Define o provedor LLM (ex: forge, ollama)", process.env.LLM_PROVIDER || "ollama")
   .option("-m, --model <model>", "Define um modelo específico a ser usado (apenas para o provedor selecionado)")
   .option("--auto-confirm", "Auto confirma etapas com confirmacao humana no Agent Loop V2")
+  .option("--mode <mode>", "Modo de autonomia: safe | balanced | proactive-max", process.env.AVA_PROACTIVE_MODE || "balanced")
+  .option("--timeout-ms <timeoutMs>", "Tempo maximo por chamada LLM em ms", process.env.AVA_CLI_TIMEOUT_MS || "90000")
   .action(async (query: string, options) => {
     console.log(`\n[AVA Agent]: Iniciando loop autônomo. Provedor: ${options.provider.toUpperCase()}...`);
     console.log(`[AVA Agent]: Tarefa Recebida: "${query}"\n`);
+    const policy = resolveRuntimePolicy({
+      proactiveMode: String(options.mode || "balanced"),
+      timeoutMs: Number.parseInt(String(options.timeoutMs || ""), 10),
+    });
+    const llmTimeoutMs = policy.llmTimeoutMs;
+    const proactiveMode = policy.proactiveMode;
+    process.env.AVA_PROACTIVE_MODE_EFFECTIVE = proactiveMode;
     
     // Assegurar inicialização do Database (suporta as the ferramentas que o LLM usa e.g. gerenciar_produtos)
     await getDb();
@@ -622,6 +636,8 @@ program
     let successfulToolCalls = 0;
     let previousToolBatchSignature: string | null = null;
     let repeatedToolBatchCount = 0;
+    const maxAutoContinuations = policy.autoContinuationLimit;
+    let proactiveContinuationCount = 0;
 
     try {
       while (finishReason !== "stop" && fallbackCounter < 15) {
@@ -631,12 +647,22 @@ program
         let response;
         for (let attempt = 0; ; attempt++) {
           try {
-            response = await orchestrateAgentResponse(
-              messages,
-              options.provider as "forge" | "ollama" | "groq" | "gemini",
-              options.model,
-              getCliAvailableTools()
-            );
+            response = await Promise.race([
+              orchestrateAgentResponse(
+                messages,
+                options.provider as "forge" | "ollama" | "groq" | "gemini",
+                options.model,
+                getCliAvailableTools(),
+                undefined,
+                llmTimeoutMs
+              ),
+              new Promise((_, reject) =>
+                setTimeout(
+                  () => reject(new Error(`Tempo esgotado (timeout CLI). Sem resposta em ${llmTimeoutMs}ms.`)),
+                  llmTimeoutMs + 2000
+                )
+              ),
+            ] as const);
             break;
           } catch (err: any) {
             const msg = String(err?.message || err || "");
@@ -1461,6 +1487,21 @@ program
           if (typeof textContent === "string" && textContent.trim().length > 0) {
             console.log(`\n[AVA Responde]:\n${textContent}\n`);
             await logAudit("LLM_RESPONSE", textContent.slice(0, 150).replace(/\n/g, " "));
+
+            if (
+              proactiveContinuationCount < maxAutoContinuations &&
+              shouldForceProactiveContinuation(query, textContent, proactiveMode)
+            ) {
+              proactiveContinuationCount += 1;
+              const followUp = buildProactiveFollowUp(proactiveMode);
+              messages.push({ role: "user", content: followUp });
+              await logAudit(
+                "PROACTIVE_CONTINUATION",
+                `Follow-up automatico para fechamento operacional. mode=${proactiveMode} rodada=${proactiveContinuationCount}/${maxAutoContinuations}`
+              );
+              finishReason = "tool_calls";
+              continue;
+            }
           }
           finishReason = choice.finish_reason || "stop";
         }

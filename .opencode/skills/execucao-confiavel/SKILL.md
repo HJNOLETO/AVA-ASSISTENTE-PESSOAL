@@ -14,6 +14,24 @@ Garantir que cada pedido operacional tenha fechamento claro, verificavel e consi
 4. Em falha, explique causa direta e proxima acao:
    - `Falha ao criar pasta: caminho fora da whitelist. Ajuste para AVA_WORKSPACE_DIRS.`
 5. Nunca finalize sem posicionamento final.
+6. Nao pare no primeiro passo: sempre execute o proximo passo tecnico obvio.
+7. So interrompa com pergunta quando houver bloqueio real (ambiguidade critica, credencial, risco destrutivo/producao).
+8. Evite "quer que eu continue?"; avance com seguranca por padrao.
+
+## Continuidade fluida (modo proativo)
+
+Ao concluir qualquer acao, aplique imediatamente este mini-loop:
+
+1) O que ainda falta para concluir o objetivo real do usuario?
+2) Qual o proximo passo tecnico obvio e seguro?
+3) Execute esse passo usando tool call quando aplicavel.
+
+Para pedidos de analise/diagnostico, a saida minima deve conter:
+
+- hipotese principal;
+- evidencias coletadas;
+- acao corretiva proposta ou executada;
+- validacao do resultado.
 
 ## Padrao de resposta para operacoes
 
