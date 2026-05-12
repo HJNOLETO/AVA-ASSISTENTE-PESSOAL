@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { spawn } from "node:child_process";
 import { pathToFileURL } from "node:url";
+import fsp from "node:fs/promises";
 
 type CommandResult = {
   code: number | null;
@@ -17,6 +18,70 @@ type HostDoctorReport = {
   docker: { status: "up" | "down" | "partial"; detail: string; desktopDetected: boolean };
   recommendations: string[];
 };
+
+type HostActionMemoryItem = {
+  id: string;
+  service: "ollama" | "docker";
+  action: string;
+  context: string;
+  ok: boolean;
+  durationMs: number;
+  errorSignature?: string;
+  createdAt: string;
+};
+
+const HOST_MEMORY_FILE = path.resolve(process.cwd(), "data", "host-action-memory.jsonl");
+
+async function rememberHostAction(entry: Omit<HostActionMemoryItem, "id" | "createdAt">): Promise<void> {
+  const item: HostActionMemoryItem = {
+    id: `host-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    createdAt: new Date().toISOString(),
+    ...entry,
+  };
+  try {
+    await fsp.mkdir(path.dirname(HOST_MEMORY_FILE), { recursive: true });
+    await fsp.appendFile(HOST_MEMORY_FILE, `${JSON.stringify(item)}\n`, "utf8");
+  } catch {
+    // nao quebra bootstrap por falha de memoria operacional
+  }
+}
+
+async function loadHostActionMemory(limit = 200): Promise<HostActionMemoryItem[]> {
+  try {
+    const raw = await fsp.readFile(HOST_MEMORY_FILE, "utf8");
+    const lines = raw.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+    const parsed = lines
+      .map((line) => {
+        try {
+          return JSON.parse(line) as HostActionMemoryItem;
+        } catch {
+          return null;
+        }
+      })
+      .filter((x): x is HostActionMemoryItem => !!x);
+    return parsed.slice(-limit);
+  } catch {
+    return [];
+  }
+}
+
+function buildActionHint(memory: HostActionMemoryItem[], service: "ollama" | "docker", context: string): string | null {
+  const matches = memory.filter((m) => m.service === service && m.context === context);
+  if (matches.length === 0) return null;
+  const grouped = new Map<string, { ok: number; fail: number }>();
+  for (const item of matches) {
+    const current = grouped.get(item.action) || { ok: 0, fail: 0 };
+    if (item.ok) current.ok += 1;
+    else current.fail += 1;
+    grouped.set(item.action, current);
+  }
+  const ranked = Array.from(grouped.entries())
+    .map(([action, stat]) => ({ action, score: stat.ok - stat.fail, ok: stat.ok, fail: stat.fail }))
+    .sort((a, b) => b.score - a.score);
+  const best = ranked[0];
+  if (!best || best.score <= 0) return null;
+  return `Historico indica maior chance com '${best.action}' (sucesso=${best.ok}, falha=${best.fail}).`;
+}
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -77,6 +142,13 @@ async function ensureOllama(): Promise<void> {
   const ready = await waitUntil("ollama", ["list"], 2, 1500, "ollama");
   if (ready) {
     console.log("[HostBootstrap] Ollama ja esta disponivel.");
+    await rememberHostAction({
+      service: "ollama",
+      action: "healthcheck:list",
+      context: "bootstrap",
+      ok: true,
+      durationMs: 0,
+    });
     return;
   }
 
@@ -91,12 +163,28 @@ async function ensureOllama(): Promise<void> {
 
   const attempts = Number(process.env.OLLAMA_BOOTSTRAP_ATTEMPTS || 12);
   const waitMs = Number(process.env.OLLAMA_BOOTSTRAP_RETRY_MS || 2500);
+  const start = Date.now();
   const becameReady = await waitUntil("ollama", ["list"], attempts, waitMs, "ollama");
   if (!becameReady) {
+    await rememberHostAction({
+      service: "ollama",
+      action: "start:ollama-serve",
+      context: "bootstrap",
+      ok: false,
+      durationMs: Date.now() - start,
+      errorSignature: "ollama-not-ready-after-serve",
+    });
     throw new Error("Nao foi possivel iniciar/verificar Ollama automaticamente. Inicie o Ollama manualmente.");
   }
 
   console.log("[HostBootstrap] Ollama iniciado com sucesso.");
+  await rememberHostAction({
+    service: "ollama",
+    action: "start:ollama-serve",
+    context: "bootstrap",
+    ok: true,
+    durationMs: Date.now() - start,
+  });
 }
 
 function getDockerDesktopCandidates(): string[] {
@@ -116,9 +204,15 @@ async function ensureDockerAndShutdownProjects(): Promise<void> {
 
   let dockerReady = await waitUntil("docker", ["info", "--format", "{{.ServerVersion}}"], 1, 1000, "docker");
   if (!dockerReady && process.platform === "win32") {
+    const memory = await loadHostActionMemory();
+    const hint = buildActionHint(memory, "docker", "daemon-unavailable");
+    if (hint) {
+      console.log(`[HostBootstrap] ${hint}`);
+    }
     const desktopExe = getDockerDesktopCandidates().find((candidate) => fs.existsSync(candidate));
     if (desktopExe) {
       console.log(`[HostBootstrap] Docker indisponivel. Iniciando Docker Desktop: ${desktopExe}`);
+      const start = Date.now();
       const p = spawn("powershell", [
         "-NoProfile",
         "-Command",
@@ -130,8 +224,23 @@ async function ensureDockerAndShutdownProjects(): Promise<void> {
         stdio: "ignore",
       });
       p.unref();
+      await rememberHostAction({
+        service: "docker",
+        action: "start:docker-desktop",
+        context: "daemon-unavailable",
+        ok: true,
+        durationMs: Date.now() - start,
+      });
     } else {
       console.warn("[HostBootstrap] Docker Desktop nao encontrado em caminhos padrao. Pulando auto start.");
+      await rememberHostAction({
+        service: "docker",
+        action: "start:docker-desktop",
+        context: "daemon-unavailable",
+        ok: false,
+        durationMs: 0,
+        errorSignature: "docker-desktop-not-found",
+      });
     }
   }
 
@@ -147,8 +256,24 @@ async function ensureDockerAndShutdownProjects(): Promise<void> {
 
   if (!dockerReady) {
     console.warn("[HostBootstrap] Docker nao ficou disponivel. Seguirei sem encerrar projetos compose.");
+    await rememberHostAction({
+      service: "docker",
+      action: "healthcheck:docker-info",
+      context: "daemon-unavailable",
+      ok: false,
+      durationMs: 0,
+      errorSignature: "docker-daemon-not-ready",
+    });
     return;
   }
+
+  await rememberHostAction({
+    service: "docker",
+    action: "healthcheck:docker-info",
+    context: "daemon-unavailable",
+    ok: true,
+    durationMs: 0,
+  });
 
   console.log("[HostBootstrap] Docker disponivel. Encerrando projetos compose configurados...");
   const raw = String(process.env.AVA_DOCKER_STOP_COMPOSE_FILES || "docker-compose.study.yml;docker-compose.cli.yml");
@@ -248,6 +373,12 @@ export async function diagnoseHostServices(): Promise<HostDoctorReport> {
   if (!report.docker.desktopDetected) {
     report.recommendations.push("Docker Desktop nao encontrado no host em caminhos padrao.");
   }
+
+  const memory = await loadHostActionMemory(300);
+  const dockerHint = buildActionHint(memory, "docker", "daemon-unavailable");
+  if (dockerHint) report.recommendations.push(dockerHint);
+  const ollamaHint = buildActionHint(memory, "ollama", "bootstrap");
+  if (ollamaHint) report.recommendations.push(ollamaHint);
 
   return report;
 }
