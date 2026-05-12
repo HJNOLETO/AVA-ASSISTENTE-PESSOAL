@@ -128,6 +128,24 @@ export async function buildUnifiedExecuteTool(userId: number) {
       return { output: await executeRegisteredTool(name, args), ok: true };
     }
 
+    // ─── Compatibilidade legado: buscar_na_memoria -> memory_ops.search ───
+    if (name === "buscar_na_memoria") {
+      const palavras = Array.isArray(args.palavras_chave)
+        ? args.palavras_chave.map((item) => String(item || "").trim()).filter(Boolean)
+        : [String(args.palavras_chave || "").trim()].filter(Boolean);
+      const query = palavras.join(" ").trim();
+      if (!query) {
+        return { output: "Nenhuma palavra-chave informada para buscar_na_memoria.", ok: false };
+      }
+
+      const output = await executeRegisteredTool("memory_ops", {
+        action: "search",
+        userId,
+        query,
+      });
+      return { output, ok: true };
+    }
+
     // ─── Data/hora ───
     if (name === "obter_data_hora") {
       return { output: new Date().toISOString(), ok: true };
@@ -497,8 +515,13 @@ export async function processAvaRequest(
   await logAuditUnified(channel, "REQUEST_START", `query=${query.slice(0, 120)}`);
 
   try {
-    const runtimePolicy = resolveRuntimePolicy();
+    const runtimePolicy = resolveRuntimePolicy({ provider, model });
     process.env.AVA_PROACTIVE_MODE_EFFECTIVE = runtimePolicy.proactiveMode;
+    await logAuditUnified(
+      channel,
+      "RUNTIME_POLICY",
+      `timeout=${runtimePolicy.llmTimeoutMs} mode=${runtimePolicy.proactiveMode} ${runtimePolicy.timeoutReason}`
+    );
 
     const executeTool = await buildUnifiedExecuteTool(userId);
     const useV2 =

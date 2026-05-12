@@ -1,4 +1,4 @@
-import { eq, and, or, like, gte, lte, isNotNull, isNull, sql, inArray } from "drizzle-orm";
+import { eq, and, or, like, gte, lte, isNotNull, isNull, sql, inArray, desc } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import Database from "better-sqlite3";
 import { generateEmbedding } from "./_core/llm";
@@ -909,6 +909,51 @@ export async function searchMemoryByKeywords(userId: number, query: string) {
   } catch {
     return [];
   }
+}
+
+export async function listMemoryEntries(userId: number, limit = 20) {
+  const safeLimit = Number.isFinite(limit) ? Math.max(1, Math.min(100, Math.floor(limit))) : 20;
+  const db = await getDb();
+  if (!db) {
+    return memMemoryEntries
+      .filter((m) => m.userId === userId && !(m as any).archived)
+      .sort((a, b) => (b.accessedAt?.getTime() ?? 0) - (a.accessedAt?.getTime() ?? 0))
+      .slice(0, safeLimit);
+  }
+
+  return db
+    .select()
+    .from(memoryEntries)
+    .where(and(eq(memoryEntries.userId, userId), eq(memoryEntries.archived, 0)))
+    .orderBy(desc(memoryEntries.accessedAt))
+    .limit(safeLimit);
+}
+
+export async function archiveMemoryEntry(userId: number, id: number) {
+  const db = await getDb();
+  if (!db) {
+    const target = memMemoryEntries.find((m) => m.userId === userId && m.id === id && !(m as any).archived);
+    if (!target) return { updated: 0 };
+    (target as any).archived = 1;
+    return { updated: 1 };
+  }
+
+  const existing = await db
+    .select({ id: memoryEntries.id })
+    .from(memoryEntries)
+    .where(and(eq(memoryEntries.userId, userId), eq(memoryEntries.id, id), eq(memoryEntries.archived, 0)))
+    .limit(1);
+
+  if (existing.length === 0) {
+    return { updated: 0 };
+  }
+
+  await db
+    .update(memoryEntries)
+    .set({ archived: 1, accessedAt: new Date() })
+    .where(and(eq(memoryEntries.userId, userId), eq(memoryEntries.id, id), eq(memoryEntries.archived, 0)));
+
+  return { updated: 1 };
 }
 
 // Hardware snapshot queries
@@ -2958,4 +3003,3 @@ export async function getLearningModuleById(userId: number, moduleId: number) {
     .limit(1);
   return result[0] ?? null;
 }
-
