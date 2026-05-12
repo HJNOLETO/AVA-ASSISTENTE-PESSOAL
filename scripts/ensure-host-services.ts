@@ -88,7 +88,7 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const runCommand = (command: string, args: string[], timeoutMs = 15000): Promise<CommandResult> =>
   new Promise((resolve, reject) => {
     const child = spawn(command, args, {
-      shell: true,
+      shell: false,
       windowsHide: true,
       stdio: ["ignore", "pipe", "pipe"],
     });
@@ -295,6 +295,77 @@ async function ensureDockerAndShutdownProjects(): Promise<void> {
       console.warn(`[HostBootstrap] Falha ao encerrar compose (${composeFile}) code=${String(result.code)}.`);
       if (result.stderr.trim()) console.warn(result.stderr.trim());
     }
+  }
+
+  await stopUnusedDockerContainers();
+}
+
+async function listRunningDockerContainers(): Promise<Array<{ id: string; name: string }>> {
+  const result = await runCommand("docker", ["ps", "--format", "{{.ID}}\t{{.Names}}"], 15000);
+  if (result.code !== 0) {
+    throw new Error(result.stderr.trim() || "Falha ao listar containers em execucao.");
+  }
+
+  return result.stdout
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const [id, name] = line.split("\t");
+      return { id: String(id || "").trim(), name: String(name || "").trim() };
+    })
+    .filter((item) => item.id && item.name);
+}
+
+async function stopUnusedDockerContainers(): Promise<void> {
+  const enabled = String(process.env.AVA_DOCKER_AUTO_STOP_UNUSED || "true").toLowerCase() !== "false";
+  if (!enabled) {
+    console.log("[HostBootstrap] Auto stop de containers nao utilizados desativado.");
+    return;
+  }
+
+  const keepRaw = String(process.env.AVA_DOCKER_KEEP_CONTAINERS || "");
+  const keepSet = new Set(
+    keepRaw
+      .split(/[;,]/g)
+      .map((item) => item.trim())
+      .filter(Boolean)
+  );
+
+  const running = await listRunningDockerContainers();
+  if (running.length === 0) {
+    console.log("[HostBootstrap] Nenhum container em execucao para revisar.");
+    return;
+  }
+
+  const toStop = running.filter((container) => !keepSet.has(container.name));
+  if (toStop.length === 0) {
+    console.log("[HostBootstrap] Todos os containers ativos estao na lista de manutencao (keep). Nenhuma acao necessaria.");
+    return;
+  }
+
+  console.log(`[HostBootstrap] Containers ativos detectados: ${running.map((c) => c.name).join(", ")}`);
+  console.log(`[HostBootstrap] Containers considerados nao utilizados: ${toStop.map((c) => c.name).join(", ")}`);
+
+  for (const container of toStop) {
+    const startedAt = Date.now();
+    const stopResult = await runCommand("docker", ["container", "stop", container.id], 60000);
+    const ok = stopResult.code === 0;
+    if (ok) {
+      console.log(`[HostBootstrap] Container parado: ${container.name} (${container.id})`);
+    } else {
+      console.warn(`[HostBootstrap] Falha ao parar container ${container.name} (${container.id})`);
+      if (stopResult.stderr.trim()) console.warn(stopResult.stderr.trim());
+    }
+
+    await rememberHostAction({
+      service: "docker",
+      action: "cleanup:stop-unused-container",
+      context: container.name,
+      ok,
+      durationMs: Date.now() - startedAt,
+      errorSignature: ok ? undefined : stopResult.stderr.trim() || "docker-stop-failed",
+    });
   }
 }
 
