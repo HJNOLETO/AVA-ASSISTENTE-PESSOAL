@@ -3,7 +3,14 @@ import { runFileOps } from "./file_ops";
 import { runHttpOps } from "./http_ops";
 import { runIngestOps } from "./ingest_ops";
 import { runSandboxed } from "./sandbox";
-import { addMemoryEntry, archiveMemoryEntry, listMemoryEntries, searchMemoryByKeywords } from "../db";
+import {
+  addMemoryEntry,
+  archiveMemoryEntry,
+  explainMemoryEntries,
+  listMemoryEntries,
+  pruneExpiredMemory,
+  searchMemoryByKeywords,
+} from "../db";
 
 export async function executeRegisteredTool(name: string, args: Record<string, unknown>): Promise<string> {
   if (name === "file_ops") {
@@ -36,7 +43,17 @@ export async function executeRegisteredTool(name: string, args: Record<string, u
       const type = (typeRaw === "fact" || typeRaw === "preference" || typeRaw === "context" || typeRaw === "command")
         ? typeRaw
         : "fact";
-      const out = await addMemoryEntry(userId, content, keywords, type);
+      const ttlMap: Record<string, number> = {
+        preference: 365 * 24 * 60 * 60,
+        fact: 180 * 24 * 60 * 60,
+        context: 30 * 24 * 60 * 60,
+        command: 7 * 24 * 60 * 60,
+      };
+      const ttlSeconds = Number(args.ttlSeconds);
+      const effectiveTtl = Number.isFinite(ttlSeconds) && ttlSeconds > 0
+        ? Math.floor(ttlSeconds)
+        : ttlMap[type] || ttlMap.fact;
+      const out = await addMemoryEntry(userId, content, keywords, type, effectiveTtl);
       return JSON.stringify({ ok: true, action, result: out });
     }
 
@@ -58,6 +75,19 @@ export async function executeRegisteredTool(name: string, args: Record<string, u
       if (!Number.isFinite(id) || id <= 0) throw new Error("id obrigatorio para memory_ops.delete");
       const out = await archiveMemoryEntry(userId, id);
       return JSON.stringify({ ok: out.updated > 0, action, result: out });
+    }
+
+    if (action === "explain") {
+      const query = String(args.query || args.keywords || "").trim();
+      if (!query) throw new Error("query obrigatoria para memory_ops.explain");
+      const limit = Number(args.limit || 5);
+      const items = await explainMemoryEntries(userId, query, limit);
+      return JSON.stringify({ ok: true, action, count: items.length, items });
+    }
+
+    if (action === "prune") {
+      const result = await pruneExpiredMemory(userId);
+      return JSON.stringify({ ok: true, action, result });
     }
 
     throw new Error(`acao nao suportada em memory_ops: ${action}`);

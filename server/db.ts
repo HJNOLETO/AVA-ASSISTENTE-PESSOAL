@@ -748,7 +748,8 @@ export async function addMemoryEntry(
   userId: number,
   content: string,
   keywords?: string,
-  type: "fact" | "preference" | "context" | "command" = "fact"
+  type: "fact" | "preference" | "context" | "command" = "fact",
+  ttlSeconds?: number
 ): Promise<unknown> {
   const route = routeMemoryPersistence(content);
   const blockSensitiveByDefault = String(process.env.AVA_MEMORY_BLOCK_SENSITIVE ?? "true").toLowerCase() !== "false";
@@ -800,6 +801,7 @@ export async function addMemoryEntry(
       type,
       createdAt: now,
       accessedAt: now,
+      ttl: Number.isFinite(ttlSeconds) && (ttlSeconds as number) > 0 ? Math.floor(ttlSeconds as number) : null,
     } as typeof memoryEntries.$inferSelect;
     memMemoryEntries.push(row);
     return row;
@@ -811,6 +813,7 @@ export async function addMemoryEntry(
     keywords: finalKeywords,
     embedding: embeddingJson,
     type,
+    ttl: Number.isFinite(ttlSeconds) && (ttlSeconds as number) > 0 ? Math.floor(ttlSeconds as number) : null,
   });
 }
 
@@ -822,6 +825,7 @@ export async function searchMemoryByKeywords(userId: number, query: string) {
       .filter(
         m =>
           m.userId === userId &&
+          !(m as any).archived &&
           ((m.keywords ?? "").toLowerCase().includes(q) ||
             m.content.toLowerCase().includes(q))
       )
@@ -837,7 +841,7 @@ export async function searchMemoryByKeywords(userId: number, query: string) {
     try {
       const queryEmbedding = await generateEmbedding(query);
       const scored = memMemoryEntries
-        .filter(m => m.userId === userId && typeof m.embedding === "string" && m.embedding.length > 0)
+        .filter(m => m.userId === userId && !(m as any).archived && typeof m.embedding === "string" && m.embedding.length > 0)
         .map((m) => {
           try {
             const emb = JSON.parse(m.embedding as unknown as string);
@@ -867,6 +871,7 @@ export async function searchMemoryByKeywords(userId: number, query: string) {
     .where(
       and(
         eq(memoryEntries.userId, userId),
+        eq(memoryEntries.archived, 0),
         or(
           like(memoryEntries.keywords, `%${query}%`),
           like(memoryEntries.content, `%${query}%`)
@@ -884,7 +889,7 @@ export async function searchMemoryByKeywords(userId: number, query: string) {
     const allMemories = await db
       .select()
       .from(memoryEntries)
-      .where(eq(memoryEntries.userId, userId));
+      .where(and(eq(memoryEntries.userId, userId), eq(memoryEntries.archived, 0)));
 
     const scored = allMemories
       .map((m) => {
@@ -954,6 +959,42 @@ export async function archiveMemoryEntry(userId: number, id: number) {
     .where(and(eq(memoryEntries.userId, userId), eq(memoryEntries.id, id), eq(memoryEntries.archived, 0)));
 
   return { updated: 1 };
+}
+
+export async function explainMemoryEntries(userId: number, query: string, limit = 5) {
+  const safeLimit = Number.isFinite(limit) ? Math.max(1, Math.min(20, Math.floor(limit))) : 5;
+  const matches = await searchMemoryByKeywords(userId, query);
+  const nowMs = Date.now();
+
+  return matches.slice(0, safeLimit).map((m: any) => {
+    const createdAtMs = m.createdAt ? new Date(m.createdAt).getTime() : nowMs;
+    const ageDays = Math.max(0, Math.floor((nowMs - createdAtMs) / (1000 * 60 * 60 * 24)));
+    const ttlSeconds = typeof m.ttl === "number" ? m.ttl : null;
+    const expiresAt = ttlSeconds ? new Date(createdAtMs + ttlSeconds * 1000).toISOString() : null;
+    const keywords = String(m.keywords || "").toLowerCase();
+    const q = query.toLowerCase();
+    const score = keywords.includes(q) ? 0.92 : String(m.content || "").toLowerCase().includes(q) ? 0.78 : 0.63;
+
+    return {
+      id: m.id,
+      content: m.content,
+      type: m.type,
+      keywords: m.keywords,
+      createdAt: m.createdAt,
+      accessedAt: m.accessedAt,
+      expiresAt,
+      confidence: Number(score.toFixed(2)),
+      provenance: {
+        source: "memoryEntries",
+        strategy: "keyword_or_semantic",
+      },
+      ageDays,
+    };
+  });
+}
+
+export async function pruneExpiredMemory(userId: number) {
+  return deleteExpiredMemory(userId);
 }
 
 // Hardware snapshot queries

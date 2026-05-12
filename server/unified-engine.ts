@@ -146,6 +146,24 @@ export async function buildUnifiedExecuteTool(userId: number) {
       return { output, ok: true };
     }
 
+    // ─── Compatibilidade legado: salvar_na_memoria -> memory_ops.save ───
+    if (name === "salvar_na_memoria") {
+      const content = String(args.conteudo || args.content || "").trim();
+      if (!content) {
+        return { output: "Conteudo obrigatorio para salvar_na_memoria.", ok: false };
+      }
+
+      const output = await executeRegisteredTool("memory_ops", {
+        action: "save",
+        userId,
+        content,
+        keywords: typeof args.keywords === "string" ? args.keywords : undefined,
+        type: typeof args.type === "string" ? args.type : "fact",
+        ttlSeconds: Number(args.ttlSeconds || 0) || undefined,
+      });
+      return { output, ok: true };
+    }
+
     // ─── Data/hora ───
     if (name === "obter_data_hora") {
       return { output: new Date().toISOString(), ok: true };
