@@ -246,33 +246,54 @@ const cloudTaskQueue = new TaskQueue({
 
 export async function generateEmbedding(text: string, provider?: "forge" | "ollama"): Promise<number[]> {
   const selectedProvider = provider || (process.env.LLM_PROVIDER as "forge" | "ollama" | undefined) || "ollama";
-  const model = process.env.EMBEDDING_MODEL || (selectedProvider === "ollama" ? "nomic-embed-text" : "text-embedding-3-small");
+  const providersToTry: Array<"ollama" | "forge"> = selectedProvider === "ollama" ? ["ollama", "forge"] : ["forge", "ollama"];
 
-  try {
-    if (selectedProvider === "ollama") {
-      const base = process.env.OLLAMA_BASE_URL || "http://localhost:11434";
-      const url = `${base.replace(/\/$/, "")}/api/embeddings`;
-      
-      const response = await fetchWithTimeout(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ model, prompt: text }),
-      });
+  const buildDeterministicEmbedding = (content: string, dimensions = 256): number[] => {
+    const vec = new Array<number>(dimensions).fill(0);
+    const normalized = content.toLowerCase().trim();
+    for (let i = 0; i < normalized.length; i++) {
+      const code = normalized.charCodeAt(i);
+      const idx = (code * 131 + i * 17) % dimensions;
+      vec[idx] += 1;
+    }
+    const norm = Math.sqrt(vec.reduce((sum, v) => sum + v * v, 0)) || 1;
+    return vec.map((v) => Number((v / norm).toFixed(8)));
+  };
 
-      if (!response.ok) {
-        throw new Error(`Ollama embedding failed: ${response.statusText}`);
+  const errors: string[] = [];
+  for (const p of providersToTry) {
+    try {
+      if (p === "ollama") {
+        const base = process.env.OLLAMA_BASE_URL || "http://localhost:11434";
+        const url = `${base.replace(/\/$/, "")}/api/embeddings`;
+        const model = process.env.EMBEDDING_MODEL_OLLAMA || process.env.EMBEDDING_MODEL || "nomic-embed-text";
+
+        const response = await fetchWithTimeout(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ model, prompt: text }),
+          timeout: Number(process.env.EMBEDDING_TIMEOUT_MS || "20000"),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Ollama embedding failed: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        if (!Array.isArray(data?.embedding) || data.embedding.length === 0) {
+          throw new Error("Ollama embedding retornou payload invalido");
+        }
+        return data.embedding;
       }
 
-      const data = await response.json();
-      return data.embedding;
-    } else {
-      // Forge / OpenAI Compatible
-      const apiUrl = process.env.FORGE_API_URL 
+      const apiUrl = process.env.FORGE_API_URL
         ? `${process.env.FORGE_API_URL.replace(/\/$/, "")}/v1/embeddings`
         : "https://forge.manus.im/v1/embeddings";
-        
       const apiKey = process.env.FORGE_API_KEY;
-      if (!apiKey) throw new Error("FORGE_API_KEY is not configured");
+      if (!apiKey) {
+        throw new Error("FORGE_API_KEY is not configured");
+      }
+      const model = process.env.EMBEDDING_MODEL_FORGE || process.env.EMBEDDING_MODEL || "text-embedding-3-small";
 
       const response = await fetchWithTimeout(apiUrl, {
         method: "POST",
@@ -281,20 +302,33 @@ export async function generateEmbedding(text: string, provider?: "forge" | "olla
           "Authorization": `Bearer ${apiKey}`,
         },
         body: JSON.stringify({ model, input: text }),
+        timeout: Number(process.env.EMBEDDING_TIMEOUT_MS || "20000"),
       });
 
       if (!response.ok) {
-        throw new Error(`Forge embedding failed: ${response.statusText}`);
+        throw new Error(`Forge embedding failed: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
-      return data.data[0].embedding;
+      const embedding = data?.data?.[0]?.embedding;
+      if (!Array.isArray(embedding) || embedding.length === 0) {
+        throw new Error("Forge embedding retornou payload invalido");
+      }
+      return embedding;
+    } catch (error: any) {
+      errors.push(`${p}: ${String(error?.message || error)}`);
     }
-  } catch (error) {
-    console.error("Embedding generation error:", error);
-    // Return empty array or throw? Throwing is better to handle upstream.
-    throw error;
   }
+
+  const allowDeterministicFallback = String(process.env.AVA_EMBEDDING_ALLOW_HASH_FALLBACK ?? "true").toLowerCase() !== "false";
+  if (allowDeterministicFallback) {
+    console.warn(`[Embedding] Fallback deterministico ativado. Motivos: ${errors.join(" | ")}`);
+    return buildDeterministicEmbedding(text);
+  }
+
+  const message = `Embedding generation error: ${errors.join(" | ")}`;
+  console.error(message);
+  throw new Error(message);
 }
 
 export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
