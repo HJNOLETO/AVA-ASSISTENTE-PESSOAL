@@ -39,7 +39,8 @@
     "db:push": "drizzle-kit generate && drizzle-kit migrate",
     "db:seed": "tsx server/_core/seed-admin.ts",
     "dev:sqlite": "pnpm dev",
-    "host:bootstrap": "tsx scripts/ensure-host-services.ts"
+    "host:bootstrap": "tsx scripts/ensure-host-services.ts",
+    "host:doctor": "tsx scripts/ensure-host-services.ts --doctor"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.693.0",

@@ -11,6 +11,13 @@ type CommandResult = {
   stderr: string;
 };
 
+type HostDoctorReport = {
+  generatedAt: string;
+  ollama: { status: "up" | "down" | "skipped"; detail: string };
+  docker: { status: "up" | "down" | "partial"; detail: string; desktopDetected: boolean };
+  recommendations: string[];
+};
+
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const runCommand = (command: string, args: string[], timeoutMs = 15000): Promise<CommandResult> =>
@@ -171,7 +178,89 @@ export async function ensureHostServicesReady(): Promise<void> {
   await ensureDockerAndShutdownProjects();
 }
 
+export async function diagnoseHostServices(): Promise<HostDoctorReport> {
+  const report: HostDoctorReport = {
+    generatedAt: new Date().toISOString(),
+    ollama: { status: "down", detail: "Nao verificado" },
+    docker: { status: "down", detail: "Nao verificado", desktopDetected: false },
+    recommendations: [],
+  };
+
+  const provider = String(process.env.LLM_PROVIDER || "ollama").toLowerCase();
+  if (provider !== "ollama") {
+    report.ollama = {
+      status: "skipped",
+      detail: `LLM_PROVIDER=${provider}; Ollama nao e obrigatorio neste perfil.`,
+    };
+  } else {
+    try {
+      const ollama = await runCommand("ollama", ["list"], 10000);
+      if (ollama.code === 0) {
+        report.ollama = { status: "up", detail: "Comando 'ollama list' respondeu com sucesso." };
+      } else {
+        report.ollama = {
+          status: "down",
+          detail: ollama.stderr.trim() || "'ollama list' falhou sem detalhe.",
+        };
+        report.recommendations.push("Inicie Ollama manualmente: `ollama serve`.");
+      }
+    } catch (error: any) {
+      report.ollama = { status: "down", detail: String(error?.message || error) };
+      report.recommendations.push("Instale/verifique Ollama no PATH e execute `ollama serve`.");
+    }
+  }
+
+  const desktopExe = getDockerDesktopCandidates().find((candidate) => fs.existsSync(candidate));
+  report.docker.desktopDetected = Boolean(desktopExe);
+
+  try {
+    const dockerInfo = await runCommand("docker", ["info", "--format", "{{.ServerVersion}}"], 10000);
+    if (dockerInfo.code === 0) {
+      report.docker = {
+        status: "up",
+        detail: `Docker daemon ativo. ServerVersion=${dockerInfo.stdout.trim() || "n/d"}`,
+        desktopDetected: Boolean(desktopExe),
+      };
+    } else {
+      const stderr = dockerInfo.stderr.trim();
+      const hasPipeError = /pipe\/dockerDesktopLinuxEngine|cannot find the file specified/i.test(stderr);
+      report.docker = {
+        status: hasPipeError ? "partial" : "down",
+        detail: stderr || "docker info falhou sem detalhe.",
+        desktopDetected: Boolean(desktopExe),
+      };
+      if (hasPipeError) {
+        report.recommendations.push("Docker Desktop abriu, mas daemon nao subiu. Aguarde inicializacao completa e tente novamente.");
+        report.recommendations.push("Se persistir, reinicie Docker Desktop e valide backend WSL2.");
+      } else {
+        report.recommendations.push("Inicie Docker Desktop e confirme `docker info` sem erro.");
+      }
+    }
+  } catch (error: any) {
+    report.docker = {
+      status: "down",
+      detail: String(error?.message || error),
+      desktopDetected: Boolean(desktopExe),
+    };
+    report.recommendations.push("Instale Docker CLI/Desktop ou ajuste PATH do Docker.");
+  }
+
+  if (!report.docker.desktopDetected) {
+    report.recommendations.push("Docker Desktop nao encontrado no host em caminhos padrao.");
+  }
+
+  return report;
+}
+
 async function main() {
+  if (process.argv.includes("--doctor")) {
+    const report = await diagnoseHostServices();
+    console.log(JSON.stringify(report, null, 2));
+    const unhealthy = report.ollama.status === "down" || (report.docker.status !== "up");
+    if (unhealthy) process.exitCode = 2;
+    return;
+  }
+
   await ensureHostServicesReady();
 }
 

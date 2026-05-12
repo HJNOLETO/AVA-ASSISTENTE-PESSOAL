@@ -49,6 +49,7 @@ import {
   resolveRuntimePolicy,
   shouldForceProactiveContinuation,
 } from "../server/runtime/adaptive-policy";
+import { diagnoseHostServices, ensureHostServicesReady } from "../scripts/ensure-host-services";
 
 const program = new Command();
 const execFileAsync = promisify(execFile);
@@ -606,10 +607,13 @@ program
     const policy = resolveRuntimePolicy({
       proactiveMode: String(options.mode || "balanced"),
       timeoutMs: Number.parseInt(String(options.timeoutMs || ""), 10),
+      provider: options.provider,
+      model: options.model,
     });
     const llmTimeoutMs = policy.llmTimeoutMs;
     const proactiveMode = policy.proactiveMode;
     process.env.AVA_PROACTIVE_MODE_EFFECTIVE = proactiveMode;
+    console.log(`[AVA Runtime]: timeout=${llmTimeoutMs}ms | ${policy.timeoutReason}`);
     
     // Assegurar inicialização do Database (suporta as the ferramentas que o LLM usa e.g. gerenciar_produtos)
     await getDb();
@@ -1687,6 +1691,26 @@ program
       return;
     }
     console.log(`\n${formatSelfStatusReport(report)}\n`);
+  });
+
+program
+  .command("host")
+  .description("Diagnostica e prepara servicos locais do host (Ollama/Docker).")
+  .option("--doctor", "Executa apenas diagnostico de host")
+  .option("--bootstrap", "Inicia/normaliza servicos locais automaticamente")
+  .action(async (options: { doctor?: boolean; bootstrap?: boolean }) => {
+    if (options.bootstrap) {
+      await ensureHostServicesReady();
+      console.log("Host bootstrap concluido.");
+      return;
+    }
+
+    const report = await diagnoseHostServices();
+    console.log(JSON.stringify(report, null, 2));
+    const unhealthy = report.ollama.status === "down" || report.docker.status !== "up";
+    if (unhealthy) {
+      process.exitCode = 2;
+    }
   });
 
 registerLegalRagCommands(program, CLI_USER_ID);
