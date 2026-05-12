@@ -164,6 +164,37 @@ export async function buildUnifiedExecuteTool(userId: number) {
       return { output, ok: true };
     }
 
+    if (name === "listar_memoria") {
+      const output = await executeRegisteredTool("memory_ops", {
+        action: "list",
+        userId,
+        limit: Number(args.limit || 20),
+      });
+      return { output, ok: true };
+    }
+
+    if (name === "explicar_memoria") {
+      const query = String(args.query || args.consulta || "").trim();
+      if (!query) {
+        return { output: "Consulta obrigatoria para explicar_memoria.", ok: false };
+      }
+      const output = await executeRegisteredTool("memory_ops", {
+        action: "explain",
+        userId,
+        query,
+        limit: Number(args.limit || 5),
+      });
+      return { output, ok: true };
+    }
+
+    if (name === "limpar_memorias_expiradas") {
+      const output = await executeRegisteredTool("memory_ops", {
+        action: "prune",
+        userId,
+      });
+      return { output, ok: true };
+    }
+
     // ─── Data/hora ───
     if (name === "obter_data_hora") {
       return { output: new Date().toISOString(), ok: true };

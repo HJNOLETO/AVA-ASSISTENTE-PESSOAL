@@ -262,6 +262,84 @@ export function getAvailableTools(): Tool[] {
     {
       type: "function",
       function: {
+        name: "salvar_na_memoria",
+        description:
+          "Salva informacao util na memoria de longo prazo do usuario, com governanca de seguranca.",
+        parameters: {
+          type: "object",
+          properties: {
+            conteudo: {
+              type: "string",
+              description: "Conteudo util que deve ser lembrado.",
+            },
+            type: {
+              type: "string",
+              enum: ["fact", "preference", "context", "command"],
+              description: "Tipo de memoria para aplicar politica de retencao.",
+            },
+            ttlSeconds: {
+              type: "number",
+              description: "Opcional. TTL em segundos para expiracao automatica.",
+            },
+          },
+          required: ["conteudo"],
+        },
+      },
+    },
+    {
+      type: "function",
+      function: {
+        name: "listar_memoria",
+        description:
+          "Lista memorias ativas do usuario com limite configuravel para revisao rapida.",
+        parameters: {
+          type: "object",
+          properties: {
+            limit: {
+              type: "number",
+              description: "Opcional. Limite de itens (1-100).",
+            },
+          },
+        },
+      },
+    },
+    {
+      type: "function",
+      function: {
+        name: "explicar_memoria",
+        description:
+          "Explica por que uma memoria foi recuperada, com confianca e proveniencia.",
+        parameters: {
+          type: "object",
+          properties: {
+            query: {
+              type: "string",
+              description: "Consulta para explicar memorias relacionadas.",
+            },
+            limit: {
+              type: "number",
+              description: "Opcional. Quantidade maxima de itens explicados.",
+            },
+          },
+          required: ["query"],
+        },
+      },
+    },
+    {
+      type: "function",
+      function: {
+        name: "limpar_memorias_expiradas",
+        description:
+          "Executa limpeza das memorias expiradas por TTL para manter higiene e seguranca.",
+        parameters: {
+          type: "object",
+          properties: {},
+        },
+      },
+    },
+    {
+      type: "function",
+      function: {
         name: "gerenciar_crm",
         description: "Gerencia clientes e contatos no CRM (listar, criar, atualizar).",
         parameters: {
