@@ -4,7 +4,7 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "predev": "tsx scripts/ensure-ollama-ready.ts",
+    "predev": "tsx scripts/ensure-host-services.ts",
     "dev": "tsx watch server/_core/index.ts",
     "build": "vite build && esbuild server/_core/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
     "start": "node dist/index.js",
@@ -38,7 +38,8 @@
     "sync:agent-opencode": "tsx scripts/sync-agent-opencode.ts",
     "db:push": "drizzle-kit generate && drizzle-kit migrate",
     "db:seed": "tsx server/_core/seed-admin.ts",
-    "dev:sqlite": "pnpm dev"
+    "dev:sqlite": "pnpm dev",
+    "host:bootstrap": "tsx scripts/ensure-host-services.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.693.0",
