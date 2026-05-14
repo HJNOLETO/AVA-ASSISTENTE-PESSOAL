@@ -90,6 +90,53 @@ function coerceDate(value: unknown, field: string): Date {
   throw new Error(`Campo '${field}' com data/hora invalida.`);
 }
 
+function decodeHtmlEntities(input: string): string {
+  return input
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&#(\d+);/g, (_, d) => {
+      const code = Number(d);
+      return Number.isFinite(code) ? String.fromCharCode(code) : "";
+    });
+}
+
+function stripHtmlToText(html: string): string {
+  return decodeHtmlEntities(
+    html
+      .replace(/<script[\s\S]*?<\/script>/gi, " ")
+      .replace(/<style[\s\S]*?<\/style>/gi, " ")
+      .replace(/<!--([\s\S]*?)-->/g, " ")
+      .replace(/<[^>]+>/g, " ")
+      .replace(/\s+/g, " ")
+  ).trim();
+}
+
+function extractLinks(html: string, baseUrl: string, max = 20): string[] {
+  const links: string[] = [];
+  const regex = /<a[^>]*href=["']([^"']+)["'][^>]*>/gi;
+  let m: RegExpExecArray | null;
+  while ((m = regex.exec(html)) !== null && links.length < max) {
+    const raw = String(m[1] || "").trim();
+    if (!raw || raw.startsWith("#") || raw.startsWith("javascript:")) continue;
+    try {
+      const absolute = new URL(raw, baseUrl).toString();
+      if (!links.includes(absolute)) links.push(absolute);
+    } catch {
+      // ignora links invalidos
+    }
+  }
+  return links;
+}
+
+function truncateToolOutput(text: string, max = 12000): string {
+  const clean = String(text || "").trim();
+  if (clean.length <= max) return clean;
+  return `${clean.slice(0, max)}\n\n...[saida truncada para evitar estouro de contexto]`;
+}
+
 async function logAuditUnified(
   channel: AvaChannel,
   action: string,
@@ -125,7 +172,7 @@ export async function buildUnifiedExecuteTool(userId: number) {
       name === "db_ops" ||
       name === "ingest_ops"
     ) {
-      return { output: await executeRegisteredTool(name, args), ok: true };
+      return { output: truncateToolOutput(await executeRegisteredTool(name, args)), ok: true };
     }
 
     // ─── Compatibilidade legado: buscar_na_memoria -> memory_ops.search ───
@@ -143,7 +190,7 @@ export async function buildUnifiedExecuteTool(userId: number) {
         userId,
         query,
       });
-      return { output, ok: true };
+      return { output: truncateToolOutput(output), ok: true };
     }
 
     // ─── Compatibilidade legado: salvar_na_memoria -> memory_ops.save ───
@@ -161,7 +208,7 @@ export async function buildUnifiedExecuteTool(userId: number) {
         type: typeof args.type === "string" ? args.type : "fact",
         ttlSeconds: Number(args.ttlSeconds || 0) || undefined,
       });
-      return { output, ok: true };
+      return { output: truncateToolOutput(output), ok: true };
     }
 
     if (name === "listar_memoria") {
@@ -170,7 +217,7 @@ export async function buildUnifiedExecuteTool(userId: number) {
         userId,
         limit: Number(args.limit || 20),
       });
-      return { output, ok: true };
+      return { output: truncateToolOutput(output), ok: true };
     }
 
     if (name === "explicar_memoria") {
@@ -184,7 +231,7 @@ export async function buildUnifiedExecuteTool(userId: number) {
         query,
         limit: Number(args.limit || 5),
       });
-      return { output, ok: true };
+      return { output: truncateToolOutput(output), ok: true };
     }
 
     if (name === "limpar_memorias_expiradas") {
@@ -192,7 +239,7 @@ export async function buildUnifiedExecuteTool(userId: number) {
         action: "prune",
         userId,
       });
-      return { output, ok: true };
+      return { output: truncateToolOutput(output), ok: true };
     }
 
     // ─── Data/hora ───
@@ -262,6 +309,79 @@ export async function buildUnifiedExecuteTool(userId: number) {
         } catch { /* skip */ }
       }
       return { output: items.length > 0 ? items.join("\n") : "Sem resultados encontrados.", ok: true };
+    }
+
+    // ─── Navegação web simples (sem browser headless) ───
+    if (name === "navegar_pagina") {
+      const url = String(args.url || "").trim();
+      const maxChars = Math.max(500, Math.min(12000, Number(args.max_chars || 8000)));
+      if (!/^https?:\/\//i.test(url)) {
+        return { output: "URL invalida para navegar_pagina.", ok: false };
+      }
+
+      try {
+        const res = await fetch(url, {
+          headers: {
+            "User-Agent": "AVA-UnifiedEngine/1.0",
+            Accept: "text/html,application/xhtml+xml",
+          },
+          signal: AbortSignal.timeout(25000),
+        });
+        if (!res.ok) return { output: `Falha ao navegar pagina (HTTP ${res.status}).`, ok: false };
+        const html = await res.text();
+        const titleMatch = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+        const title = decodeHtmlEntities((titleMatch?.[1] || "").replace(/\s+/g, " ").trim()) || "(sem titulo)";
+        const text = stripHtmlToText(html).slice(0, maxChars);
+        return {
+          output: `Titulo: ${title}\nURL: ${url}\n\n${text || "Sem conteudo textual extraivel."}`,
+          ok: true,
+        };
+      } catch (err: any) {
+        return { output: `Erro em navegar_pagina: ${err?.message || err}`, ok: false };
+      }
+    }
+
+    // ─── Extração estruturada de página ───
+    if (name === "extrair_conteudo_estruturado") {
+      const url = String(args.url || "").trim();
+      const maxChars = Math.max(500, Math.min(12000, Number(args.max_chars || 6000)));
+      if (!/^https?:\/\//i.test(url)) {
+        return { output: "URL invalida para extrair_conteudo_estruturado.", ok: false };
+      }
+
+      try {
+        const res = await fetch(url, {
+          headers: {
+            "User-Agent": "AVA-UnifiedEngine/1.0",
+            Accept: "text/html,application/xhtml+xml",
+          },
+          signal: AbortSignal.timeout(25000),
+        });
+        if (!res.ok) {
+          return { output: `Falha na extracao estruturada (HTTP ${res.status}).`, ok: false };
+        }
+        const html = await res.text();
+        const titleMatch = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+        const title = decodeHtmlEntities((titleMatch?.[1] || "").replace(/\s+/g, " ").trim()) || "(sem titulo)";
+        const body = stripHtmlToText(html).slice(0, maxChars);
+        const links = extractLinks(html, url, 20);
+
+        return {
+          output: JSON.stringify(
+            {
+              url,
+              title,
+              content: body,
+              links,
+            },
+            null,
+            2
+          ),
+          ok: true,
+        };
+      } catch (err: any) {
+        return { output: `Erro em extrair_conteudo_estruturado: ${err?.message || err}`, ok: false };
+      }
     }
 
     // ─── Leitura de arquivo ───

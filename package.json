@@ -24,6 +24,7 @@
     "rag:import-csv": "tsx scripts/import-roberto-csv.ts",
     "telegram:study-bot": "tsx server/telegramStudyBot.ts",
     "collector:study": "tsx server/studyCollector.ts",
+    "runtime:hygiene": "tsx scripts/runtime-hygiene.ts",
     "check": "tsc --noEmit",
     "test:ava-cli:exaustivo": "tsx scripts/test-ava-cli-exaustivo.ts",
     "format": "prettier --write .",
