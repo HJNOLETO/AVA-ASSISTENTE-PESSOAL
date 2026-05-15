@@ -97,10 +97,21 @@ export async function runAgentCycle(query: string, context: AgentContext): Promi
     memHits.slice(0, 8).map((m: any) => ({ content: String(m.content || ""), createdAt: m.createdAt })),
     query
   );
+
+  let recentHistory: string[] = [];
+  try {
+    const { getRecentMemories } = await import("../db");
+    const recent = await getRecentMemories(context.userId, 5);
+    recentHistory = recent.reverse().map(m => m.content); // reverse para chronological
+  } catch(e) {
+    console.error("[AgentLoop] Erro ao buscar histórico recente", e);
+  }
+
   const plannedPrompt = inject({
     baseSystemPrompt: buildPlanningPrompt(query, compactMemory, compactPrefs),
     contextSummary: compacted.summary,
     prioritizedMemories: prioritized,
+    recentHistory,
   });
   const messages: Message[] = [{ role: "user", content: plannedPrompt }];
 

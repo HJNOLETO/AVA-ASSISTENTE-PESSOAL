@@ -1284,6 +1284,33 @@ export async function searchMemoryWithRelevance(
   return scored.filter((m) => m.score > 0).sort((a, b) => b.score - a.score);
 }
 
+export async function getRecentMemories(userId: number, limit: number = 5) {
+  const db = await getDb();
+  if (!db) {
+    return memMemoryEntries
+      .filter((m) => m.userId === userId && !(m as any).archived)
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .slice(0, limit);
+  }
+
+  try {
+    return await db
+      .select()
+      .from(memoryEntries)
+      .where(and(eq(memoryEntries.userId, userId), eq(memoryEntries.archived, 0)))
+      .orderBy(sql`${memoryEntries.createdAt} DESC`)
+      .limit(limit);
+  } catch (error) {
+    if (String(error).toLowerCase().includes("no such table")) {
+      return memMemoryEntries
+        .filter((m) => m.userId === userId && !(m as any).archived)
+        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+        .slice(0, limit);
+    }
+    throw error;
+  }
+}
+
 // Agent queries
 export async function getAgents(userId: number) {
   const db = await getDb();

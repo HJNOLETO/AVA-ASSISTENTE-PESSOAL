@@ -32,24 +32,35 @@ export function inject(params: {
   baseSystemPrompt: string;
   contextSummary?: string;
   prioritizedMemories?: PrioritizedMemory[];
+  recentHistory?: string[];
   ragChunks?: Array<{ content: string }>;
   preferences?: Record<string, unknown>;
   maxChars?: number;
 }): string {
   const maxChars = params.maxChars ?? 4500;
+  
   const memoryBlock = (params.prioritizedMemories || [])
     .slice(0, 4)
-    .map((m, i) => `${i + 1}. ${m.content}`)
+    .map((m, i) => {
+      const dateStr = m.createdAt ? `[Data: ${new Date(m.createdAt).toLocaleString("pt-BR")}] ` : "";
+      return `${i + 1}. ${dateStr}${m.content}`;
+    })
     .join("\n");
+    
   const ragBlock = (params.ragChunks || [])
     .slice(0, 3)
     .map((c, i) => `RAG ${i + 1}: ${c.content}`)
     .join("\n");
 
+  const recentBlock = (params.recentHistory || [])
+    .map((msg, i) => `Interação ${i + 1}: ${msg}`)
+    .join("\n");
+
   const merged = [
     params.baseSystemPrompt,
     params.contextSummary ? `\n[Resumo de contexto]\n${params.contextSummary}` : "",
-    memoryBlock ? `\n[Memorias priorizadas]\n${memoryBlock}` : "",
+    recentBlock ? `\n[Histórico Recente da Conversa]\n${recentBlock}` : "",
+    memoryBlock ? `\n[Memórias Priorizadas (RAG)]\n${memoryBlock}` : "",
     ragBlock ? `\n[Chunks RAG]\n${ragBlock}` : "",
     params.preferences ? `\n[Preferencias]\n${JSON.stringify(params.preferences)}` : "",
   ]
