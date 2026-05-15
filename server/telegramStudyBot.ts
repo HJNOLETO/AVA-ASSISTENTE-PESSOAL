@@ -210,7 +210,7 @@ function chunkMessage(text: string, size = 3900) {
   return chunks;
 }
 
-async function telegramSendMessage(chatId: string | number, text: string) {
+export async function telegramSendMessage(chatId: string | number, text: string) {
   for (const part of chunkMessage(text)) {
     const res = await fetch(apiUrl("sendMessage"), {
       method: "POST",
