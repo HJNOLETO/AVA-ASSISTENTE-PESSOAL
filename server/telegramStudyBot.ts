@@ -931,32 +931,49 @@ async function start() {
       const offset = state.lastUpdateId > 0 ? state.lastUpdateId + 1 : 0;
       const updates = await telegramGetUpdates(offset);
       for (const upd of updates) {
-        state.lastUpdateId = Math.max(state.lastUpdateId, upd.update_id);
-        const chatId = upd.message?.chat?.id;
-        if (!chatId) continue;
-        
-        let text = upd.message?.text?.trim() || upd.message?.caption?.trim() || "";
-        let visualContext = "";
-        
-        const photo = upd.message?.photo;
-        if (photo && photo.length > 0) {
-           const bestPhoto = photo[photo.length - 1];
-           const fileUrl = await telegramGetFileUrl(bestPhoto.file_id);
-           if (fileUrl) {
-              await telegramSendMessage(chatId, "👀 Analisando a imagem enviada...");
-              try {
-                const desc = await invokeVisionModel(fileUrl, "Descreva esta imagem em detalhes, focando em elementos visuais, textos presentes e contexto geral, em português.");
-                visualContext = `\n[Contexto Visual: O usuário enviou uma imagem. A descrição gerada pela IA de visão foi: "${desc}"]\n`;
-              } catch (err: any) {
-                console.error("[telegram-study-bot] Erro na visao:", err);
-                visualContext = `\n[Contexto Visual: O usuário enviou uma imagem, mas ocorreu um erro no provedor de nuvem ao tentar processá-la e o AVA está temporariamente 'cego'. Diga ao usuário que a visão está indisponível.]\n`;
-              }
-           }
-        }
+        try {
+          const chatId = upd.message?.chat?.id;
+          if (!chatId) {
+            state.lastUpdateId = Math.max(state.lastUpdateId, upd.update_id);
+            continue;
+          }
+          
+          let text = upd.message?.text?.trim() || upd.message?.caption?.trim() || "";
+          let visualContext = "";
+          
+          const photo = upd.message?.photo;
+          if (photo && photo.length > 0) {
+             const bestPhoto = photo[photo.length - 1];
+             const fileUrl = await telegramGetFileUrl(bestPhoto.file_id);
+             if (fileUrl) {
+                try {
+                  await telegramSendMessage(chatId, "👀 Analisando a imagem enviada...");
+                } catch(e) {} // ignorar erro na mensagem temporária
+                
+                try {
+                  const desc = await invokeVisionModel(fileUrl, "Descreva esta imagem em detalhes, focando em elementos visuais, textos presentes e contexto geral, em português.");
+                  visualContext = `\n[Contexto Visual: O usuário enviou uma imagem. A descrição gerada pela IA de visão foi: "${desc}"]\n`;
+                } catch (err: any) {
+                  console.error("[telegram-study-bot] Erro na visao:", err);
+                  visualContext = `\n[Contexto Visual: O usuário enviou uma imagem, mas ocorreu um erro no provedor de nuvem ao tentar processá-la e o AVA está temporariamente 'cego'. Diga ao usuário que a visão está indisponível.]\n`;
+                }
+             }
+          }
 
-        if (!text && !visualContext) continue;
-        const finalPayload = `${visualContext}${text}`;
-        await handleIncomingMessage(String(chatId), finalPayload, upd.message?.from?.first_name);
+          if (!text && !visualContext) {
+            state.lastUpdateId = Math.max(state.lastUpdateId, upd.update_id);
+            continue;
+          }
+
+          const finalPayload = `${visualContext}${text}`;
+          await handleIncomingMessage(String(chatId), finalPayload, upd.message?.from?.first_name);
+          
+          state.lastUpdateId = Math.max(state.lastUpdateId, upd.update_id);
+        } catch (innerErr) {
+          console.error("[telegram-study-bot] Erro ao processar mensagem específica:", innerErr);
+          // Atualiza para não travar na mesma mensagem infinitamente
+          state.lastUpdateId = Math.max(state.lastUpdateId, upd.update_id);
+        }
       }
       await writeState(state);
     } catch (err) {
