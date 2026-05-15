@@ -8,6 +8,7 @@
     "dev": "tsx watch server/_core/index.ts",
     "build": "vite build && esbuild server/_core/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
     "start": "node dist/index.js",
+    "daemon:start": "tsx server/autonomous-daemon.ts",
     "rag:index": "tsx scripts/index-drive-sync.ts",
     "rag:knowledge:export": "tsx scripts/knowledge-cli.ts",
     "rag:drive-sync:index": "tsx scripts/index-drive-sync.ts",

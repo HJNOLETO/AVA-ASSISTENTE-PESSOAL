@@ -9,10 +9,9 @@ import fs from "fs/promises";
 import { getDocumentsRAG } from "./db";
 import { searchRelevantChunks } from "./rag";
 import { invokeLLM } from "./_core/llm";
-import { exec } from "child_process";
-import { promisify } from "util";
-
-const execAsync = promisify(exec);
+import { processAvaRequest } from "./unified-engine";
+import { runAutonomousHostCleanup } from "./hostMaintenance";
+import { ensurePersonalRoutine } from "./personalRoutine";
 
 type TelegramUpdate = {
   update_id: number;
@@ -40,6 +39,7 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
 const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
 const TELEGRAM_IMAGE_PROVIDER = (process.env.TELEGRAM_IMAGE_PROVIDER || "pollinations").toLowerCase();
 const TELEGRAM_CAROUSEL_SLIDES = Number(process.env.TELEGRAM_CAROUSEL_SLIDES || "5");
+const TELEGRAM_REQUEST_TIMEOUT_MS = Number(process.env.TELEGRAM_REQUEST_TIMEOUT_MS || "120000");
 
 const statePath = path.join(process.cwd(), "data", "telegram-study-bot-state.json");
 const lockPath = path.join(process.cwd(), "data", "telegram-study-bot.lock");
@@ -91,6 +91,13 @@ function assertConfig() {
   }
   if (!Number.isFinite(TELEGRAM_STUDY_USER_ID) || TELEGRAM_STUDY_USER_ID <= 0) {
     throw new Error("TELEGRAM_STUDY_USER_ID deve ser um numero positivo");
+  }
+  // Etapa 2: Alertar se userId divergir entre canais (causa de memória fragmentada)
+  const cliUserId = Number(process.env.AVA_CLI_USER_ID || "0");
+  if (cliUserId > 0 && cliUserId !== TELEGRAM_STUDY_USER_ID) {
+    console.warn(
+      `[telegram-study-bot] ⚠️  AVISO: AVA_CLI_USER_ID (${cliUserId}) diferente de TELEGRAM_STUDY_USER_ID (${TELEGRAM_STUDY_USER_ID}). Isso causa memória fragmentada entre canais! Alinhe ambos no .env.`
+    );
   }
 }
 
@@ -253,6 +260,24 @@ async function telegramSendMediaGroup(
 
 function sanitizeUserText(input: string) {
   return input.trim().replace(/\s+/g, " ");
+}
+
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string): Promise<T> {
+  let timer: NodeJS.Timeout | null = null;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`${label} timeout após ${timeoutMs}ms`)), timeoutMs);
+  });
+  try {
+    return await Promise.race([promise, timeout]);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
+function buildCloudModelHint(provider: string): string {
+  const isCloudOllama = provider === "ollama" && String(LLM_MODEL || "").toLowerCase().includes("cloud");
+  if (!isCloudOllama) return "";
+  return "\n\nDica: o modelo cloud Ollama pode ter atingido limite/sessao. Se continuar sem responder, troque de conta cloud e tente novamente.";
 }
 
 async function buildContext(query: string, topK = 6) {
@@ -621,6 +646,7 @@ async function handleIncomingMessage(chatId: string, text: string, firstName?: s
         "/post <tema> - gera post (texto + imagem)",
         "/carrossel <tema> - gera carrossel (texto + imagens)",
         "/cli <comando> - Executa um comando autônomo remoto na máquina host",
+        "/limpeza_host - executa limpeza autonoma de temporarios/caches do Windows",
       ].join("\n")
     );
     return;
@@ -637,31 +663,37 @@ async function handleIncomingMessage(chatId: string, text: string, firstName?: s
       await telegramSendMessage(chatId, "Use: /cli <tarefa para executar autonomamente na maquina>");
       return;
     }
-    await telegramSendMessage(chatId, `⏳ Agente CLI acionado localmente. Processando a tarefa: "${arg}"...`);
+    await telegramSendMessage(chatId, `⏳ Motor AVA acionado (canal unificado). Processando: "${arg}"...`);
     try {
-      const cliCommand = buildCliAskCommand(arg);
-      // Execução Nativa de alta performance ignorando o Docker devido as falhas de VHD do Windows
-      const { stdout, stderr } = await execAsync(cliCommand, {
-        timeout: 120000 
-      });
-      
-      const output = stdout.trim();
-      let responseMsg = "[Terminal AVA-CLI (Nativo)]\n\n";
-      
-      // Filtrar linhas irrelevantes do stdout (TaskQueue, logs chatos...)
-      const cleanOutput = output.split('\n')
-          .filter(l => !l.startsWith('[TaskQueue]') && !l.startsWith('[LLM]') && !l.startsWith('Container '))
-          .join('\n');
-      
-      responseMsg += cleanOutput.slice(0, 3900);
-      if (stderr) {
-         responseMsg += `\n\n[Avisos do Sistema]:\n${stderr.slice(0, 500)}`;
-      }
+      // Etapa 3: Motor unificado elimina exec() por mensagem
+      const result = await withTimeout(processAvaRequest(arg, {
+        userId: TELEGRAM_STUDY_USER_ID,
+        provider: (TELEGRAM_TEXT_PROVIDER as any) || "gemini",
+        channel: "telegram",
+        autoConfirm: true,
+      }), TELEGRAM_REQUEST_TIMEOUT_MS, "processAvaRequest(/cli)");
+      const responseMsg = `[AVA-CLI via Motor Unificado]\n\n${result.response.slice(0, 3900)}`;
       await telegramSendMessage(chatId, responseMsg);
     } catch (err) {
       const errorMsg = formatExecError(err);
-      await telegramSendMessage(chatId, `❌ Erro de execucao no Proxy Nativo CLI: ${errorMsg}`);
+      const hint = buildCloudModelHint((TELEGRAM_TEXT_PROVIDER as any) || "gemini");
+      await telegramSendMessage(chatId, `❌ Erro no motor unificado: ${errorMsg}${hint}`);
     }
+    return;
+  }
+
+  if (cmd === "/limpeza_host") {
+    await telegramSendMessage(chatId, "🧹 Iniciando limpeza autônoma do host (modo seguro com trilha de auditoria)...");
+    const result = await runAutonomousHostCleanup();
+    const status = result.ok ? "✅" : "❌";
+    const msg = [
+      `${status} ${result.summary}`,
+      result.details ? `\nDetalhes:\n${result.details.slice(0, 2500)}` : "",
+      result.ok ? "\nDica: para limpeza profunda adicional, rode DISM em terminal elevado." : "",
+    ]
+      .filter(Boolean)
+      .join("\n");
+    await telegramSendMessage(chatId, msg);
     return;
   }
 
@@ -762,32 +794,23 @@ async function handleIncomingMessage(chatId: string, text: string, firstName?: s
 
   await telegramSendMessage(chatId, `⏳ Analisando sua solicitação...`);
   try {
-    const cliCommand = buildCliAskCommand(normalized);
-    const { stdout, stderr } = await execAsync(cliCommand, {
-      timeout: 120000 
-    });
-    
-    // Limpar output feio de logs internos e terminal
-    const cleanOutput = stdout.trim().split('\n')
-        .filter(l => !l.startsWith('[TaskQueue]') && !l.startsWith('[LLM]') && !l.startsWith('Container ') && !l.includes('[SYS]'))
-        .join('\n');
-    
-    let responseMsg = cleanOutput.slice(0, 3900);
-    // Limpar quebras de linha excessivas e logs '[AVA Responde]:'
-    responseMsg = responseMsg.replace(/\[AVA Responde\]:/gi, "").trim();
+    // Etapa 3 + 4: Motor unificado com persistência automática de memória
+    const result = await withTimeout(processAvaRequest(normalized, {
+      userId: TELEGRAM_STUDY_USER_ID,
+      provider: (TELEGRAM_TEXT_PROVIDER as any) || "gemini",
+      channel: "telegram",
+      autoConfirm: false,
+    }), TELEGRAM_REQUEST_TIMEOUT_MS, "processAvaRequest(mensagem)");
 
-    if (stderr) {
-       responseMsg += `\n\n[Avisos do Sistema]:\n${stderr.slice(0, 500)}`;
-    }
-    
+    let responseMsg = result.response.replace(/\[AVA Responde\]:/gi, "").trim();
     if (!responseMsg) {
-       responseMsg = "Não foi possível gerar uma resposta. Tente reformular a solicitação.";
+      responseMsg = "Não foi possível gerar uma resposta. Tente reformular a solicitação.";
     }
-    
-    await telegramSendMessage(chatId, responseMsg);
+    await telegramSendMessage(chatId, responseMsg.slice(0, 3900));
   } catch (err) {
     const errorMsg = formatExecError(err);
-    await telegramSendMessage(chatId, `❌ Erro de processamento: ${errorMsg}`);
+    const hint = buildCloudModelHint((TELEGRAM_TEXT_PROVIDER as any) || "gemini");
+    await telegramSendMessage(chatId, `❌ Erro de processamento: ${errorMsg}${hint}`);
   }
 }
 
@@ -837,6 +860,10 @@ async function start() {
   console.log(
     `[telegram-study-bot] chatIdsPermitidos=${ALLOWED_CHAT_IDS.size > 0 ? Array.from(ALLOWED_CHAT_IDS).join(",") : "(todos)"}`
   );
+
+  if (TELEGRAM_STUDY_USER_ID > 0) {
+    await ensurePersonalRoutine(TELEGRAM_STUDY_USER_ID);
+  }
   
   // GARANTIR QUE NENHUM WEBHOOK (ex: n8n) ESTEJA ATIVO CONFLITANDO COM O POLLING
   try {

@@ -14,7 +14,10 @@ export type RuntimePolicy = {
   maxCycles: number;
   maxToolCalls: number;
   autoContinuationLimit: number;
+  timeoutReason: string;
 };
+
+export type LlmProvider = "forge" | "ollama" | "groq" | "gemini";
 
 const clamp = (value: number, min: number, max: number): number => {
   if (!Number.isFinite(value)) return min;
@@ -105,6 +108,8 @@ export function resolveRuntimePolicy(overrides?: {
   proactiveMode?: string;
   timeoutMs?: number;
   tier?: RuntimeTier;
+  provider?: LlmProvider | string;
+  model?: string;
 }): RuntimePolicy {
   const detected = detectTier();
   const forcedTier = String(process.env.AVA_RUNTIME_TIER || overrides?.tier || "").trim().toLowerCase();
@@ -113,9 +118,47 @@ export function resolveRuntimePolicy(overrides?: {
     : detected.tier;
 
   const proactiveMode = parseProactiveMode(overrides?.proactiveMode || process.env.AVA_PROACTIVE_MODE);
-  const baseTimeoutByTier = tier === "full" ? 120000 : tier === "balanced" ? 90000 : 60000;
-  const timeoutRaw = overrides?.timeoutMs || Number(process.env.AVA_CLI_TIMEOUT_MS || baseTimeoutByTier);
-  const llmTimeoutMs = clamp(timeoutRaw, 10000, 300000);
+  const provider = String(overrides?.provider || process.env.LLM_PROVIDER || "ollama").toLowerCase();
+  const model = String(overrides?.model || "").toLowerCase();
+
+  const modelSizeMatch = model.match(/(\d+(?:\.\d+)?)\s*b\b/i);
+  const modelSizeB = modelSizeMatch ? Number(modelSizeMatch[1]) : null;
+
+  const isCloudProvider = provider === "forge" || provider === "groq" || provider === "gemini";
+  const isOllamaCloudModel = /cloud/.test(model);
+  const isLocalModel = provider === "ollama" && !isOllamaCloudModel;
+
+  const localBaseTimeoutByTier = tier === "full" ? 180000 : tier === "balanced" ? 240000 : 300000;
+  const cloudBaseTimeoutByTier = tier === "full" ? 60000 : tier === "balanced" ? 75000 : 90000;
+
+  let baseTimeout = isLocalModel ? localBaseTimeoutByTier : cloudBaseTimeoutByTier;
+  const reasons: string[] = [];
+
+  if (isCloudProvider || isOllamaCloudModel) {
+    reasons.push("perfil cloud");
+  } else {
+    reasons.push("perfil local");
+  }
+
+  if (isLocalModel && modelSizeB !== null) {
+    if (modelSizeB <= 4) {
+      baseTimeout = Math.max(baseTimeout, 150000);
+      reasons.push(`modelo local ${modelSizeB}B`);
+    } else if (modelSizeB <= 7) {
+      baseTimeout = Math.max(baseTimeout, 360000);
+      reasons.push(`modelo local ${modelSizeB}B (pesado)`);
+    } else {
+      baseTimeout = Math.max(baseTimeout, 480000);
+      reasons.push(`modelo local ${modelSizeB}B (muito pesado)`);
+    }
+  }
+
+  const envTimeoutName = isLocalModel ? "AVA_TIMEOUT_LOCAL_MS" : "AVA_TIMEOUT_CLOUD_MS";
+  const envTimeoutRaw = Number(process.env[envTimeoutName] || "");
+  const timeoutRaw =
+    overrides?.timeoutMs ||
+    (Number.isFinite(envTimeoutRaw) && envTimeoutRaw > 0 ? envTimeoutRaw : Number(process.env.AVA_CLI_TIMEOUT_MS || baseTimeout));
+  const llmTimeoutMs = clamp(timeoutRaw, 10000, 900000);
 
   const baseCyclesByTier = tier === "full" ? 14 : tier === "balanced" ? 12 : 9;
   const baseToolCallsByTier = tier === "full" ? 18 : tier === "balanced" ? 14 : 10;
@@ -134,5 +177,6 @@ export function resolveRuntimePolicy(overrides?: {
     maxCycles: clamp(baseCyclesByTier + modeCycleBoost, 6, 18),
     maxToolCalls: clamp(baseToolCallsByTier + modeToolBoost, 8, 24),
     autoContinuationLimit: proactiveMode === "proactive-max" ? 2 : proactiveMode === "balanced" ? 1 : 0,
+    timeoutReason: `${reasons.join(" | ")} | tier=${tier}`,
   };
 }

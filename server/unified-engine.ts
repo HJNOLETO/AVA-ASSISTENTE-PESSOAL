@@ -37,6 +37,7 @@ import { runAgentCycle } from "./agents/agent-loop";
 import { executeRegisteredTool } from "./tools/executor";
 import type { ToolCall } from "./_core/llm";
 import { resolveRuntimePolicy } from "./runtime/adaptive-policy";
+import { alignToPersonalWindow } from "./personalSchedule";
 
 // Conjunto de nomes de ferramentas disponíveis (usado no autodiagnóstico)
 const _CLI_TOOL_NAMES: Set<string> = new Set(
@@ -247,6 +248,31 @@ export async function buildUnifiedExecuteTool(userId: number) {
       return { output: new Date().toISOString(), ok: true };
     }
 
+    if (name === "enviar_mensagem_telegram") {
+      const mensagem = String(args.mensagem || "").trim();
+      if (!mensagem) {
+        return { output: "Mensagem vazia.", ok: false };
+      }
+      try {
+        const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || "";
+        const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || "";
+        if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
+          return { output: "Configuração do Telegram ausente no .env", ok: false };
+        }
+        const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: mensagem })
+        });
+        if (!res.ok) {
+          return { output: `Falha ao enviar Telegram HTTP ${res.status}`, ok: false };
+        }
+        return { output: "Mensagem enviada com sucesso no Telegram.", ok: true };
+      } catch (err: any) {
+        return { output: `Erro ao enviar Telegram: ${err.message}`, ok: false };
+      }
+    }
+
     // ─── Auto-diagnóstico ───
     if (name === "autodiagnostico_ava") {
       const toolNames = Array.from(_CLI_TOOL_NAMES.values()).sort();
@@ -441,6 +467,8 @@ export async function buildUnifiedExecuteTool(userId: number) {
           nextRun = coerceDate(horario, "horario");
         }
       }
+      nextRun = alignToPersonalWindow(nextRun);
+
       await createProactiveTask(userId, {
         title: `Lembrete: ${mensagem}`,
         description: mensagem,

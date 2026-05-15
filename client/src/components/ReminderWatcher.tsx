@@ -2,6 +2,44 @@ import React, { useCallback, useEffect, useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 
+function isWithinPersonalWindow(date: Date): boolean {
+  const day = date.getDay();
+  const hour = date.getHours() + date.getMinutes() / 60;
+  if (day >= 1 && day <= 5) return hour >= 8 && hour < 18;
+  if (day === 6) return hour >= 8 && hour < 12;
+  return false;
+}
+
+function nextPersonalWindowStart(from: Date): Date {
+  const candidate = new Date(from);
+  for (let i = 0; i < 8; i += 1) {
+    const day = candidate.getDay();
+    const start = new Date(candidate);
+    start.setMinutes(0, 0, 0);
+    const end = new Date(candidate);
+    end.setMinutes(0, 0, 0);
+
+    if (day >= 1 && day <= 5) {
+      start.setHours(8);
+      end.setHours(18);
+    } else if (day === 6) {
+      start.setHours(8);
+      end.setHours(12);
+    } else {
+      candidate.setDate(candidate.getDate() + 1);
+      candidate.setHours(0, 0, 0, 0);
+      continue;
+    }
+
+    if (candidate < start) return start;
+    if (candidate >= start && candidate < end) return candidate;
+
+    candidate.setDate(candidate.getDate() + 1);
+    candidate.setHours(0, 0, 0, 0);
+  }
+  return from;
+}
+
 export default function ReminderWatcher() {
   const [activeReminders, setActiveReminders] = useState<Set<number>>(new Set());
   const { data: tasks, refetch } = trpc.proactiveTasks.list.useQuery(undefined, {
@@ -92,6 +130,17 @@ export default function ReminderWatcher() {
       const isReminderType = task.type === "watcher" || task.type === "alerta_urgente" || task.type === "proactive";
       
       if (isReminderType && dueTime > 0 && now >= dueTime) {
+        const nowDate = new Date(now);
+        if (!isWithinPersonalWindow(nowDate)) {
+          const nextAllowed = nextPersonalWindowStart(nowDate);
+          void updateTask.mutateAsync({
+            id: task.id,
+            nextRun: nextAllowed,
+            status: "active",
+          }).then(() => refetch()).catch(() => undefined);
+          return;
+        }
+
         console.log(`[ReminderWatcher] Disparando lembrete: ${task.title} (ID: ${task.id})`);
         
         // Mapeia como visualizado localmente no front

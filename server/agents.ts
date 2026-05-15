@@ -231,6 +231,24 @@ export function getAvailableTools(): Tool[] {
     {
       type: "function",
       function: {
+        name: "enviar_mensagem_telegram",
+        description:
+          "Envia uma mensagem proativa para o usuário via Telegram.",
+        parameters: {
+          type: "object",
+          properties: {
+            mensagem: {
+              type: "string",
+              description: "A mensagem a ser enviada ao usuário.",
+            },
+          },
+          required: ["mensagem"],
+        },
+      },
+    },
+    {
+      type: "function",
+      function: {
         name: "obter_data_hora",
         description:
           "Obtém a data e hora atual do sistema local.",

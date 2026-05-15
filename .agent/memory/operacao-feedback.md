@@ -56,3 +56,11 @@ Registrar padroes de acerto/erro para melhorar a consistencia das respostas oper
 - Cenarios aprovados: T01 - Autodiagnostico operacional; T02 - Criacao de lembrete; T03 - Listagem de lembretes; T04 - Criacao de pasta/arquivo; T05 - Copia de arquivo; T06 - Renomeacao de arquivo; T07 - Exclusao com confirmacao explicita; T08 - Busca web; T09 - Extracao estruturada de pagina; T10 - Cofre seguro; T11 - Listagem de cofre
 - Cenarios falhos: nenhum
 - Cenarios ignorados: nenhum
+
+## Rodada 2026-05-09T15:10:43.448Z (exaustivo-2026-05-09T15-02-19-308Z)
+- Aprovados: 2
+- Falhos: 4
+- Ignorados: 14
+- Cenarios aprovados: T16 - Persistencia multi-canal (log unificado); T20 - ToolRegistry ESM: ausencia de require error
+- Cenarios falhos: T01 - Autodiagnostico operacional; T02 - Criacao de lembrete; T03 - Listagem de lembretes; T15 - Identidade unificada CLI==Telegram
+- Cenarios ignorados: T04 - Criacao de pasta/arquivo; T05 - Copia de arquivo; T06 - Renomeacao de arquivo; T07 - Exclusao com confirmacao explicita; T08 - Busca web; T09 - Extracao estruturada de pagina; T10 - Cofre seguro; T11 - Listagem de cofre; T12 - Mentor Socratico: iniciar sessao de estudo; T13 - Mentor Socratico: listar modulos de estudo; T14 - Mentor Socratico: verificar revisoes pendentes; T17 - Motor unificado via Gemini: auto-status; T18 - Git status operacional; T19 - RAG juridico: busca de documentos

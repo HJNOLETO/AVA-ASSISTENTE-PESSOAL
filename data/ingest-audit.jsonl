@@ -14,3 +14,4 @@
 {"at":"2026-04-28T21:29:22.611Z","arquivo":"tiny.md","status":"failed","erro":"Formato invalido: minimo de 200 caracteres de conteudo (atual: 61)","reason":"conteudo_abaixo_minimo","minChars":200}
 {"at":"2026-04-28T21:30:13.809Z","arquivo":"tiny.md","status":"failed","erro":"Formato invalido: minimo de 200 caracteres de conteudo (atual: 61)","reason":"conteudo_abaixo_minimo","minChars":200}
 {"at":"2026-04-28T21:30:48.821Z","arquivo":"tiny.md","status":"failed","erro":"Formato invalido: minimo de 200 caracteres de conteudo (atual: 61)","reason":"conteudo_abaixo_minimo","minChars":200}
+{"at":"2026-05-12T12:07:37.683Z","arquivo":"tiny.md","status":"failed","erro":"Formato invalido: minimo de 200 caracteres de conteudo (atual: 61)","reason":"conteudo_abaixo_minimo","minChars":200}

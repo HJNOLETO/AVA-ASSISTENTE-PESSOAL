@@ -9,6 +9,7 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { startCleanupJob } from "../cleanup-job";
+import { ensurePersonalRoutine } from "../personalRoutine";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -82,6 +83,11 @@ async function startServer() {
   server.headersTimeout = 1802000;   // Recommended to be higher than keepAliveTimeout
 
   startCleanupJob();
+
+  const routineUserId = Number(process.env.TELEGRAM_STUDY_USER_ID || 1);
+  ensurePersonalRoutine(routineUserId).catch((err) => {
+    console.warn("[PersonalRoutine] failed to bootstrap routine:", err);
+  });
 }
 
 startServer().catch(console.error);

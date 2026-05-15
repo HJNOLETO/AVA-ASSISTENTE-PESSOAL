@@ -1,9 +1,10 @@
 import "dotenv/config";
 import fs from "node:fs";
 import path from "node:path";
-import { spawn } from "node:child_process";
+import { execFile, spawn } from "node:child_process";
 import { pathToFileURL } from "node:url";
 import fsp from "node:fs/promises";
+import { promisify } from "node:util";
 
 type CommandResult = {
   code: number | null;
@@ -84,38 +85,52 @@ function buildActionHint(memory: HostActionMemoryItem[], service: "ollama" | "do
 }
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+const execFileAsync = promisify(execFile);
 
-const runCommand = (command: string, args: string[], timeoutMs = 15000): Promise<CommandResult> =>
-  new Promise((resolve, reject) => {
-    const child = spawn(command, args, {
-      shell: false,
-      windowsHide: true,
-      stdio: ["ignore", "pipe", "pipe"],
-    });
+const DOCKER_API_FALLBACKS = ["1.53", "1.52", "1.51", "1.50", "1.49", "1.48", "1.47", "1.46", "1.45", "1.44", "1.43", "1.42", "1.41"];
 
-    let stdout = "";
-    let stderr = "";
-    child.stdout.on("data", (chunk) => {
-      stdout += String(chunk || "");
-    });
-    child.stderr.on("data", (chunk) => {
-      stderr += String(chunk || "");
-    });
+function isDockerApiNegotiationError(stderr: string): boolean {
+  return /supports the requested API version|Internal Server Error for API route and version/i.test(stderr);
+}
 
-    const timer = setTimeout(() => {
-      child.kill("SIGTERM");
-    }, timeoutMs);
+const runCommand = async (command: string, args: string[], timeoutMs = 15000): Promise<CommandResult> => {
+  const invoke = async (extraEnv?: NodeJS.ProcessEnv): Promise<CommandResult> => {
+    try {
+      const { stdout, stderr } = await execFileAsync(command, args, {
+        windowsHide: true,
+        timeout: timeoutMs,
+        maxBuffer: 1024 * 1024,
+        env: extraEnv ? { ...process.env, ...extraEnv } : process.env,
+      });
+      return { code: 0, signal: null, stdout: String(stdout || ""), stderr: String(stderr || "") };
+    } catch (error: any) {
+      const code = typeof error?.code === "number" ? error.code : 1;
+      const signal = (error?.signal as NodeJS.Signals | null) || null;
+      const stdout = String(error?.stdout || "");
+      const stderr = String(error?.stderr || error?.message || "");
+      return { code, signal, stdout, stderr };
+    }
+  };
 
-    child.on("error", (error) => {
-      clearTimeout(timer);
-      reject(error);
-    });
+  const initial = await invoke();
+  if (command !== "docker" || initial.code === 0 || !isDockerApiNegotiationError(initial.stderr)) {
+    return initial;
+  }
 
-    child.on("close", (code, signal) => {
-      clearTimeout(timer);
-      resolve({ code, signal, stdout, stderr });
-    });
-  });
+  for (const apiVersion of DOCKER_API_FALLBACKS) {
+    const retried = await invoke({ DOCKER_API_VERSION: apiVersion });
+    if (retried.code === 0) {
+      return {
+        ...retried,
+        stderr: retried.stderr
+          ? `${retried.stderr}\n[HostBootstrap] Docker API fallback aplicado: ${apiVersion}`
+          : `[HostBootstrap] Docker API fallback aplicado: ${apiVersion}`,
+      };
+    }
+  }
+
+  return initial;
+};
 
 async function waitUntil(command: string, args: string[], attempts: number, waitMs: number, label: string): Promise<boolean> {
   for (let i = 1; i <= attempts; i++) {
@@ -189,10 +204,28 @@ async function ensureOllama(): Promise<void> {
 
 function getDockerDesktopCandidates(): string[] {
   return [
+    "C:/Program Files/Docker/Docker/frontend/Docker Desktop.exe",
+    "C:/Program Files (x86)/Docker/Docker/frontend/Docker Desktop.exe",
     "C:/Program Files/Docker/Docker/Docker Desktop.exe",
     "C:/Program Files (x86)/Docker/Docker/Docker Desktop.exe",
+    path.join(process.env.LOCALAPPDATA || "", "Programs/Docker/Docker/frontend/Docker Desktop.exe"),
     path.join(process.env.LOCALAPPDATA || "", "Programs/Docker/Docker/Docker Desktop.exe"),
   ].filter(Boolean);
+}
+
+function launchDockerDesktop(desktopExe: string): void {
+  const escapedPath = desktopExe.replace(/'/g, "''");
+  const p = spawn("powershell", [
+    "-NoProfile",
+    "-Command",
+    `start '${escapedPath}'`,
+  ], {
+    shell: false,
+    detached: true,
+    windowsHide: true,
+    stdio: "ignore",
+  });
+  p.unref();
 }
 
 async function ensureDockerAndShutdownProjects(): Promise<void> {
@@ -213,17 +246,7 @@ async function ensureDockerAndShutdownProjects(): Promise<void> {
     if (desktopExe) {
       console.log(`[HostBootstrap] Docker indisponivel. Iniciando Docker Desktop: ${desktopExe}`);
       const start = Date.now();
-      const p = spawn("powershell", [
-        "-NoProfile",
-        "-Command",
-        `Start-Process -FilePath '${desktopExe.replace(/'/g, "''")}'`,
-      ], {
-        shell: false,
-        detached: true,
-        windowsHide: true,
-        stdio: "ignore",
-      });
-      p.unref();
+      launchDockerDesktop(desktopExe);
       await rememberHostAction({
         service: "docker",
         action: "start:docker-desktop",
@@ -252,6 +275,20 @@ async function ensureDockerAndShutdownProjects(): Promise<void> {
       3000,
       "docker",
     );
+  }
+
+  if (!dockerReady) {
+    const autoWslFix = String(process.env.AVA_DOCKER_AUTO_WSL_FIX || "true").toLowerCase() !== "false";
+    if (autoWslFix && process.platform === "win32") {
+      console.log("[HostBootstrap] Tentando auto-correcao Docker via WSL shutdown + relaunch...");
+      await runCommand("wsl", ["--shutdown"], 20000);
+      await sleep(3000);
+      const desktopExe = getDockerDesktopCandidates().find((candidate) => fs.existsSync(candidate));
+      if (desktopExe) {
+        launchDockerDesktop(desktopExe);
+      }
+      dockerReady = await waitUntil("docker", ["info", "--format", "{{.ServerVersion}}"], 12, 5000, "docker-autofix");
+    }
   }
 
   if (!dockerReady) {

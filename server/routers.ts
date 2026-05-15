@@ -164,6 +164,7 @@ import {
   searchPJeComunicacoes,
 } from "./legalApis";
 import { addHours, addDays, setHours, setMinutes, isWeekend, isAfter } from "date-fns";
+import { computeNextRunBySchedule } from "./personalSchedule";
 import axios from "axios";
 import fs from "fs";
 import path from "path";
@@ -898,25 +899,8 @@ export const appRouter = router({
         const task = tasks.find(t => t.id === input.id);
         if (!task || !task.schedule) return { success: false, message: "Task not found or not recurring" };
 
-        let nextRun = new Date();
         const now = new Date();
-        const schedule = task.schedule.toLowerCase();
-
-        if (schedule === "1h" || schedule === "60m") {
-          nextRun = addHours(task.nextRun || now, 1);
-        } else if (schedule === "diario") {
-          nextRun = addDays(task.nextRun || now, 1);
-        } else if (schedule === "8-18h") {
-          const lastRun = task.nextRun || now;
-          let candidate = addHours(lastRun, 1);
-          const hour = candidate.getHours();
-          if (hour < 8) {
-             candidate = setHours(setMinutes(candidate, 0), 8);
-          } else if (hour >= 18) {
-             candidate = addDays(setHours(setMinutes(candidate, 0), 8), 1);
-          }
-          nextRun = candidate;
-        }
+        const nextRun = computeNextRunBySchedule(task.schedule, task.nextRun || now);
 
         await updateProactiveTask(ctx.user.id, input.id, {
           nextRun,
