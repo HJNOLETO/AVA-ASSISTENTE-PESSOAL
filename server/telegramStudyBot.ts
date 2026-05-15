@@ -18,7 +18,9 @@ type TelegramUpdate = {
   message?: {
     chat: { id: number };
     text?: string;
+    caption?: string;
     from?: { first_name?: string };
+    photo?: Array<{ file_id: string; width: number; height: number }>;
   };
 };
 
@@ -260,6 +262,52 @@ async function telegramSendMediaGroup(
 
 function sanitizeUserText(input: string) {
   return input.trim().replace(/\s+/g, " ");
+}
+
+async function telegramGetFileUrl(fileId: string): Promise<string | null> {
+  const url = apiUrl("getFile");
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ file_id: fileId }),
+  });
+  if (!res.ok) return null;
+  const payload = await res.json() as any;
+  if (!payload.ok || !payload.result?.file_path) return null;
+  return `https://api.telegram.org/file/bot${TELEGRAM_BOT_TOKEN}/${payload.result.file_path}`;
+}
+
+async function invokeVisionModel(imageUrl: string, prompt: string): Promise<string> {
+  if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY nao configurada para Visao.");
+  const imgRes = await fetch(imageUrl);
+  if (!imgRes.ok) throw new Error("Falha ao baixar imagem do Telegram");
+  const buffer = await imgRes.arrayBuffer();
+  const base64Image = Buffer.from(buffer).toString("base64");
+  
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-goog-api-key": GEMINI_API_KEY,
+    },
+    body: JSON.stringify({
+      contents: [{
+        parts: [
+          { text: prompt },
+          { inline_data: { mime_type: "image/jpeg", data: base64Image } }
+        ]
+      }]
+    }),
+  });
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Falha Gemini Vision HTTP ${res.status}: ${errText}`);
+  }
+  const payload = await res.json() as any;
+  const text = payload?.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!text) throw new Error("Resposta de visão vazia");
+  return text.trim();
 }
 
 async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string): Promise<T> {
@@ -884,10 +932,31 @@ async function start() {
       const updates = await telegramGetUpdates(offset);
       for (const upd of updates) {
         state.lastUpdateId = Math.max(state.lastUpdateId, upd.update_id);
-        const text = upd.message?.text?.trim();
         const chatId = upd.message?.chat?.id;
-        if (!text || !chatId) continue;
-        await handleIncomingMessage(String(chatId), text, upd.message?.from?.first_name);
+        if (!chatId) continue;
+        
+        let text = upd.message?.text?.trim() || upd.message?.caption?.trim() || "";
+        let visualContext = "";
+        
+        const photo = upd.message?.photo;
+        if (photo && photo.length > 0) {
+           const bestPhoto = photo[photo.length - 1];
+           const fileUrl = await telegramGetFileUrl(bestPhoto.file_id);
+           if (fileUrl) {
+              await telegramSendMessage(chatId, "👀 Analisando a imagem enviada...");
+              try {
+                const desc = await invokeVisionModel(fileUrl, "Descreva esta imagem em detalhes, focando em elementos visuais, textos presentes e contexto geral, em português.");
+                visualContext = `\n[Contexto Visual: O usuário enviou uma imagem. A descrição gerada pela IA de visão foi: "${desc}"]\n`;
+              } catch (err: any) {
+                console.error("[telegram-study-bot] Erro na visao:", err);
+                visualContext = `\n[Contexto Visual: O usuário enviou uma imagem, mas ocorreu um erro no provedor de nuvem ao tentar processá-la e o AVA está temporariamente 'cego'. Diga ao usuário que a visão está indisponível.]\n`;
+              }
+           }
+        }
+
+        if (!text && !visualContext) continue;
+        const finalPayload = `${visualContext}${text}`;
+        await handleIncomingMessage(String(chatId), finalPayload, upd.message?.from?.first_name);
       }
       await writeState(state);
     } catch (err) {

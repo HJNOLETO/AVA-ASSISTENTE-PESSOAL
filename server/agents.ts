@@ -733,6 +733,20 @@ export function getAvailableTools(): Tool[] {
     {
       type: "function",
       function: {
+        name: "gerar_imagem_promocional",
+        description: "Gera uma imagem gráfica promocional (ex: flyer, post, logo) através de uma API gratuita. Retorna a URL da imagem gerada.",
+        parameters: {
+          type: "object",
+          properties: {
+            prompt_visual: { type: "string", description: "O prompt em inglês bem detalhado descrevendo o que deve ser gerado." }
+          },
+          required: ["prompt_visual"]
+        }
+      }
+    },
+    {
+      type: "function",
+      function: {
         name: "criar_skill_customizada",
         description: "Cria uma nova skill em .agent/skills/<nome>/SKILL.md quando nao existir skill adequada para o objetivo.",
         parameters: {

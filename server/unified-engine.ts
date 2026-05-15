@@ -273,6 +273,24 @@ export async function buildUnifiedExecuteTool(userId: number) {
       }
     }
 
+    if (name === "gerar_imagem_promocional") {
+      const promptVisual = String(args.prompt_visual || "").trim();
+      if (!promptVisual) {
+        return { output: "O prompt_visual é obrigatório.", ok: false };
+      }
+      try {
+        const encoded = encodeURIComponent(promptVisual);
+        const seed = Date.now();
+        const imageUrl = `https://image.pollinations.ai/prompt/${encoded}?width=1024&height=1024&seed=${seed}&nologo=true`;
+        return {
+          output: `A imagem foi gerada com sucesso na seguinte URL: ${imageUrl}\n\nEnvie este link para o usuário visualizar a imagem.`,
+          ok: true
+        };
+      } catch (err: any) {
+        return { output: `Erro ao gerar imagem: ${err.message}`, ok: false };
+      }
+    }
+
     // ─── Auto-diagnóstico ───
     if (name === "autodiagnostico_ava") {
       const toolNames = Array.from(_CLI_TOOL_NAMES.values()).sort();
