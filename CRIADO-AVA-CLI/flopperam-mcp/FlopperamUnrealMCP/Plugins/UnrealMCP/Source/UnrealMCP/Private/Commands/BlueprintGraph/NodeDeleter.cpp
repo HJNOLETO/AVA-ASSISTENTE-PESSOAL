@@ -1,9 +1,9 @@
 #include "Commands/BlueprintGraph/NodeDeleter.h"
+#include "Commands/EpicUnrealMCPCommonUtils.h"
 #include "Engine/Blueprint.h"
 #include "EdGraph/EdGraph.h"
 #include "EdGraph/EdGraphNode.h"
 #include "Kismet2/BlueprintEditorUtils.h"
-#include "EditorAssetLibrary.h"
 
 TSharedPtr<FJsonObject> FNodeDeleter::DeleteNode(const TSharedPtr<FJsonObject>& Params)
 {
@@ -31,7 +31,7 @@ TSharedPtr<FJsonObject> FNodeDeleter::DeleteNode(const TSharedPtr<FJsonObject>& 
 	Params->TryGetStringField(TEXT("function_name"), FunctionName);
 
 	// Load the Blueprint
-	UBlueprint* Blueprint = LoadBlueprint(BlueprintName);
+	UBlueprint* Blueprint = FEpicUnrealMCPCommonUtils::FindBlueprint(BlueprintName);
 	if (!Blueprint)
 	{
 		return CreateErrorResponse(FString::Printf(TEXT("Blueprint not found: %s"), *BlueprintName));
@@ -149,40 +149,6 @@ bool FNodeDeleter::RemoveNode(UEdGraph* Graph, UEdGraphNode* Node)
 	Graph->RemoveNode(Node);
 
 	return true;
-}
-
-UBlueprint* FNodeDeleter::LoadBlueprint(const FString& BlueprintName)
-{
-	// Try direct path first
-	FString BlueprintPath = BlueprintName;
-
-	// If no path prefix, assume /Game/Blueprints/
-	if (!BlueprintPath.StartsWith(TEXT("/")))
-	{
-		BlueprintPath = TEXT("/Game/Blueprints/") + BlueprintName;
-	}
-
-	// Add .Blueprint suffix if not present
-	if (!BlueprintPath.Contains(TEXT(".")))
-	{
-		BlueprintPath += TEXT(".") + FPaths::GetBaseFilename(BlueprintPath);
-	}
-
-	// Try to load the Blueprint
-	UBlueprint* BP = LoadObject<UBlueprint>(nullptr, *BlueprintPath);
-
-	// If not found, try with UEditorAssetLibrary
-	if (!BP)
-	{
-		FString AssetPath = BlueprintPath;
-		if (UEditorAssetLibrary::DoesAssetExist(AssetPath))
-		{
-			UObject* Asset = UEditorAssetLibrary::LoadAsset(AssetPath);
-			BP = Cast<UBlueprint>(Asset);
-		}
-	}
-
-	return BP;
 }
 
 TSharedPtr<FJsonObject> FNodeDeleter::CreateSuccessResponse(const FString& DeletedNodeID)

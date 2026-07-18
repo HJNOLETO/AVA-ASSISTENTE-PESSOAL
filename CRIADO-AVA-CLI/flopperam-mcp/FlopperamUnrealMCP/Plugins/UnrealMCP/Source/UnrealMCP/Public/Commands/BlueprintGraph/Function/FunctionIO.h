@@ -62,13 +62,6 @@ private:
 	);
 
 	/**
-	 * Load a Blueprint by name
-	 * @param BlueprintName Name or path of the Blueprint
-	 * @return Loaded Blueprint or nullptr
-	 */
-	static UBlueprint* LoadBlueprint(const FString& BlueprintName);
-
-	/**
 	 * Convert string type name to UE FProperty type
 	 * @param TypeName Type name (bool, int, float, string, vector, etc.)
 	 * @return FEdGraphPinType or default

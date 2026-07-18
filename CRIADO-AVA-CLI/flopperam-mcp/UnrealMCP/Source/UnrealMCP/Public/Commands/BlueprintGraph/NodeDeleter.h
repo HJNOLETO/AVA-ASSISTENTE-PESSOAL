@@ -50,13 +50,6 @@ private:
 	 */
 	static bool RemoveNode(UEdGraph* Graph, UEdGraphNode* Node);
 
-	/**
-	 * Load a Blueprint by name
-	 * @param BlueprintName Name or path of the Blueprint
-	 * @return Loaded Blueprint or nullptr
-	 */
-	static UBlueprint* LoadBlueprint(const FString& BlueprintName);
-
 	// Helper functions
 	static TSharedPtr<FJsonObject> CreateSuccessResponse(const FString& DeletedNodeID);
 	static TSharedPtr<FJsonObject> CreateErrorResponse(const FString& ErrorMessage);

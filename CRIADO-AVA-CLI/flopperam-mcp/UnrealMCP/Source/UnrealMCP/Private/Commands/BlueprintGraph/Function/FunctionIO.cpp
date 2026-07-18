@@ -1,4 +1,5 @@
 #include "Commands/BlueprintGraph/Function/FunctionIO.h"
+#include "Commands/EpicUnrealMCPCommonUtils.h"
 #include "Engine/Blueprint.h"
 #include "EdGraph/EdGraph.h"
 #include "EdGraphSchema_K2.h"
@@ -73,7 +74,7 @@ TSharedPtr<FJsonObject> FFunctionIO::AddFunctionIO(const TSharedPtr<FJsonObject>
 	}
 
 	// Load the Blueprint
-	UBlueprint* Blueprint = LoadBlueprint(BlueprintName);
+	UBlueprint* Blueprint = FEpicUnrealMCPCommonUtils::FindBlueprint(BlueprintName);
 	if (!Blueprint)
 	{
 		return CreateErrorResponse(FString::Printf(TEXT("Blueprint not found: %s"), *BlueprintName));
@@ -282,24 +283,6 @@ bool FFunctionIO::AddFunctionParameter(
 	FunctionGraph->NotifyGraphChanged();
 
 	return true;
-}
-
-UBlueprint* FFunctionIO::LoadBlueprint(const FString& BlueprintName)
-{
-	// Try direct load
-	UBlueprint* Blueprint = Cast<UBlueprint>(StaticLoadObject(UBlueprint::StaticClass(), nullptr, *BlueprintName));
-	if (Blueprint)
-	{
-		return Blueprint;
-	}
-
-	// Try EditorAssetLibrary
-	if (UEditorAssetLibrary::DoesAssetExist(BlueprintName))
-	{
-		return Cast<UBlueprint>(UEditorAssetLibrary::LoadAsset(BlueprintName));
-	}
-
-	return nullptr;
 }
 
 FEdGraphPinType FFunctionIO::GetPropertyTypeFromString(const FString& TypeName)

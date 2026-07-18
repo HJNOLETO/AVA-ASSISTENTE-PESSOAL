@@ -1,4 +1,5 @@
 #include "Commands/BlueprintGraph/Function/FunctionManager.h"
+#include "Commands/EpicUnrealMCPCommonUtils.h"
 #include "Engine/Blueprint.h"
 #include "EdGraph/EdGraph.h"
 #include "Kismet2/BlueprintEditorUtils.h"
@@ -39,7 +40,7 @@ TSharedPtr<FJsonObject> FFunctionManager::CreateFunction(const TSharedPtr<FJsonO
 	}
 
 	// Load the Blueprint
-	UBlueprint* Blueprint = LoadBlueprint(BlueprintName);
+	UBlueprint* Blueprint = FEpicUnrealMCPCommonUtils::FindBlueprint(BlueprintName);
 	if (!Blueprint)
 	{
 		return CreateErrorResponse(FString::Printf(TEXT("Blueprint not found: %s"), *BlueprintName));
@@ -163,7 +164,7 @@ TSharedPtr<FJsonObject> FFunctionManager::DeleteFunction(const TSharedPtr<FJsonO
 	}
 
 	// Load the Blueprint
-	UBlueprint* Blueprint = LoadBlueprint(BlueprintName);
+	UBlueprint* Blueprint = FEpicUnrealMCPCommonUtils::FindBlueprint(BlueprintName);
 	if (!Blueprint)
 	{
 		return CreateErrorResponse(FString::Printf(TEXT("Blueprint not found: %s"), *BlueprintName));
@@ -230,7 +231,7 @@ TSharedPtr<FJsonObject> FFunctionManager::RenameFunction(const TSharedPtr<FJsonO
 	}
 
 	// Load the Blueprint
-	UBlueprint* Blueprint = LoadBlueprint(BlueprintName);
+	UBlueprint* Blueprint = FEpicUnrealMCPCommonUtils::FindBlueprint(BlueprintName);
 	if (!Blueprint)
 	{
 		return CreateErrorResponse(FString::Printf(TEXT("Blueprint not found: %s"), *BlueprintName));
@@ -262,33 +263,6 @@ TSharedPtr<FJsonObject> FFunctionManager::RenameFunction(const TSharedPtr<FJsonO
 	UE_LOG(LogTemp, Display, TEXT("Successfully renamed function '%s' to '%s' in %s"), *OldFunctionName, *NewFunctionName, *BlueprintName);
 
 	return CreateSuccessResponse(NewFunctionName);
-}
-
-UBlueprint* FFunctionManager::LoadBlueprint(const FString& BlueprintName)
-{
-	// Try direct load with _C suffix first (most reliable for Blueprint assets)
-	FString ClassPath = BlueprintName + TEXT("_C");
-	UClass* BlueprintClass = Cast<UClass>(StaticLoadObject(UClass::StaticClass(), nullptr, *ClassPath));
-	if (BlueprintClass)
-	{
-		// Get the Blueprint asset from the class
-		for (TObjectIterator<UBlueprint> It; It; ++It)
-		{
-			if (It->GetPathName().Contains(BlueprintName))
-			{
-				return *It;
-			}
-		}
-	}
-
-	// Try EditorAssetLibrary as fallback
-	if (UEditorAssetLibrary::DoesAssetExist(BlueprintName))
-	{
-		UObject* Asset = UEditorAssetLibrary::LoadAsset(BlueprintName);
-		return Cast<UBlueprint>(Asset);
-	}
-
-	return nullptr;
 }
 
 bool FFunctionManager::ValidateFunctionName(const FString& FunctionName)

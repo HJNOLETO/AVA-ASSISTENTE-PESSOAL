@@ -44,7 +44,10 @@ public class UnrealMCP : ModuleRules
 				"PhysicsCore",
 				"UnrealEd",           // For Blueprint editing
 				"BlueprintGraph",     // For K2Node classes (F15-F22)
-				"KismetCompiler"      // For Blueprint compilation (F15-F22)
+				"KismetCompiler",      // For Blueprint compilation (F15-F22)
+				"EnhancedInput",       // For InputAction/InputMappingContext
+				"UMG",                 // For WidgetBlueprint, UserWidget
+				"UMGEditor"            // For WidgetBlueprint factory
 			}
 		);
 		

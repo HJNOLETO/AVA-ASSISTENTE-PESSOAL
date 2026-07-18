@@ -49,22 +49,6 @@ class UNREALMCP_API FBlueprintNodeManager
 		static class UK2Node_Event* CreateEventNode(class UEdGraph* Graph, const TSharedPtr<FJsonObject>& Params);
 
 		/**
-		 * Create a Variable Get node
-		 * @param Graph - Target graph
-		 * @param Params - Node parameters (must include variable_name)
-		 * @return Created node or nullptr
-		 */
-		static class UK2Node* CreateVariableGetNode(class UEdGraph* Graph, const TSharedPtr<FJsonObject>& Params);
-
-		/**
-		 * Create a Variable Set node
-		 * @param Graph - Target graph
-		 * @param Params - Node parameters (must include variable_name)
-		 * @return Created node or nullptr
-		 */
-		static class UK2Node* CreateVariableSetNode(class UEdGraph* Graph, const TSharedPtr<FJsonObject>& Params);
-
-		/**
 		 * Create a Call Function node
 		 * @param Graph - Target graph
 		 * @param Params - Node parameters (must include target_function, optional: target_blueprint, pos_x, pos_y)

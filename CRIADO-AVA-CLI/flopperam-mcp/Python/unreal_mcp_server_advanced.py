@@ -879,31 +879,19 @@ def create_wall(
     name_prefix: str = "WallBlock",
     mesh: str = "/Engine/BasicShapes/Cube.Cube"
 ) -> Dict[str, Any]:
-    """Create a simple wall from cubes."""
+    """Create a simple wall (delegates to native C++ for single-trip performance)."""
     try:
         unreal = get_unreal_connection()
         if not unreal:
             return {"success": False, "message": "Failed to connect to Unreal Engine"}
-        spawned = []
-        scale = block_size / 100.0
-        for h in range(height):
-            for i in range(length):
-                actor_name = f"{name_prefix}_{h}_{i}"
-                if orientation == "x":
-                    loc = [location[0] + i * block_size, location[1], location[2] + h * block_size]
-                else:
-                    loc = [location[0], location[1] + i * block_size, location[2] + h * block_size]
-                params = {
-                    "name": actor_name,
-                    "type": "StaticMeshActor",
-                    "location": loc,
-                    "scale": [scale, scale, scale],
-                    "static_mesh": mesh
-                }
-                resp = safe_spawn_actor(unreal, params)
-                if resp and resp.get("status") == "success":
-                    spawned.append(resp)
-        return {"success": True, "actors": spawned}
+        return unreal.send_command("create_wall", {
+            "length": length,
+            "height": height,
+            "block_size": block_size,
+            "location": location,
+            "orientation": orientation,
+            "name_prefix": name_prefix
+        }) or {"success": False, "message": "No response from command"}
     except Exception as e:
         logger.error(f"create_wall error: {e}")
         return {"success": False, "message": str(e)}
@@ -918,7 +906,15 @@ def create_tower(
     mesh: str = "/Engine/BasicShapes/Cube.Cube",
     tower_style: str = "cylindrical"  # "cylindrical", "square", "tapered"
 ) -> Dict[str, Any]:
-    """Create a realistic tower with various architectural styles."""
+    """Create a realistic tower with various architectural styles.
+    
+    NOTE: This Python implementation is intentionally kept (not delegated to C++ native)
+    because it supports advanced features the C++ native command doesn't have:
+    - Multiple tower styles (cylindrical, square, tapered)
+    - Decorative elements every 3 levels
+    - Corner detail blocks
+    
+    The C++ native command has a simpler square-only tower. Do NOT redirect to native."""
     try:
         unreal = get_unreal_connection()
         if not unreal:
@@ -1053,31 +1049,20 @@ def create_staircase(
     steps: int = 5,
     step_size: List[float] = [100.0, 100.0, 50.0],
     location: List[float] = [0.0, 0.0, 0.0],
-    name_prefix: str = "Stair",
+    name_prefix: str = "StairBlock",
     mesh: str = "/Engine/BasicShapes/Cube.Cube"
 ) -> Dict[str, Any]:
-    """Create a staircase from cubes."""
+    """Create a staircase (delegates to native C++ for single-trip performance)."""
     try:
         unreal = get_unreal_connection()
         if not unreal:
             return {"success": False, "message": "Failed to connect to Unreal Engine"}
-        spawned = []
-        sx, sy, sz = step_size
-        for i in range(steps):
-            actor_name = f"{name_prefix}_{i}"
-            loc = [location[0] + i * sx, location[1], location[2] + i * sz]
-            scale = [sx/100.0, sy/100.0, sz/100.0]
-            params = {
-                "name": actor_name,
-                "type": "StaticMeshActor",
-                "location": loc,
-                "scale": scale,
-                "static_mesh": mesh
-            }
-            resp = safe_spawn_actor(unreal, params)
-            if resp and resp.get("status") == "success":
-                spawned.append(resp)
-        return {"success": True, "actors": spawned}
+        return unreal.send_command("create_staircase", {
+            "steps": steps,
+            "step_size": step_size,
+            "location": location,
+            "name_prefix": name_prefix
+        }) or {"success": False, "message": "No response from command"}
     except Exception as e:
         logger.error(f"create_staircase error: {e}")
         return {"success": False, "message": str(e)}
@@ -1092,7 +1077,11 @@ def construct_house(
     mesh: str = "/Engine/BasicShapes/Cube.Cube",
     house_style: str = "modern"  # "modern", "cottage"
 ) -> Dict[str, Any]:
-    """Construct a realistic house with architectural details and multiple rooms."""
+    """Construct a realistic house with architectural details and multiple rooms.
+    
+    NOTE: This Python implementation delegates to the build_house() helper which supports
+    multiple house styles (modern, cottage), rooms, roof, doors, and windows.
+    The C++ native command is simpler. Do NOT redirect to native."""
     try:
         unreal = get_unreal_connection()
         if not unreal:

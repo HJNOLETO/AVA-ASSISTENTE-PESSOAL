@@ -1,317 +1,117 @@
-# 🔧 Advanced Tools Reference
-
-Complete documentation for all 21 tools in the Unreal MCP Advanced Server.
-
-## 🏗️ World Building Tools
-
-### create_town
-Create complete urban environments with buildings, roads, and infrastructure.
-
-**Parameters:**
-- `town_size` (string): "small", "medium", "large", or "metropolis"
-- `architectural_style` (string): "modern", "medieval", "suburban", "downtown", "mixed", or "futuristic"  
-- `building_density` (float, 0.0-1.0): How packed the buildings are
-- `location` (array): [X, Y, Z] world position for town center
-- `include_infrastructure` (bool): Add roads, utilities, etc.
-- `name_prefix` (string): Prefix for spawned building actors
-
-**Example:**
-```bash
-create_town(town_size="medium", architectural_style="modern", building_density=0.8, location=[0, 0, 0])
-```
-
-### construct_house  
-Build realistic multi-room houses with architectural details.
-
-**Parameters:**
-- `width` (int): House width in centimeters (default: 1200)
-- `depth` (int): House depth in centimeters (default: 1000)
-- `height` (int): Wall height in centimeters (default: 600)
-- `location` (array): House center position
-- `house_style` (string): "modern", "cottage", or "mansion"
-- `mesh` (string): Static mesh asset path
-- `name_prefix` (string): Prefix for house components
-
-**Features:**
-- **Foundation & Floor**: Proper structural base
-- **Room Division**: Interior walls creating realistic spaces
-- **Windows & Doors**: Authentic openings with proper sizing
-- **Pitched Roof**: Angled rooftop instead of flat surface
-- **Style Variations**: Different proportions and decorative elements
-
-**Examples:**
-```bash
-# Modern family home
-construct_house(house_style="modern", location=[0, 0, 0])
-
-# Large mansion
-construct_house(width=1500, depth=1200, house_style="mansion", location=[2000, 0, 0])
-
-# Cozy cottage  
-construct_house(house_style="cottage", location=[-1000, 1000, 0])
-```
-
-### create_tower
-Build architectural towers with various styles and decorative elements.
-
-**Parameters:**
-- `height` (int): Number of vertical levels (default: 10)
-- `base_size` (int): Base diameter/width (default: 4)
-- `tower_style` (string): "cylindrical", "square", or "tapered"
-- `block_size` (float): Size of building blocks in cm
-- `location` (array): Tower base center position
-- `mesh` (string): Static mesh for blocks
-- `name_prefix` (string): Actor naming prefix
-
-**Styles:**
-- **Cylindrical**: Round tower with blocks in circular pattern
-- **Square**: Hollow square tower with corner reinforcements  
-- **Tapered**: Tower that narrows toward the top
-
-**Example:**
-```bash
-create_tower(height=15, base_size=6, tower_style="cylindrical", location=[1000, 0, 0])
-```
-
-### create_arch
-Create decorative arch structures using blocks arranged in semicircles.
-
-**Parameters:**
-- `radius` (float): Arch radius in centimeters (default: 300)
-- `segments` (int): Number of blocks forming the arch (default: 6)
-- `location` (array): Arch center base position
-- `mesh` (string): Static mesh asset path
-- `name_prefix` (string): Actor naming prefix
-
-## 🧩 Level Design Tools
-
-### create_maze
-Generate solvable mazes using recursive backtracking algorithm.
-
-**Parameters:**
-- `rows` (int): Maze height in cells (default: 8)
-- `cols` (int): Maze width in cells (default: 8)  
-- `cell_size` (float): Size of each maze cell in cm (default: 300)
-- `wall_height` (int): Height of walls in block layers (default: 3)
-- `location` (array): Maze center position
-
-**Features:**
-- **Guaranteed Solvable**: Uses recursive backtracking for valid paths
-- **Clear Entrance/Exit**: Marked with distinctive objects
-- **Open Top Design**: Walls are limited height for aerial viewing
-- **No Dead Ends**: Every area is accessible
-
-**Example:**
-```bash
-create_maze(rows=12, cols=12, wall_height=4, cell_size=250, location=[0, 0, 0])
-```
-
-### create_pyramid
-Build stepped pyramids from stacked blocks.
-
-**Parameters:**
-- `base_size` (int): Number of blocks on base edge (default: 3)
-- `block_size` (float): Edge length of each block in cm (default: 100)
-- `location` (array): Pyramid base center
-- `mesh` (string): Static mesh asset path
-- `name_prefix` (string): Actor naming prefix
-
-### create_wall
-Generate straight walls from repeated block elements.
-
-**Parameters:**
-- `length` (int): Number of blocks along wall (default: 5)
-- `height` (int): Number of block layers vertically (default: 2)
-- `block_size` (float): Block dimensions in cm (default: 100)
-- `location` (array): Wall starting position
-- `orientation` (string): Direction to extend - "x" or "y"
-- `mesh` (string): Static mesh asset path
-- `name_prefix` (string): Actor naming prefix
-
-### create_staircase
-Build stepped staircases with configurable dimensions.
-
-**Parameters:**
-- `steps` (int): Number of steps (default: 5)
-- `step_size` (array): [width, depth, height] of each step (default: [100, 100, 50])
-- `location` (array): Staircase starting position
-- `mesh` (string): Static mesh asset path
-- `name_prefix` (string): Actor naming prefix
-
-## ⚛️ Physics & Materials
-
-### spawn_physics_blueprint_actor 
-Create actors with custom physics properties and materials.
-
-**Parameters:**
-- `name` (string): Actor name (must be unique)
-- `mesh_path` (string): Path to static mesh asset
-- `location` (array): Spawn position (default: [0, 0, 0])
-- `mass` (float): Physics mass in kg (default: 1.0)
-- `simulate_physics` (bool): Enable physics simulation (default: true)
-- `gravity_enabled` (bool): Enable gravity effects (default: true)
-
-**Process:**
-1. Creates temporary Blueprint class
-2. Adds StaticMeshComponent with specified mesh
-3. Configures physics properties
-4. Compiles Blueprint and spawns actor
-
-
-## 🎨 Blueprint System
-
-### create_blueprint
-Create new Blueprint classes for custom actors.
-
-**Parameters:**
-- `name` (string): Blueprint name (must be unique)
-- `parent_class` (string): Base class - typically "Actor"
-
-### add_component_to_blueprint
-Add components to existing Blueprint classes.
-
-**Parameters:**
-- `blueprint_name` (string): Target Blueprint name
-- `component_type` (string): Component class name
-- `component_name` (string): Name for the new component
-- `location` (array): Relative position within Blueprint
-- `rotation` (array): Relative rotation in degrees
-- `scale` (array): Relative scale factors
-- `component_properties` (object): Additional component settings
-
-**Common Component Types:**
-- `StaticMeshComponent`: 3D geometry rendering
-- `CameraComponent`: Viewport and rendering cameras  
-- `LightComponent`: Lighting sources
-- `AudioComponent`: Sound playback
-
-### set_static_mesh_properties
-Configure mesh assets on StaticMeshComponents.
-
-**Parameters:**
-- `blueprint_name` (string): Blueprint containing the component
-- `component_name` (string): StaticMeshComponent to modify
-- `static_mesh` (string): Asset path to mesh (default: "/Engine/BasicShapes/Cube.Cube")
-
-**Available Basic Meshes:**
-- `/Engine/BasicShapes/Cube.Cube`
-- `/Engine/BasicShapes/Sphere.Sphere`  
-- `/Engine/BasicShapes/Cylinder.Cylinder`
-- `/Engine/BasicShapes/Plane.Plane`
-
-### set_physics_properties
-Configure physics simulation parameters on components.
-
-**Parameters:**
-- `blueprint_name` (string): Blueprint containing component
-- `component_name` (string): Component to configure
-- `mass` (float): Object mass in kilograms (default: 1.0)
-- `linear_damping` (float): Resistance to linear motion (default: 0.01)
-- `angular_damping` (float): Resistance to rotation (default: 0.0)
-- `simulate_physics` (bool): Enable physics simulation (default: true)
-- `gravity_enabled` (bool): Enable gravity effects (default: true)
-
-### set_mesh_material_color
-Apply colored materials to mesh components.
-
-**Parameters:**
-- `blueprint_name` (string): Blueprint containing component
-- `component_name` (string): StaticMeshComponent to color
-- `color` (array): [R, G, B, A] values (0.0-1.0 range)
-- `material_path` (string): Material asset path 
-- `parameter_name` (string): Material parameter to modify
-
-**Common Colors:**
-- Red: `[1.0, 0.0, 0.0, 1.0]`
-- Green: `[0.0, 1.0, 0.0, 1.0]` 
-- Blue: `[0.0, 0.0, 1.0, 1.0]`
-- Yellow: `[1.0, 1.0, 0.0, 1.0]`
-- Purple: `[1.0, 0.0, 1.0, 1.0]`
-- White: `[1.0, 1.0, 1.0, 1.0]`
-
-### compile_blueprint
-Compile Blueprint classes to apply changes.
-
-**Parameters:**
-- `blueprint_name` (string): Blueprint to compile
-
-**Note:** Always compile Blueprints before spawning actors from them.
-
-### spawn_blueprint_actor
-Create actor instances from compiled Blueprint classes.
-
-**Parameters:**
-- `blueprint_name` (string): Source Blueprint class
-- `actor_name` (string): Name for spawned actor
-- `location` (array): World spawn position
-- `rotation` (array): World rotation in degrees
-
-## 🎯 Actor Management
-
-### get_actors_in_level
-List all actors currently in the level.
-
-**Returns:** Array of actor information including names, types, and transforms.
-
-### find_actors_by_name
-Search for actors using name patterns.
-
-**Parameters:**
-- `pattern` (string): Search pattern (supports wildcards)
-
-### spawn_actor  
-Create basic actor types directly.
-
-**Parameters:**
-- `name` (string): Actor name
-- `type` (string): Actor class name
-- `location` (array): Spawn position (default: [0, 0, 0])
-- `rotation` (array): Spawn rotation (default: [0, 0, 0])
-
-**Common Types:**
-- `StaticMeshActor`: Basic 3D objects
-- `CameraActor`: Viewport cameras
-- `LightActor`: Scene lighting
-
-### delete_actor
-Remove actors from the level.
-
-**Parameters:**
-- `name` (string): Name of actor to delete
-
-### set_actor_transform
-Modify actor position, rotation, and scale.
-
-**Parameters:**
-- `name` (string): Actor to transform
-- `location` (array): New world position (optional)
-- `rotation` (array): New rotation in degrees (optional)  
-- `scale` (array): New scale factors (optional)
-
----
-
-## 💡 Usage Tips
-
-### Performance Optimization
-- Use advanced composition tools instead of individual spawning
-- Keep total actor counts reasonable (< 1000 actors)
-- Use physics sparingly for better performance
-
-### Naming Conventions
-- Use descriptive, unique names for all actors
-- Include prefixes for grouped objects (e.g., "House1_Wall", "House1_Roof")
-- Avoid special characters in actor names
-
-### Coordinate Guidelines  
-- Place objects at Z > 0 to avoid ground clipping
-- Use large separation distances for multiple structures
-- Remember Unreal uses centimeters (100 = 1 meter)
-
-### Blueprint Workflow
-1. Create Blueprint class
-2. Add required components  
-3. Set component properties (mesh, physics, materials)
-4. Compile Blueprint
-5. Spawn actors from compiled Blueprint
-
----
+# UnrealMCP - Tools Reference
+
+**Total commands:** 86
+**Generated:** 2026-07-18 from get_command_schema
+
+> Auto-generated. Regenerate with: query get_command_schema.
+
+## Bridge Commands
+
+| Command | Description |
+|---|---|
+| ping | Health check / pong |
+| health | Server info: plugin version, protocol, UE, state, command count |
+| get_server_info | Alias for health |
+| get_command_schema | List all available commands |
+| list_commands | Alias for get_command_schema |
+| create_test_report | Session snapshot: commands executed, uptime, version |
+
+## Editor Commands
+
+| Command | Description |
+|---|---|
+| get_actors_in_level | List all actors in the current level |
+| find_actors_by_name | Find actors by name pattern |
+| spawn_actor | Spawn a basic actor (StaticMeshActor, PointLight, etc.) |
+| delete_actor | Delete an actor by name |
+| set_actor_transform | Set actor location/rotation/scale |
+| spawn_blueprint_actor | Spawn an actor from a Blueprint |
+| attach_actor_to_socket | Attach an actor to a socket of another actor |
+| search_assets | Search assets by path, query, and class filters |
+| get_asset_details | Get detailed info about an asset |
+| list_assets_in_path | List all assets in a content path |
+| get_project_info | Project diagnostics: maps, plugins, input, engine version |
+| add_widget_to_viewport | Instantiate and add a Widget Blueprint to viewport |
+| validate_project | Project diagnostics: maps, plugins, actors, module state |
+| compile_project_target | Compile project target (informational - use VS/UBT externally) |
+| run_map_check | Run Map Check on current level (severity, message) |
+| pie_start | Start Play In Editor session |
+| pie_stop | Stop Play In Editor session |
+| pie_state | Check PIE state: stopped, queued, running |
+
+## Blueprint Commands
+
+| Command | Description |
+|---|---|
+| create_blueprint | Create a new Blueprint |
+| add_component_to_blueprint | Add a component to a Blueprint SCS |
+| remove_component_from_blueprint | Remove a component from a Blueprint SCS |
+| attach_component_to_blueprint | Re-parent a component to another in Blueprint SCS |
+| set_component_properties | Set component visibility, active, transform, light props |
+| get_blueprint_components | List all components in a Blueprint with transforms |
+| set_physics_properties | Set physics properties on a Blueprint component |
+| compile_blueprint | Compile a Blueprint |
+| set_static_mesh_properties | Set static mesh and material on a component |
+| set_component_static_mesh | Assign a StaticMesh to a component |
+| set_point_light_properties | Set light properties on a PointLightComponent |
+| set_mesh_material_color | Set material color on a mesh component |
+| get_available_materials | Search for materials in the project |
+| apply_material_to_actor | Apply a material to an actor's mesh |
+| apply_material_to_blueprint | Apply a material to a Blueprint component |
+| get_actor_material_info | Get material info for an actor |
+| get_blueprint_material_info | Get material info for a Blueprint component |
+| create_material_instance | Create a MaterialInstanceConstant from a parent material |
+| set_material_instance_parameter | Set scalar/vector/texture params on a MaterialInstance |
+| apply_material_to_component | Apply material to component slot with previous material info |
+| get_component_materials | List all materials on a component |
+| get_static_mesh_material_slots | List material slots on a StaticMesh |
+| read_blueprint_content | Read Blueprint content (graph, variables, components) |
+| analyze_blueprint_graph | Deep analysis of a Blueprint graph |
+| get_blueprint_variable_details | Get variable details for a Blueprint |
+| get_blueprint_function_details | Get function details for a Blueprint |
+| get_blueprint_summary | Summary: parent class, components, variables, interfaces, graphs, compilation |
+| get_blueprint_diagnostics | Diagnostics: errors, warnings, orphan nodes, loose pins |
+| create_input_action_asset | Create an InputAction asset (Enhanced Input) |
+| map_input_action | Map an InputAction to an InputMappingContext |
+| set_blueprint_property | Set BP-level properties: parent_class, tick_enabled, auto_possess_player/ai |
+| set_blueprint_default_value | Set default value on a Blueprint variable |
+| create_widget_blueprint | Create a UMG Widget Blueprint (UserWidget) |
+| set_component_collision | Set collision: enabled, profile, object_type, generate_overlap_events |
+| add_socket_to_component | Add a socket to a StaticMesh or SkeletalMesh component |
+
+## Graph Commands
+
+| Command | Description |
+|---|---|
+| add_blueprint_node | Add a node to a Blueprint graph |
+| connect_nodes | Connect two graph node pins |
+| create_variable | Create a new Blueprint variable |
+| set_blueprint_variable_properties | Set properties on a Blueprint variable |
+| add_event_node | Add an event node to the EventGraph |
+| add_input_action_node | Add an InputAction node (enhanced input) |
+| add_key_event_node | Add a keyboard key event node |
+| delete_node | Delete a node from a Blueprint graph |
+| set_node_property | Set property on a graph node |
+| create_function | Create a new Blueprint function |
+| add_function_input | Add an input parameter to a function |
+| add_function_output | Add an output parameter to a function |
+| delete_function | Delete a Blueprint function |
+| rename_function | Rename a Blueprint function |
+| add_get_node | Add a variable Get node |
+| call_function_on_object | Add a function call node on a target object |
+| add_blueprint_interface | Add an interface to a Blueprint |
+| remove_blueprint_interface | Remove an interface from a Blueprint |
+| get_blueprint_graph_nodes | Get all nodes in a Blueprint graph with IDs and pins |
+| disconnect_pins | Disconnect pins on a node with dry_run support |
+| delete_blueprint_node | Delete a node by ID with dry_run, reports broken connections |
+| add_enhanced_input_action_node | Add EnhancedInputAction node (asset-ref, not legacy) |
+| add_is_valid_guard | Create a GetVariable→IsValid guard pattern |
+
+## Building Commands
+
+| Command | Description |
+|---|---|
+| create_wall | Procedurally build a wall |
+| create_staircase | Procedurally build a staircase |
+| create_tower | Procedurally build a tower |
+| construct_house | Procedurally build a house |

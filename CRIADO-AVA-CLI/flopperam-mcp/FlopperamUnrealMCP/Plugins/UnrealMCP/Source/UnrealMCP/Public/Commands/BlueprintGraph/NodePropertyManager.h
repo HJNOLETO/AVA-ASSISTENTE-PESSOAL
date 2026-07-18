@@ -77,11 +77,6 @@ private:
 		const FString& PropertyName,
 		const TSharedPtr<FJsonValue>& Value);
 
-	/**
-	 * Load a Blueprint by name
-	 */
-	static UBlueprint* LoadBlueprint(const FString& BlueprintName);
-
 	// Routing dispatcher for edit actions
 	// Delegates to specialized editors (PinManagementEditor, TypeModificationEditor, ReferenceUpdateEditor)
 	static TSharedPtr<FJsonObject> DispatchEditAction(

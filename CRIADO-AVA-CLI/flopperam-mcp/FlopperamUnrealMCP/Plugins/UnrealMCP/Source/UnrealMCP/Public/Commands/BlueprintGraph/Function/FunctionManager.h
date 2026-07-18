@@ -46,13 +46,6 @@ public:
 
 private:
 	/**
-	 * Load a Blueprint by name
-	 * @param BlueprintName Name or path of the Blueprint
-	 * @return Loaded Blueprint or nullptr
-	 */
-	static UBlueprint* LoadBlueprint(const FString& BlueprintName);
-
-	/**
 	 * Validate function name (no spaces, special chars, etc.)
 	 * @param FunctionName Name to validate
 	 * @return true if valid

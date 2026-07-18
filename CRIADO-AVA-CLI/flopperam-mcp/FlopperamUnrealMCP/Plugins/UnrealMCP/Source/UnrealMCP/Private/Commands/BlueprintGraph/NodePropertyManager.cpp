@@ -2,6 +2,7 @@
 #include "Commands/BlueprintGraph/Nodes/SwitchEnumEditor.h"
 #include "Commands/BlueprintGraph/Nodes/ExecutionSequenceEditor.h"
 #include "Commands/BlueprintGraph/Nodes/MakeArrayEditor.h"
+#include "Commands/EpicUnrealMCPCommonUtils.h"
 #include "Engine/Blueprint.h"
 #include "EdGraph/EdGraph.h"
 #include "EdGraph/EdGraphNode.h"
@@ -87,7 +88,7 @@ TSharedPtr<FJsonObject> FNodePropertyManager::SetNodeProperty(const TSharedPtr<F
 	Params->TryGetStringField(TEXT("function_name"), FunctionName);
 
 	// Load the Blueprint
-	UBlueprint* Blueprint = LoadBlueprint(BlueprintName);
+	UBlueprint* Blueprint = FEpicUnrealMCPCommonUtils::FindBlueprint(BlueprintName);
 	if (!Blueprint)
 	{
 		return CreateErrorResponse(FString::Printf(TEXT("Blueprint not found: %s"), *BlueprintName));
@@ -190,7 +191,7 @@ TSharedPtr<FJsonObject> FNodePropertyManager::EditNode(const TSharedPtr<FJsonObj
 	Params->TryGetStringField(TEXT("function_name"), FunctionName);
 
 	// Load the Blueprint
-	UBlueprint* Blueprint = LoadBlueprint(BlueprintName);
+	UBlueprint* Blueprint = FEpicUnrealMCPCommonUtils::FindBlueprint(BlueprintName);
 	if (!Blueprint)
 	{
 		return CreateErrorResponse(FString::Printf(TEXT("Blueprint not found: %s"), *BlueprintName));
@@ -532,40 +533,6 @@ UEdGraphNode* FNodePropertyManager::FindNodeByID(UEdGraph* Graph, const FString&
 	}
 
 	return nullptr;
-}
-
-UBlueprint* FNodePropertyManager::LoadBlueprint(const FString& BlueprintName)
-{
-	// Try direct path first
-	FString BlueprintPath = BlueprintName;
-
-	// If no path prefix, assume /Game/Blueprints/
-	if (!BlueprintPath.StartsWith(TEXT("/")))
-	{
-		BlueprintPath = TEXT("/Game/Blueprints/") + BlueprintName;
-	}
-
-	// Add .Blueprint suffix if not present
-	if (!BlueprintPath.Contains(TEXT(".")))
-	{
-		BlueprintPath += TEXT(".") + FPaths::GetBaseFilename(BlueprintPath);
-	}
-
-	// Try to load the Blueprint
-	UBlueprint* BP = LoadObject<UBlueprint>(nullptr, *BlueprintPath);
-
-	// If not found, try with UEditorAssetLibrary
-	if (!BP)
-	{
-		FString AssetPath = BlueprintPath;
-		if (UEditorAssetLibrary::DoesAssetExist(AssetPath))
-		{
-			UObject* Asset = UEditorAssetLibrary::LoadAsset(AssetPath);
-			BP = Cast<UBlueprint>(Asset);
-		}
-	}
-
-	return BP;
 }
 
 TSharedPtr<FJsonObject> FNodePropertyManager::CreateSuccessResponse(const FString& PropertyName)
