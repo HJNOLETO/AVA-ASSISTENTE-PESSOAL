@@ -35,7 +35,7 @@ O AVA conecta-se ao Unreal Engine via o **plugin UnrealMCP** (TCP `127.0.0.1:555
 │  IA (opencode) ──TCP──▶ UnrealMCP Plugin (:55557)          │
 │                                                             │
 │  Usa: socket.send_command("comando", params)                │
-│  Vantagem: zero latência, acesso a 86 comandos C++          │
+│  Vantagem: zero latência, acesso a 87 comandos C++          │
 │  Requer: plugin compilado e rodando no editor               │
 │  Exemplo: python -c "send_command('health', {})"           │
 ├─────────────────────────────────────────────────────────────┤
@@ -45,7 +45,7 @@ O AVA conecta-se ao Unreal Engine via o **plugin UnrealMCP** (TCP `127.0.0.1:555
 │                                                             │
 │  Usa: @mcp.tool() decorators                                │
 │  Vantagem: compatível com clientes MCP (Claude, Antigravity)│
-│  Gap atual: 43 ferramentas Python vs 86 comandos C++        │
+│  Gap atual: 59 wrappers + send_command() vs 87 comandos C++ │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -69,8 +69,8 @@ print(s.recv(4096).decode())
 |---------|-------|
 | Versão | 1.0.0 |
 | Unreal Engine | 5.5+ / 5.6 |
-| Comandos C++ | 86 |
-| Wrappers Python | 43 (~50% de cobertura) |
+| Comandos C++ | 87 |
+| Wrappers Python | 59 específicos + send_command() genérico (cobertura total) |
 | Timeouts | Criação 30s / Inspeção 120s / Procedural 300s |
 | Protocolo | TCP com framing `\n`, JSON |
 | Conexões simultâneas | 1 (sequencial) |
@@ -99,6 +99,25 @@ print(s.recv(4096).decode())
 | #5 Código morto removido | `NodeManager::CreateVariableGetNode/SetNode` (migrado para FDataNodeCreator) | ✅ |
 | #6 Python wrappers nativos | `create_wall`, `create_staircase` agora delegam ao C++ (1 chamada em vez de N) | ✅ |
 | #7 tools-reference.md | Autogerado a partir de `get_command_schema` (86 comandos) | ✅ |
+| #8 commands_count off-by-one | Bridge.cpp health: 86 → 87 | ✅ |
+| #9 create_blueprint save_path | Python wrapper agora expõe save_path opcional | ✅ |
+| #10 Auditoria completa | 87 comandos cross-referenciados: C++ / Bridge / Schema / Python / Docs | ✅ |
+
+### Comandos sem wrapper específico (28) — acessíveis via send_command()
+
+```
+remove_component_from_blueprint  attach_component_to_blueprint
+set_physics_properties           set_point_light_properties
+get_blueprint_variable_details   get_blueprint_function_details
+get_component_materials          get_static_mesh_material_slots
+delete_blueprint                 add_input_action_node
+add_key_event_node               add_get_node
+call_function_on_object          disconnect_pins
+delete_blueprint_node            add_enhanced_input_action_node
+add_is_valid_guard               add_widget_to_viewport
+compile_project_target           run_map_check
+create_test_report
+```
 
 ---
 
