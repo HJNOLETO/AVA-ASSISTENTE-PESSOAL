@@ -521,8 +521,18 @@ def set_actor_transform(
 
 # Essential Blueprint Tools for Physics Actors
 @mcp.tool()
-def create_blueprint(name: str, parent_class: str) -> Dict[str, Any]:
-    """Create a new Blueprint class."""
+def create_blueprint(
+    name: str,
+    parent_class: str,
+    save_path: str = ""
+) -> Dict[str, Any]:
+    """Create a new Blueprint class.
+
+    Args:
+        name: Blueprint name (e.g. "BP_MyActor")
+        parent_class: Parent class (e.g. "Actor", "Character", or full path like "/Game/Blueprints/BP_Base")
+        save_path: Optional content browser path (e.g. "/Game/Weapons/"). Defaults to "/Game/Blueprints/" if empty.
+    """
     unreal = get_unreal_connection()
     if not unreal:
         return {"success": False, "message": "Failed to connect to Unreal Engine"}
@@ -532,6 +542,8 @@ def create_blueprint(name: str, parent_class: str) -> Dict[str, Any]:
             "name": name,
             "parent_class": parent_class
         }
+        if save_path:
+            params["save_path"] = save_path
         response = unreal.send_command("create_blueprint", params)
         return response or {"success": False, "message": "No response from Unreal"}
     except Exception as e:
