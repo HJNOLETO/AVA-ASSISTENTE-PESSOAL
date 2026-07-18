@@ -248,7 +248,7 @@ FString UEpicUnrealMCPBridge::ExecuteCommand(const FString& CommandType, const T
                 ResultJson->SetStringField(TEXT("unreal_engine"), TEXT("5.6"));
                 ResultJson->SetStringField(TEXT("server_state"), TEXT("running"));
                 ResultJson->SetNumberField(TEXT("port"), MCP_SERVER_PORT);
-                ResultJson->SetNumberField(TEXT("commands_count"), 86);
+                ResultJson->SetNumberField(TEXT("commands_count"), 87);
                 TArray<TSharedPtr<FJsonValue>> Cats;
                 Cats.Add(MakeShared<FJsonValueString>(TEXT("bridge")));
                 Cats.Add(MakeShared<FJsonValueString>(TEXT("editor")));

@@ -520,6 +520,28 @@ def set_actor_transform(
         return {"success": False, "message": str(e)}
 
 # Essential Blueprint Tools for Physics Actors
+
+@mcp.tool()
+def send_command(command: str, params: Dict[str, Any] = {}) -> Dict[str, Any]:
+    """Generic dispatcher: call any C++ MCP command by name.
+    
+    Use this for commands without a dedicated @mcp.tool() wrapper.
+    Get available commands via get_command_schema or list_commands.
+    
+    Args:
+        command: Command name (e.g. 'get_blueprint_summary', 'spawn_blueprint_actor')
+        params: Parameters dict to pass to the command
+    """
+    unreal = get_unreal_connection()
+    if not unreal:
+        return {"success": False, "message": "Failed to connect to Unreal Engine"}
+    try:
+        response = unreal.send_command(command, params)
+        return response or {"success": False, "message": "No response from Unreal"}
+    except Exception as e:
+        logger.error(f"send_command({command}) error: {e}")
+        return {"success": False, "message": str(e)}
+
 @mcp.tool()
 def create_blueprint(
     name: str,
@@ -2786,8 +2808,539 @@ def rename_function(
         return {"success": False, "message": str(e)}
 
 
-# Run the server
 
+# ============================================================
+# SPACE FILLER — Blueprint Advanced / Lifecycle / Diagnostics
+# ============================================================
+
+@mcp.tool()
+def spawn_blueprint_actor(
+    blueprint_name: str,
+    actor_name: str = "",
+    location: List[float] = [0.0, 0.0, 0.0],
+    rotation: List[float] = [0.0, 0.0, 0.0],
+    scale: List[float] = [1.0, 1.0, 1.0]
+) -> Dict[str, Any]:
+    """Spawn an actor from a Blueprint asset into the level."""
+    unreal = get_unreal_connection()
+    if not unreal:
+        return {"success": False, "message": "Failed to connect to Unreal Engine"}
+    try:
+        params = {"blueprint_name": blueprint_name, "location": location, "rotation": rotation, "scale": scale}
+        if actor_name:
+            params["actor_name"] = actor_name
+        return unreal.send_command("spawn_blueprint_actor", params) or {"success": False, "message": "No response"}
+    except Exception as e:
+        logger.error(f"spawn_blueprint_actor error: {e}")
+        return {"success": False, "message": str(e)}
+
+@mcp.tool()
+def get_blueprint_summary(blueprint_name: str) -> Dict[str, Any]:
+    """Get Blueprint summary: parent class, components, variables, interfaces, graphs, compilation status."""
+    unreal = get_unreal_connection()
+    if not unreal:
+        return {"success": False, "message": "Failed to connect to Unreal Engine"}
+    try:
+        return unreal.send_command("get_blueprint_summary", {"blueprint_name": blueprint_name}) or {"success": False, "message": "No response"}
+    except Exception as e:
+        logger.error(f"get_blueprint_summary error: {e}")
+        return {"success": False, "message": str(e)}
+
+@mcp.tool()
+def get_blueprint_diagnostics(blueprint_name: str) -> Dict[str, Any]:
+    """Get Blueprint diagnostics: errors, warnings, orphan nodes, loose pins."""
+    unreal = get_unreal_connection()
+    if not unreal:
+        return {"success": False, "message": "Failed to connect to Unreal Engine"}
+    try:
+        return unreal.send_command("get_blueprint_diagnostics", {"blueprint_name": blueprint_name}) or {"success": False, "message": "No response"}
+    except Exception as e:
+        logger.error(f"get_blueprint_diagnostics error: {e}")
+        return {"success": False, "message": str(e)}
+
+@mcp.tool()
+def get_blueprint_components(blueprint_name: str) -> Dict[str, Any]:
+    """List all components in a Blueprint with their transforms."""
+    unreal = get_unreal_connection()
+    if not unreal:
+        return {"success": False, "message": "Failed to connect to Unreal Engine"}
+    try:
+        return unreal.send_command("get_blueprint_components", {"blueprint_name": blueprint_name}) or {"success": False, "message": "No response"}
+    except Exception as e:
+        logger.error(f"get_blueprint_components error: {e}")
+        return {"success": False, "message": str(e)}
+
+# ============================================================
+# SPACE FILLER — Material Instance & Component Materials
+# ============================================================
+
+@mcp.tool()
+def create_material_instance(
+    parent_material: str,
+    instance_name: str = "",
+    save_path: str = "/Game/Materials/"
+) -> Dict[str, Any]:
+    """Create a MaterialInstanceConstant from a parent material."""
+    unreal = get_unreal_connection()
+    if not unreal:
+        return {"success": False, "message": "Failed to connect to Unreal Engine"}
+    try:
+        params = {"parent_material": parent_material, "save_path": save_path}
+        if instance_name:
+            params["instance_name"] = instance_name
+        return unreal.send_command("create_material_instance", params) or {"success": False, "message": "No response"}
+    except Exception as e:
+        logger.error(f"create_material_instance error: {e}")
+        return {"success": False, "message": str(e)}
+
+@mcp.tool()
+def set_material_instance_parameter(
+    material_instance: str,
+    parameter_name: str,
+    parameter_type: str = "scalar",
+    value: float = 0.0,
+    vector_value: List[float] = [],
+    texture_path: str = ""
+) -> Dict[str, Any]:
+    """Set a parameter on a MaterialInstanceConstant (scalar, vector, or texture)."""
+    unreal = get_unreal_connection()
+    if not unreal:
+        return {"success": False, "message": "Failed to connect to Unreal Engine"}
+    try:
+        params = {"material_instance": material_instance, "parameter_name": parameter_name, "parameter_type": parameter_type}
+        if parameter_type == "scalar":
+            params["value"] = value
+        elif parameter_type == "vector" and vector_value:
+            params["value"] = vector_value
+        elif parameter_type == "texture" and texture_path:
+            params["value"] = texture_path
+        return unreal.send_command("set_material_instance_parameter", params) or {"success": False, "message": "No response"}
+    except Exception as e:
+        logger.error(f"set_material_instance_parameter error: {e}")
+        return {"success": False, "message": str(e)}
+
+@mcp.tool()
+def get_blueprint_material_info(blueprint_name: str, component_name: str = "") -> Dict[str, Any]:
+    """Get material info for a Blueprint component."""
+    unreal = get_unreal_connection()
+    if not unreal:
+        return {"success": False, "message": "Failed to connect to Unreal Engine"}
+    try:
+        params = {"blueprint_name": blueprint_name}
+        if component_name:
+            params["component_name"] = component_name
+        return unreal.send_command("get_blueprint_material_info", params) or {"success": False, "message": "No response"}
+    except Exception as e:
+        logger.error(f"get_blueprint_material_info error: {e}")
+        return {"success": False, "message": str(e)}
+
+@mcp.tool()
+def apply_material_to_component(
+    blueprint_name: str,
+    component_name: str,
+    material_path: str,
+    material_slot: int = 0
+) -> Dict[str, Any]:
+    """Apply a material to a specific component material slot."""
+    unreal = get_unreal_connection()
+    if not unreal:
+        return {"success": False, "message": "Failed to connect to Unreal Engine"}
+    try:
+        return unreal.send_command("apply_material_to_component", {
+            "blueprint_name": blueprint_name,
+            "component_name": component_name,
+            "material_path": material_path,
+            "material_slot": material_slot
+        }) or {"success": False, "message": "No response"}
+    except Exception as e:
+        logger.error(f"apply_material_to_component error: {e}")
+        return {"success": False, "message": str(e)}
+
+# ============================================================
+# SPACE FILLER — PIE, Asset Search, Project Validation
+# ============================================================
+
+@mcp.tool()
+def pie_start() -> Dict[str, Any]:
+    """Start Play In Editor session."""
+    unreal = get_unreal_connection()
+    if not unreal:
+        return {"success": False, "message": "Failed to connect to Unreal Engine"}
+    try:
+        return unreal.send_command("pie_start", {}) or {"success": False, "message": "No response"}
+    except Exception as e:
+        logger.error(f"pie_start error: {e}")
+        return {"success": False, "message": str(e)}
+
+@mcp.tool()
+def pie_stop() -> Dict[str, Any]:
+    """Stop Play In Editor session."""
+    unreal = get_unreal_connection()
+    if not unreal:
+        return {"success": False, "message": "Failed to connect to Unreal Engine"}
+    try:
+        return unreal.send_command("pie_stop", {}) or {"success": False, "message": "No response"}
+    except Exception as e:
+        logger.error(f"pie_stop error: {e}")
+        return {"success": False, "message": str(e)}
+
+@mcp.tool()
+def pie_state() -> Dict[str, Any]:
+    """Check PIE state: stopped, queued, or running."""
+    unreal = get_unreal_connection()
+    if not unreal:
+        return {"success": False, "message": "Failed to connect to Unreal Engine"}
+    try:
+        return unreal.send_command("pie_state", {}) or {"success": False, "message": "No response"}
+    except Exception as e:
+        logger.error(f"pie_state error: {e}")
+        return {"success": False, "message": str(e)}
+
+@mcp.tool()
+def search_assets(
+    query: str = "",
+    path: str = "/Game/",
+    asset_class: str = ""
+) -> Dict[str, Any]:
+    """Search assets by path, query, and class filters."""
+    unreal = get_unreal_connection()
+    if not unreal:
+        return {"success": False, "message": "Failed to connect to Unreal Engine"}
+    try:
+        params = {"path": path}
+        if query:
+            params["query"] = query
+        if asset_class:
+            params["asset_class"] = asset_class
+        return unreal.send_command("search_assets", params) or {"success": False, "message": "No response"}
+    except Exception as e:
+        logger.error(f"search_assets error: {e}")
+        return {"success": False, "message": str(e)}
+
+@mcp.tool()
+def get_asset_details(asset_path: str) -> Dict[str, Any]:
+    """Get detailed info about an asset (metadata, dependencies, references)."""
+    unreal = get_unreal_connection()
+    if not unreal:
+        return {"success": False, "message": "Failed to connect to Unreal Engine"}
+    try:
+        return unreal.send_command("get_asset_details", {"asset_path": asset_path}) or {"success": False, "message": "No response"}
+    except Exception as e:
+        logger.error(f"get_asset_details error: {e}")
+        return {"success": False, "message": str(e)}
+
+@mcp.tool()
+def list_assets_in_path(path: str = "/Game/") -> Dict[str, Any]:
+    """List all assets in a content browser path."""
+    unreal = get_unreal_connection()
+    if not unreal:
+        return {"success": False, "message": "Failed to connect to Unreal Engine"}
+    try:
+        return unreal.send_command("list_assets_in_path", {"path": path}) or {"success": False, "message": "No response"}
+    except Exception as e:
+        logger.error(f"list_assets_in_path error: {e}")
+        return {"success": False, "message": str(e)}
+
+@mcp.tool()
+def validate_project() -> Dict[str, Any]:
+    """Project diagnostics: maps, plugins, actors, module state."""
+    unreal = get_unreal_connection()
+    if not unreal:
+        return {"success": False, "message": "Failed to connect to Unreal Engine"}
+    try:
+        return unreal.send_command("validate_project", {}) or {"success": False, "message": "No response"}
+    except Exception as e:
+        logger.error(f"validate_project error: {e}")
+        return {"success": False, "message": str(e)}
+
+@mcp.tool()
+def get_project_info() -> Dict[str, Any]:
+    """Get project diagnostics: maps, plugins, input, engine version."""
+    unreal = get_unreal_connection()
+    if not unreal:
+        return {"success": False, "message": "Failed to connect to Unreal Engine"}
+    try:
+        return unreal.send_command("get_project_info", {}) or {"success": False, "message": "No response"}
+    except Exception as e:
+        logger.error(f"get_project_info error: {e}")
+        return {"success": False, "message": str(e)}
+
+# ============================================================
+# SPACE FILLER — Widget, Input, Collision, Socket
+# ============================================================
+
+@mcp.tool()
+def create_widget_blueprint(
+    name: str,
+    save_path: str = "/Game/UI/"
+) -> Dict[str, Any]:
+    """Create a UMG Widget Blueprint (UserWidget)."""
+    unreal = get_unreal_connection()
+    if not unreal:
+        return {"success": False, "message": "Failed to connect to Unreal Engine"}
+    try:
+        return unreal.send_command("create_widget_blueprint", {"name": name, "save_path": save_path}) or {"success": False, "message": "No response"}
+    except Exception as e:
+        logger.error(f"create_widget_blueprint error: {e}")
+        return {"success": False, "message": str(e)}
+
+@mcp.tool()
+def create_input_action_asset(
+    name: str,
+    save_path: str = "/Game/Input/"
+) -> Dict[str, Any]:
+    """Create an InputAction asset for Enhanced Input system."""
+    unreal = get_unreal_connection()
+    if not unreal:
+        return {"success": False, "message": "Failed to connect to Unreal Engine"}
+    try:
+        return unreal.send_command("create_input_action_asset", {"name": name, "save_path": save_path}) or {"success": False, "message": "No response"}
+    except Exception as e:
+        logger.error(f"create_input_action_asset error: {e}")
+        return {"success": False, "message": str(e)}
+
+@mcp.tool()
+def map_input_action(
+    input_action_path: str,
+    input_mapping_context_path: str
+) -> Dict[str, Any]:
+    """Map an InputAction to an InputMappingContext."""
+    unreal = get_unreal_connection()
+    if not unreal:
+        return {"success": False, "message": "Failed to connect to Unreal Engine"}
+    try:
+        return unreal.send_command("map_input_action", {
+            "input_action_path": input_action_path,
+            "input_mapping_context_path": input_mapping_context_path
+        }) or {"success": False, "message": "No response"}
+    except Exception as e:
+        logger.error(f"map_input_action error: {e}")
+        return {"success": False, "message": str(e)}
+
+@mcp.tool()
+def set_component_collision(
+    blueprint_name: str,
+    component_name: str,
+    collision_enabled: bool = True,
+    collision_profile: str = "",
+    object_type: str = ""
+) -> Dict[str, Any]:
+    """Set collision properties on a Blueprint component."""
+    unreal = get_unreal_connection()
+    if not unreal:
+        return {"success": False, "message": "Failed to connect to Unreal Engine"}
+    try:
+        params = {"blueprint_name": blueprint_name, "component_name": component_name, "collision_enabled": collision_enabled}
+        if collision_profile:
+            params["collision_profile"] = collision_profile
+        if object_type:
+            params["object_type"] = object_type
+        return unreal.send_command("set_component_collision", params) or {"success": False, "message": "No response"}
+    except Exception as e:
+        logger.error(f"set_component_collision error: {e}")
+        return {"success": False, "message": str(e)}
+
+@mcp.tool()
+def add_socket_to_component(
+    blueprint_name: str,
+    component_name: str,
+    socket_name: str,
+    relative_location: List[float] = [0.0, 0.0, 0.0],
+    relative_rotation: List[float] = [0.0, 0.0, 0.0]
+) -> Dict[str, Any]:
+    """Add a socket to a StaticMesh or SkeletalMesh component."""
+    unreal = get_unreal_connection()
+    if not unreal:
+        return {"success": False, "message": "Failed to connect to Unreal Engine"}
+    try:
+        return unreal.send_command("add_socket_to_component", {
+            "blueprint_name": blueprint_name,
+            "component_name": component_name,
+            "socket_name": socket_name,
+            "relative_location": relative_location,
+            "relative_rotation": relative_rotation
+        }) or {"success": False, "message": "No response"}
+    except Exception as e:
+        logger.error(f"add_socket_to_component error: {e}")
+        return {"success": False, "message": str(e)}
+
+@mcp.tool()
+def set_component_properties(
+    blueprint_name: str,
+    component_name: str,
+    properties: Dict[str, Any] = {}
+) -> Dict[str, Any]:
+    """Set component visibility, active, transform, or light properties."""
+    unreal = get_unreal_connection()
+    if not unreal:
+        return {"success": False, "message": "Failed to connect to Unreal Engine"}
+    try:
+        params = {"blueprint_name": blueprint_name, "component_name": component_name}
+        params.update(properties)
+        return unreal.send_command("set_component_properties", params) or {"success": False, "message": "No response"}
+    except Exception as e:
+        logger.error(f"set_component_properties error: {e}")
+        return {"success": False, "message": str(e)}
+
+# ============================================================
+# SPACE FILLER — Blueprint Graph Advanced
+# ============================================================
+
+@mcp.tool()
+def add_blueprint_node(
+    blueprint_name: str,
+    node_type: str,
+    function_name: str = "",
+    params: Dict[str, Any] = {},
+    pos_x: float = 0.0,
+    pos_y: float = 0.0
+) -> Dict[str, Any]:
+    """Add a node to a Blueprint graph (call function, variable get/set, event, etc.).
+    
+    Args:
+        blueprint_name: Blueprint to modify
+        node_type: Node type string (e.g. 'CallFunction', 'VariableGet', 'VariableSet')
+        function_name: Target function graph (empty = EventGraph)
+        params: Node-specific parameters (variable_name, target_function, etc.)
+        pos_x/pos_y: Graph position
+    """
+    unreal = get_unreal_connection()
+    if not unreal:
+        return {"success": False, "message": "Failed to connect to Unreal Engine"}
+    try:
+        cmd_params = {"blueprint_name": blueprint_name, "node_type": node_type, "pos_x": pos_x, "pos_y": pos_y}
+        if function_name:
+            cmd_params["function_name"] = function_name
+        cmd_params.update(params)
+        return unreal.send_command("add_blueprint_node", cmd_params) or {"success": False, "message": "No response"}
+    except Exception as e:
+        logger.error(f"add_blueprint_node error: {e}")
+        return {"success": False, "message": str(e)}
+
+@mcp.tool()
+def get_blueprint_graph_nodes(
+    blueprint_name: str,
+    function_name: str = ""
+) -> Dict[str, Any]:
+    """Get all nodes in a Blueprint graph with IDs and pin info."""
+    unreal = get_unreal_connection()
+    if not unreal:
+        return {"success": False, "message": "Failed to connect to Unreal Engine"}
+    try:
+        params = {"blueprint_name": blueprint_name}
+        if function_name:
+            params["function_name"] = function_name
+        return unreal.send_command("get_blueprint_graph_nodes", params) or {"success": False, "message": "No response"}
+    except Exception as e:
+        logger.error(f"get_blueprint_graph_nodes error: {e}")
+        return {"success": False, "message": str(e)}
+
+@mcp.tool()
+def add_blueprint_interface(
+    blueprint_name: str,
+    interface_path: str
+) -> Dict[str, Any]:
+    """Add a Blueprint Interface to a Blueprint."""
+    unreal = get_unreal_connection()
+    if not unreal:
+        return {"success": False, "message": "Failed to connect to Unreal Engine"}
+    try:
+        return unreal.send_command("add_blueprint_interface", {
+            "blueprint_name": blueprint_name,
+            "interface_path": interface_path
+        }) or {"success": False, "message": "No response"}
+    except Exception as e:
+        logger.error(f"add_blueprint_interface error: {e}")
+        return {"success": False, "message": str(e)}
+
+@mcp.tool()
+def remove_blueprint_interface(
+    blueprint_name: str,
+    interface_path: str
+) -> Dict[str, Any]:
+    """Remove a Blueprint Interface from a Blueprint."""
+    unreal = get_unreal_connection()
+    if not unreal:
+        return {"success": False, "message": "Failed to connect to Unreal Engine"}
+    try:
+        return unreal.send_command("remove_blueprint_interface", {
+            "blueprint_name": blueprint_name,
+            "interface_path": interface_path
+        }) or {"success": False, "message": "No response"}
+    except Exception as e:
+        logger.error(f"remove_blueprint_interface error: {e}")
+        return {"success": False, "message": str(e)}
+
+@mcp.tool()
+def set_blueprint_property(
+    blueprint_name: str,
+    property_name: str,
+    property_value: Any
+) -> Dict[str, Any]:
+    """Set a Blueprint-level property (parent_class, tick_enabled, etc.)."""
+    unreal = get_unreal_connection()
+    if not unreal:
+        return {"success": False, "message": "Failed to connect to Unreal Engine"}
+    try:
+        return unreal.send_command("set_blueprint_property", {
+            "blueprint_name": blueprint_name,
+            "property_name": property_name,
+            "property_value": property_value
+        }) or {"success": False, "message": "No response"}
+    except Exception as e:
+        logger.error(f"set_blueprint_property error: {e}")
+        return {"success": False, "message": str(e)}
+
+@mcp.tool()
+def set_blueprint_default_value(
+    blueprint_name: str,
+    variable_name: str,
+    default_value: Any
+) -> Dict[str, Any]:
+    """Set the default value of a Blueprint variable."""
+    unreal = get_unreal_connection()
+    if not unreal:
+        return {"success": False, "message": "Failed to connect to Unreal Engine"}
+    try:
+        return unreal.send_command("set_blueprint_default_value", {
+            "blueprint_name": blueprint_name,
+            "variable_name": variable_name,
+            "default_value": default_value
+        }) or {"success": False, "message": "No response"}
+    except Exception as e:
+        logger.error(f"set_blueprint_default_value error: {e}")
+        return {"success": False, "message": str(e)}
+
+# ============================================================
+# SPACE FILLER — Schema auto-check
+# ============================================================
+
+@mcp.tool()
+def get_command_schema() -> Dict[str, Any]:
+    """Get the complete command schema from the plugin (all available commands + descriptions)."""
+    unreal = get_unreal_connection()
+    if not unreal:
+        return {"success": False, "message": "Failed to connect to Unreal Engine"}
+    try:
+        return unreal.send_command("get_command_schema", {}) or {"success": False, "message": "No response"}
+    except Exception as e:
+        logger.error(f"get_command_schema error: {e}")
+        return {"success": False, "message": str(e)}
+
+@mcp.tool()
+def list_commands() -> Dict[str, Any]:
+    """Alias for get_command_schema — list all available commands."""
+    unreal = get_unreal_connection()
+    if not unreal:
+        return {"success": False, "message": "Failed to connect to Unreal Engine"}
+    try:
+        return unreal.send_command("list_commands", {}) or {"success": False, "message": "No response"}
+    except Exception as e:
+        logger.error(f"list_commands error: {e}")
+        return {"success": False, "message": str(e)}
+
+
+# Run the server
 
 
 
