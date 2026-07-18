@@ -1,0 +1,67 @@
+{
+  "name": "BP_ProjectileBase",
+  "parent_class": "Actor",
+  "template_id": "projectile_base",
+  "category": "Weapons",
+  "variables": [
+    {
+      "name": "Speed",
+      "type": "real (double)"
+    },
+    {
+      "name": "Ricochet",
+      "type": "bool"
+    },
+    {
+      "name": "Damage",
+      "type": "real (double)"
+    }
+  ],
+  "components": [
+    {
+      "name": "Mesh",
+      "type": "StaticMeshComponent"
+    },
+    {
+      "name": "ProjectileMovement",
+      "type": "ProjectileMovementComponent"
+    }
+  ],
+  "events": [
+    "`ReceiveHit`"
+  ],
+  "functions": [
+    "`ApplyDamage()`",
+    "`SpawnEmitterAtLocation()`",
+    "`SpawnDecalAttached()`",
+    "`MakeRotator()`",
+    "`RandomFloatInRange()`",
+    "`BreakRotator()`",
+    "`Multiply_VectorInt()`",
+    "`Conv_VectorToRotator()`",
+    "`SpawnSoundAtLocation()`",
+    "`GetSurfaceType()`",
+    "`SetVisibility()`",
+    "`IsSimulatingPhysics()`",
+    "`AddImpulseAtLocation()`",
+    "`GetVelocity()`",
+    "`Multiply_VectorFloat()`",
+    "`K2_GetActorLocation()`",
+    "`SetLifeSpan()`",
+    "`ExecuteUbergraph_BP_ProjectileBase()`"
+  ],
+  "graph_sections": [],
+  "interfaces": [],
+  "structs_used": [],
+  "key_patterns": {
+    "has_replication": false,
+    "has_timers": false,
+    "has_overlap_events": false,
+    "has_enhanced_input": false,
+    "has_timeline": false,
+    "has_data_tables": false,
+    "has_dynamic_material": false,
+    "has_camera_fade": false
+  },
+  "source_file": "BP_ProjectileBase.md"
+}

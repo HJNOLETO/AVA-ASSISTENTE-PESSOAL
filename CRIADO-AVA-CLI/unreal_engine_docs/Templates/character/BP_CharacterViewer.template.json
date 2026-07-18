@@ -1,0 +1,80 @@
+{
+  "name": "BP_CharacterViewer",
+  "parent_class": "Character",
+  "template_id": "character_viewer",
+  "category": "Character",
+  "variables": [
+    {
+      "name": "MousePressed",
+      "type": "bool"
+    },
+    {
+      "name": "RotateTimer",
+      "type": "struct (TimerHandle)"
+    },
+    {
+      "name": "RotateCamera?",
+      "type": "bool"
+    }
+  ],
+  "components": [
+    {
+      "name": "Mesh",
+      "type": "StaticMeshComponent"
+    },
+    {
+      "name": "Camera",
+      "type": "CameraComponent"
+    },
+    {
+      "name": "SpringArm",
+      "type": "SpringArmComponent"
+    }
+  ],
+  "events": [
+    "`RotateRight`",
+    "`EventRotateRight`",
+    "`EventStopRotate`",
+    "`RotateLeft`",
+    "`EventRotateLeft`",
+    "`ReceiveBeginPlay`"
+  ],
+  "functions": [
+    "`K2_SetTimerDelegate()`",
+    "`GetWorldDeltaSeconds()`",
+    "`RotateCharacter()`",
+    "`K2_ClearAndInvalidateTimerHandle()`",
+    "`GetController()`",
+    "`AddMappingContext()`",
+    "`AddToViewport()`",
+    "`SetInputMode_GameAndUIEx()`",
+    "`GetPlayerController()`",
+    "`BreakVector2D()`",
+    "`K2_SetRelativeRotation()`",
+    "`MakeRotator()`",
+    "`BreakRotator()`",
+    "`Create()`",
+    "`GetLocalPlayerSubSystemFromPlayerController()`",
+    "`Multiply_DoubleDouble()`",
+    "`Conv_InputActionValueToAxis2D()`",
+    "`Conv_InputActionValueToBool()`",
+    "`ExecuteUbergraph_BP_CharacterViewer()`",
+    "`Add_DoubleDouble()`"
+  ],
+  "graph_sections": [],
+  "interfaces": [],
+  "structs_used": [
+    "TimerHandle"
+  ],
+  "key_patterns": {
+    "has_replication": false,
+    "has_timers": true,
+    "has_overlap_events": false,
+    "has_enhanced_input": true,
+    "has_timeline": false,
+    "has_data_tables": false,
+    "has_dynamic_material": false,
+    "has_camera_fade": false
+  },
+  "source_file": "BP_CharacterViewer.md"
+}

@@ -1,0 +1,48 @@
+{
+  "name": "AnimBP_Motorcycle",
+  "parent_class": "VehicleAnimationInstance",
+  "template_id": "anim_bp_motorcycle",
+  "category": "Animation",
+  "variables": [
+    {
+      "name": "Steering",
+      "type": "real (float)"
+    },
+    {
+      "name": "BackSuspension",
+      "type": "real (double)"
+    }
+  ],
+  "components": [],
+  "events": [
+    "`BlueprintUpdateAnimation`",
+    "`EvaluateGraphExposedInputs_ExecuteUbergraph_AnimBP_Motorcycle_AnimGraphNode_ModifyBone_C9B35BA24E1CF57B30D0F48B3565DE26`",
+    "`EvaluateGraphExposedInputs_ExecuteUbergraph_AnimBP_Motorcycle_AnimGraphNode_ModifyBone_5078E5644195494C962B1EBA07705C97`"
+  ],
+  "functions": [
+    "`MakeRotator()`",
+    "`MakeVector()`",
+    "`TryGetPawnOwner()`",
+    "`GetSteerAngle()`",
+    "`GetSuspensionOffset()`",
+    "`IsValid()`",
+    "`Add_DoubleDouble()`",
+    "`Multiply_DoubleDouble()`",
+    "`Subtract_DoubleDouble()`",
+    "`ExecuteUbergraph_AnimBP_Motorcycle()`"
+  ],
+  "graph_sections": [],
+  "interfaces": [],
+  "structs_used": [],
+  "key_patterns": {
+    "has_replication": false,
+    "has_timers": false,
+    "has_overlap_events": false,
+    "has_enhanced_input": false,
+    "has_timeline": false,
+    "has_data_tables": false,
+    "has_dynamic_material": false,
+    "has_camera_fade": false
+  },
+  "source_file": "AnimBP_Motorcycle.md"
+}

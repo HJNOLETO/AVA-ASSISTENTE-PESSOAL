@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: Herança e Polimorfismo</title>
+    <link rel="stylesheet" href="../../recursos/css/estilo.css">
+    <script src="../../recursos/js/quiz.js" defer></script>
+</head>
+<body>
+    <button id="dark-mode-toggle">Alternar Modo Escuro</button>
+    <header>
+        <h1>Quiz: Herança e Polimorfismo</h1>
+        <p>Teste seus conhecimentos sobre reutilização e flexibilidade de código.</p>
+    </header>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Início</a> <span>&gt;</span> <a href="../modulo.html">Módulo 03</a> <span>&gt;</span> Quiz
+        </div>
+
+        <div class="content-area">
+            <h2 id="quiz-titulo">Autoavaliação: Herança e Polimorfismo</h2>
+            <p>Responda às questões abaixo e clique em "Verificar Respostas" para receber feedback imediato.</p>
+
+            <form id="quiz-form">
+                <!-- Questão 1: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="Herança" data-explanation="A herança permite que uma classe derivada reutilize a implementação de uma classe base.">
+                    <h4>Questão 1 (Múltipla Escolha): Qual pilar da POO permite que uma classe reutilize atributos e métodos de outra classe?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q0" value="Encapsulamento"> Encapsulamento</label>
+                        <label><input type="radio" name="q0" value="Herança"> Herança</label>
+                        <label><input type="radio" name="q0" value="Polimorfismo"> Polimorfismo</label>
+                        <label><input type="radio" name="q0" value="Abstração"> Abstração</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 2: Verdadeiro/Falso -->
+                <div class="quiz-question" data-correct-answer="Verdadeiro" data-explanation="Membros 'protected' são acessíveis pela própria classe e por todas as classes que herdam dela.">
+                    <h4>Questão 2 (Verdadeiro/Falso): Membros declarados como `protected` em uma classe base são acessíveis diretamente pelas classes derivadas.</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q1" value="Verdadeiro"> Verdadeiro</label>
+                        <label><input type="radio" name="q1" value="Falso"> Falso</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 3: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="virtual" data-explanation="A palavra-chave 'virtual' na classe base é o que permite o polimorfismo em tempo de execução (runtime).">
+                    <h4>Questão 3 (Múltipla Escolha): Qual palavra-chave é usada na declaração de uma função na classe base para permitir que ela seja sobrescrita polimorficamente pelas classes derivadas?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q2" value="override"> override</label>
+                        <label><input type="radio" name="q2" value="virtual"> virtual</label>
+                        <label><input type="radio" name="q2" value="public"> public</label>
+                        <label><input type="radio" name="q2" value="static"> static</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 4: Exercício de Código (Debug) -->
+                <div class="quiz-question" data-correct-answer="Carro acelerando" data-explanation="A função 'acelerar' é virtual, e o ponteiro da Base aponta para um objeto Derivado (Carro). O polimorfismo garante que o método do objeto real seja chamado.">
+                    <h4>Questão 4 (Exercício de Código): Qual será a saída do código?</h4>
+                    <pre><code>class Veiculo { public: virtual void acelerar() { std::cout << "Veiculo acelerando"; } };
+class Carro : public Veiculo { public: void acelerar() override { std::cout << "Carro acelerando"; } };
+Veiculo* v = new Carro();
+v->acelerar();</code></pre>
+                    <textarea rows="1" name="q3" placeholder="Insira a saída esperada..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 5: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="Destrutor virtual" data-explanation="Se a classe base tem funções virtuais, o destrutor deve ser virtual para garantir que o destrutor da classe derivada seja chamado corretamente ao deletar via ponteiro da base.">
+                    <h4>Questão 5 (Múltipla Escolha): O que deve ser feito com o destrutor de uma classe base que possui funções virtuais?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q4" value="Deve ser privado."> Deve ser privado.</label>
+                        <label><input type="radio" name="q4" value="Deve ser estático."> Deve ser estático.</label>
+                        <label><input type="radio" name="q4" value="Deve ser virtual."> Deve ser virtual.</label>
+                        <label><input type="radio" name="q4" value="Não é necessário declará-lo."> Não é necessário declará-lo.</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 6: Verdadeiro/Falso -->
+                <div class="quiz-question" data-correct-answer="Falso" data-explanation="O polimorfismo em tempo de execução só ocorre quando a chamada é feita através de um ponteiro ou referência da classe base.">
+                    <h4>Questão 6 (Verdadeiro/Falso): O polimorfismo em tempo de execução funciona quando você chama o método diretamente em um objeto da classe derivada (ex: `Carro c; c.acelerar();`).</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q5" value="Verdadeiro"> Verdadeiro</label>
+                        <label><input type="radio" name="q5" value="Falso"> Falso</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 7: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="AActor" data-explanation="A classe 'AActor' é a classe base para todos os objetos que podem ser colocados no mundo do jogo (personagens, inimigos, itens, etc.).">
+                    <h4>Questão 7 (Múltipla Escolha): Qual é a classe base fundamental na Unreal Engine para a maioria dos objetos que interagem no mundo do jogo?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q6" value="UObject"> UObject</label>
+                        <label><input type="radio" name="q6" value="AActor"> AActor</label>
+                        <label><input type="radio" name="q6" value="UCharacter"> UCharacter</label>
+                        <label><input type="radio" name="q6" value="APawn"> APawn</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 8: Exercício de Código (Debug) -->
+                <div class="quiz-question" data-correct-answer="150" data-explanation="O construtor da classe derivada (Guerreiro) chama o construtor da classe base (Personagem) com o valor 150.">
+                    <h4>Questão 8 (Exercício de Código): Qual será o valor de `guerreiro.vida`?</h4>
+                    <pre><code>class Personagem { public: int vida; Personagem(int v) : vida(v) {} };
+class Guerreiro : public Personagem { public: Guerreiro() : Personagem(150) {} };
+Guerreiro guerreiro;
+// std::cout << guerreiro.vida;</code></pre>
+                    <textarea rows="1" name="q7" placeholder="Insira o valor final..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 9: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="Sobrescrita (Override)" data-explanation="Sobrescrita é a implementação de uma função virtual da classe base na classe derivada.">
+                    <h4>Questão 9 (Múltipla Escolha): O que é o ato de fornecer uma nova implementação para uma função virtual em uma classe derivada?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q8" value="Sobrecarga (Overload)"> Sobrecarga (Overload)</label>
+                        <label><input type="radio" name="q8" value="Sobrescrita (Override)"> Sobrescrita (Override)</label>
+                        <label><input type="radio" name="q8" value="Herança Múltipla"> Herança Múltipla</label>
+                        <label><input type="radio" name="q8" value="Encapsulamento"> Encapsulamento</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 10: Questão Conceitual Aplicada -->
+                <div class="quiz-question" data-correct-answer="A classe base seria 'AActor' ou 'APawn'. As classes derivadas seriam 'AInimigoMelee', 'AInimigoRanged' e 'AInimigoBoss'. A função virtual seria 'virtual void Atacar()', permitindo que cada inimigo implemente seu próprio comportamento de ataque (corpo a corpo, à distância, ataque especial) de forma polimórfica." data-explanation="A herança é usada para criar hierarquias de classes (ex: Inimigo -> InimigoMelee), e o polimorfismo é usado para que o código possa tratar todos os inimigos de forma genérica (ex: 'inimigo->Atacar()') sem saber o tipo exato.">
+                    <h4>Questão 10 (Conceitual Aplicada): Em um jogo, como você usaria Herança e Polimorfismo para criar diferentes tipos de inimigos? Cite a classe base e a função virtual.</h4>
+                    <textarea rows="3" name="q9" placeholder="Responda aqui..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Verificar Respostas</button>
+            </form>
+            <div id="quiz-result"></div>
+
+            <div class="nav-buttons">
+                <a href="../modulo.html" class="prev">&laquo; Voltar ao Módulo</a>
+                <a href="../03-Encapsulamento-Abstracao/teoria.md" class="next">Próxima Lição: Encapsulamento e Abstração &raquo;</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

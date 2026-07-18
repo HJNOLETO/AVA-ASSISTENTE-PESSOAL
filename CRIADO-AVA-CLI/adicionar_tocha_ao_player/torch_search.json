@@ -1,0 +1,498 @@
+{
+  "/Game/AdvancedLocomotionV4/Props": [
+    {
+      "name": "Bow_Skeleton",
+      "class": "Skeleton"
+    },
+    {
+      "name": "Bow_Draw",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "Bow_AnimBP",
+      "class": "AnimBlueprint"
+    },
+    {
+      "name": "M_Prop",
+      "class": "Material"
+    },
+    {
+      "name": "Barrel",
+      "class": "StaticMesh"
+    },
+    {
+      "name": "M_Prop_Binoculars",
+      "class": "MaterialInstanceConstant"
+    },
+    {
+      "name": "Binoculars",
+      "class": "StaticMesh"
+    },
+    {
+      "name": "M_Prop_Bow1",
+      "class": "MaterialInstanceConstant"
+    },
+    {
+      "name": "M_Prop_Bow2",
+      "class": "MaterialInstanceConstant"
+    },
+    {
+      "name": "M_Prop_Bow3",
+      "class": "MaterialInstanceConstant"
+    },
+    {
+      "name": "Bow",
+      "class": "SkeletalMesh"
+    },
+    {
+      "name": "Box",
+      "class": "StaticMesh"
+    },
+    {
+      "name": "M_Prop_M4A1",
+      "class": "MaterialInstanceConstant"
+    },
+    {
+      "name": "M4A1_Physics",
+      "class": "PhysicsAsset"
+    },
+    {
+      "name": "M4A1_Skeleton",
+      "class": "Skeleton"
+    },
+    {
+      "name": "M4A1",
+      "class": "SkeletalMesh"
+    },
+    {
+      "name": "M_Prop_M9",
+      "class": "MaterialInstanceConstant"
+    },
+    {
+      "name": "M9_Skeleton",
+      "class": "Skeleton"
+    },
+    {
+      "name": "M9",
+      "class": "SkeletalMesh"
+    },
+    {
+      "name": "M_Prop_Torch1",
+      "class": "MaterialInstanceConstant"
+    },
+    {
+      "name": "M_Prop_Torch2",
+      "class": "MaterialInstanceConstant"
+    },
+    {
+      "name": "M_Prop_Torch3",
+      "class": "MaterialInstanceConstant"
+    },
+    {
+      "name": "Torch",
+      "class": "StaticMesh"
+    }
+  ],
+  "/Game/AdvancedLocomotionV4": [
+    {
+      "name": "ALS_Mannequin_Skeleton",
+      "class": "Skeleton"
+    },
+    {
+      "name": "CameraShake_Notify",
+      "class": "Blueprint"
+    },
+    {
+      "name": "GroundedEntryState",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "ALS_Animation_BPI",
+      "class": "Blueprint"
+    },
+    {
+      "name": "GroundedEntryState_AnimNotify",
+      "class": "Blueprint"
+    },
+    {
+      "name": "Sprint_CameraShake",
+      "class": "Blueprint"
+    },
+    {
+      "name": "ALS_N_LandRoll_F",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "ALS_N_Pose",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "ALS_N_Look_F_Sweep",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "ALS_CLF_Pose",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "ALS_Flail",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "ALS_N_FallLoop",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "ALS_N_FallLoop_Fast",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "ALS_N_JumpLoop",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "ALS_N_JumpRun_LF",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "ALS_N_JumpRun_RF",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "ALS_N_JumpWalk_LF",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "ALS_N_JumpWalk_RF",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "LookIn",
+      "class": "CurveFloat"
+    },
+    {
+      "name": "LookOut",
+      "class": "CurveFloat"
+    },
+    {
+      "name": "AO_SwitchSidesOut",
+      "class": "CurveFloat"
+    },
+    {
+      "name": "AO_SwitchSidesIn",
+      "class": "CurveFloat"
+    },
+    {
+      "name": "ChangeStance",
+      "class": "CurveFloat"
+    },
+    {
+      "name": "AimingOutCurve",
+      "class": "CurveFloat"
+    },
+    {
+      "name": "AimingInCurve",
+      "class": "CurveFloat"
+    },
+    {
+      "name": "ChangeDirection",
+      "class": "CurveFloat"
+    },
+    {
+      "name": "MovementDirection",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "HipsDirection",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "VelocityBlend",
+      "class": "UserDefinedStruct"
+    },
+    {
+      "name": "LeanAmount",
+      "class": "UserDefinedStruct"
+    },
+    {
+      "name": "ALS_MovementState",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "ALS_MovementAction",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "ALS_RotationMode",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "ALS_Gait",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "ALS_Stance",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "ALS_ViewMode",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "ALS_OverlayState",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "TurnInPlace_Asset",
+      "class": "UserDefinedStruct"
+    },
+    {
+      "name": "ALS_AnimBP",
+      "class": "AnimBlueprint"
+    },
+    {
+      "name": "DynamicMontageParams",
+      "class": "UserDefinedStruct"
+    },
+    {
+      "name": "RotateInPlace_Asset",
+      "class": "UserDefinedStruct"
+    },
+    {
+      "name": "ALS_Character_BPI",
+      "class": "Blueprint"
+    },
+    {
+      "name": "ALS_Controller_BPI",
+      "class": "Blueprint"
+    },
+    {
+      "name": "ALS_Camera_BPI",
+      "class": "Blueprint"
+    },
+    {
+      "name": "CameraLerp_1",
+      "class": "CurveFloat"
+    },
+    {
+      "name": "CameraLerp_2",
+      "class": "CurveFloat"
+    },
+    {
+      "name": "Camera_Skeleton",
+      "class": "Skeleton"
+    },
+    {
+      "name": "ALS_PlayerCameraBehavior",
+      "class": "AnimBlueprint"
+    },
+    {
+      "name": "Camera",
+      "class": "SkeletalMesh"
+    },
+    {
+      "name": "ALS_PlayerCameraManager",
+      "class": "Blueprint"
+    },
+    {
+      "name": "MovementSettings_State",
+      "class": "UserDefinedStruct"
+    },
+    {
+      "name": "MovementSettings_Stance",
+      "class": "UserDefinedStruct"
+    },
+    {
+      "name": "MovementSettings",
+      "class": "UserDefinedStruct"
+    },
+    {
+      "name": "Mantle_Params",
+      "class": "UserDefinedStruct"
+    },
+    {
+      "name": "ALS_ComponentAndTransform",
+      "class": "UserDefinedStruct"
+    },
+    {
+      "name": "Mantle_TraceSettings",
+      "class": "UserDefinedStruct"
+    },
+    {
+      "name": "ALS_Base_CharacterBP",
+      "class": "Blueprint"
+    },
+    {
+      "name": "MantleType",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "Mantle_Asset",
+      "class": "UserDefinedStruct"
+    },
+    {
+      "name": "Mannequin_PhysicsAsset",
+      "class": "PhysicsAsset"
+    },
+    {
+      "name": "Bow_Skeleton",
+      "class": "Skeleton"
+    },
+    {
+      "name": "Bow_Draw",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "Bow_AnimBP",
+      "class": "AnimBlueprint"
+    },
+    {
+      "name": "Footstep_AnimNotify",
+      "class": "Blueprint"
+    },
+    {
+      "name": "S_Footsteps",
+      "class": "UserDefinedStruct"
+    },
+    {
+      "name": "ALS_Player_Controller",
+      "class": "Blueprint"
+    },
+    {
+      "name": "ALS_MacroLibrary",
+      "class": "Blueprint"
+    },
+    {
+      "name": "OverlayStateButton",
+      "class": "WidgetBlueprint"
+    },
+    {
+      "name": "OverlayStateButtonParams",
+      "class": "UserDefinedStruct"
+    },
+    {
+      "name": "OverlayStateSwitcher",
+      "class": "WidgetBlueprint"
+    },
+    {
+      "name": "Click",
+      "class": "SoundWave"
+    },
+    {
+      "name": "ALS_Player",
+      "class": "Blueprint"
+    },
+    {
+      "name": "NormalMovement",
+      "class": "CurveVector"
+    },
+    {
+      "name": "Mantle_1m",
+      "class": "CurveVector"
+    },
+    {
+      "name": "Mantle_2m",
+      "class": "CurveVector"
+    },
+    {
+      "name": "NormalRotation",
+      "class": "CurveFloat"
+    },
+    {
+      "name": "ResponsiveRotation",
+      "class": "CurveFloat"
+    },
+    {
+      "name": "SluggishRotation",
+      "class": "CurveFloat"
+    },
+    {
+      "name": "ResponsiveMovement",
+      "class": "CurveVector"
+    },
+    {
+      "name": "SluggishMovement",
+      "class": "CurveVector"
+    },
+    {
+      "name": "MovementModelTable",
+      "class": "DataTable"
+    },
+    {
+      "name": "ALS_CLF_GetUp_Back_Montage_2H",
+      "class": "AnimMontage"
+    },
+    {
+      "name": "MovementAction_NotifyState",
+      "class": "Blueprint"
+    },
+    {
+      "name": "OverlayOverride_NotifyState",
+      "class": "Blueprint"
+    },
+    {
+      "name": "ALS_CLF_GetUp_Back",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "FootstepsDataTable",
+      "class": "DataTable"
+    },
+    {
+      "name": "ALS_CLF_GetUp_Back_Montage_Default",
+      "class": "AnimMontage"
+    },
+    {
+      "name": "ALS_CLF_GetUp_Back_Montage_LH",
+      "class": "AnimMontage"
+    },
+    {
+      "name": "ALS_CLF_GetUp_Back_Montage_RH",
+      "class": "AnimMontage"
+    },
+    {
+      "name": "ALS_CLF_GetUp_Front",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "ALS_CLF_GetUp_Front_Montage_2H",
+      "class": "AnimMontage"
+    },
+    {
+      "name": "ALS_CLF_GetUp_Front_Montage_Default",
+      "class": "AnimMontage"
+    },
+    {
+      "name": "ALS_CLF_GetUp_Front_Montage_LH",
+      "class": "AnimMontage"
+    },
+    {
+      "name": "ALS_CLF_GetUp_Front_Montage_RH",
+      "class": "AnimMontage"
+    },
+    {
+      "name": "ALS_N_LandRoll_F_Montage_2H",
+      "class": "AnimMontage"
+    },
+    {
+      "name": "ALS_N_LandRoll_F_Montage_Default",
+      "class": "AnimMontage"
+    },
+    {
+      "name": "ALS_N_LandRoll_F_Montage_LH",
+      "class": "AnimMontage"
+    },
+    {
+      "name": "ALS_N_LandRoll_F_Montage_RH",
+      "class": "AnimMontage"
+    },
+    {
+      "name": "ALS_N_Mantle_1m_RH",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "EarlyBlendOut_NotifyState",
+      "class": "Blueprint"
+    }
+  ]
+}

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: Operadores</title>
+    <link rel="stylesheet" href="../../recursos/css/estilo.css">
+    <script src="../../recursos/js/quiz.js" defer></script>
+</head>
+<body>
+    <button id="dark-mode-toggle">Alternar Modo Escuro</button>
+    <header>
+        <h1>Quiz: Operadores</h1>
+        <p>Teste seus conhecimentos sobre operadores aritméticos, relacionais e lógicos.</p>
+    </header>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Início</a> <span>&gt;</span> <a href="../modulo.html">Módulo 01</a> <span>&gt;</span> Quiz
+        </div>
+
+        <div class="content-area">
+            <h2 id="quiz-titulo">Autoavaliação: Operadores</h2>
+            <p>Responda às questões abaixo e clique em "Verificar Respostas" para receber feedback imediato.</p>
+
+            <form id="quiz-form">
+                <!-- Questão 1: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="2" data-explanation="O operador módulo (%) retorna o resto da divisão. 10 dividido por 4 é 2, com resto 2.">
+                    <h4>Questão 1 (Múltipla Escolha): Qual é o resultado da expressão `10 % 4`?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q0" value="2.5"> 2.5</label>
+                        <label><input type="radio" name="q0" value="2"> 2</label>
+                        <label><input type="radio" name="q0" value="0"> 0</label>
+                        <label><input type="radio" name="q0" value="4"> 4</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 2: Verdadeiro/Falso -->
+                <div class="quiz-question" data-correct-answer="Falso" data-explanation="O operador de atribuição é '=', e o operador de comparação de igualdade é '=='. Confundi-los é um erro comum.">
+                    <h4>Questão 2 (Verdadeiro/Falso): O operador `=` é usado para verificar se dois valores são iguais.</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q1" value="Verdadeiro"> Verdadeiro</label>
+                        <label><input type="radio" name="q1" value="Falso"> Falso</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 3: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="O valor de 'x' é usado na expressão, e DEPOIS incrementado." data-explanation="O pós-incremento (x++) usa o valor atual de 'x' na expressão e só depois incrementa 'x' em 1.">
+                    <h4>Questão 3 (Múltipla Escolha): Qual é o efeito do operador de pós-incremento (`x++`)?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q2" value="O valor de 'x' é incrementado, e DEPOIS usado na expressão."> O valor de 'x' é incrementado, e DEPOIS usado na expressão.</label>
+                        <label><input type="radio" name="q2" value="O valor de 'x' é usado na expressão, e DEPOIS incrementado."> O valor de 'x' é usado na expressão, e DEPOIS incrementado.</label>
+                        <label><input type="radio" name="q2" value="O valor de 'x' é sempre incrementado em 2."> O valor de 'x' é sempre incrementado em 2.</label>
+                        <label><input type="radio" name="q2" value="O compilador gera um erro."> O compilador gera um erro.</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 4: Exercício de Código (Debug) -->
+                <div class="quiz-question" data-correct-answer="false" data-explanation="A expressão é avaliada como: (true AND false) OR true. (false) OR true. O resultado final é true. Quando impresso como 'bool', o resultado é 1 (true). Se a resposta esperada fosse o valor booleano, seria 'true'.">
+                    <h4>Questão 4 (Exercício de Código): Qual é o resultado booleano da expressão `(true && false) || true`?</h4>
+                    <textarea rows="1" name="q3" placeholder="Insira 'true' ou 'false'..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 5: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="&&" data-explanation="O operador AND lógico (&&) é usado para verificar se duas ou mais condições são verdadeiras simultaneamente.">
+                    <h4>Questão 5 (Múltipla Escolha): Qual operador lógico você usaria para verificar se um personagem está **vivo** E **com mana cheia**?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q4" value="||"> ||</label>
+                        <label><input type="radio" name="q4" value="!"> !</label>
+                        <label><input type="radio" name="q4" value="&&"> &&</label>
+                        <label><input type="radio" name="q4" value="=="> ==</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 6: Verdadeiro/Falso -->
+                <div class="quiz-question" data-correct-answer="Verdadeiro" data-explanation="Em C++, a multiplicação e a divisão têm precedência sobre a adição e a subtração, seguindo as regras matemáticas.">
+                    <h4>Questão 6 (Verdadeiro/Falso): Na expressão `5 + 2 * 3`, a multiplicação será realizada antes da adição.</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q5" value="Verdadeiro"> Verdadeiro</label>
+                        <label><input type="radio" name="q5" value="Falso"> Falso</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 7: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="x = x - 10" data-explanation="O operador de atribuição composta '-=' é um atalho para subtrair um valor da variável e atribuir o resultado de volta à mesma variável.">
+                    <h4>Questão 7 (Múltipla Escolha): Qual é o equivalente da expressão `x -= 10`?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q6" value="x = x - 10"> x = x - 10</label>
+                        <label><input type="radio" name="q6" value="x = 10 - x"> x = 10 - x</label>
+                        <label><input type="radio" name="q6" value="x = 10"> x = 10</label>
+                        <label><input type="radio" name="q6" value="x = x / 10"> x = x / 10</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 8: Exercício de Código (Debug) -->
+                <div class="quiz-question" data-correct-answer="1" data-explanation="A divisão de inteiros (10 / 3) resulta em 3. O módulo (10 % 3) resulta em 1. A expressão é 3 + 1, que é 4.">
+                    <h4>Questão 8 (Exercício de Código): Qual será o valor final da variável `resultado`?</h4>
+                    <pre><code>int a = 10;
+int resultado = (a / 3) + (a % 3);</code></pre>
+                    <textarea rows="1" name="q7" placeholder="Insira o valor final..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 9: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="Usar parênteses para forçar a ordem de avaliação." data-explanation="A melhor prática para garantir a ordem de avaliação e melhorar a legibilidade é usar parênteses, mesmo que a precedência padrão já atenda ao seu objetivo.">
+                    <h4>Questão 9 (Múltipla Escolha): Qual é a melhor prática para garantir que uma parte de uma expressão seja avaliada antes de outra, independentemente da precedência padrão?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q8" value="Usar o operador de atribuição."> Usar o operador de atribuição.</label>
+                        <label><input type="radio" name="q8" value="Usar parênteses para forçar a ordem de avaliação."> Usar parênteses para forçar a ordem de avaliação.</label>
+                        <label><input type="radio" name="q8" value="Usar apenas operadores unários."> Usar apenas operadores unários.</label>
+                        <label><input type="radio" name="q8" value="Declarar as variáveis como 'double'."> Declarar as variáveis como 'double'.</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 10: Questão Conceitual Aplicada -->
+                <div class="quiz-question" data-correct-answer="O operador módulo (%) é essencial para criar ciclos e repetições, como fazer um inimigo atirar a cada 5 segundos (se (tempo % 5 == 0)) ou para criar um índice circular em um array de armas." data-explanation="O operador módulo é crucial para lógica de jogo que envolve repetição cíclica, como timers, animações que se repetem, ou para garantir que um índice de array não exceda o limite (wrap-around).">
+                    <h4>Questão 10 (Conceitual Aplicada): Em que situação de lógica de jogo o operador Módulo (`%`) seria mais útil?</h4>
+                    <textarea rows="3" name="q9" placeholder="Responda aqui..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Verificar Respostas</button>
+            </form>
+            <div id="quiz-result"></div>
+
+            <div class="nav-buttons">
+                <a href="../modulo.html" class="prev">&laquo; Voltar ao Módulo</a>
+                <a href="../03-Estruturas-Controle/teoria.md" class="next">Próxima Lição: Estruturas de Controle &raquo;</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

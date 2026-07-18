@@ -1,0 +1,77 @@
+{
+  "name": "BP_Bike",
+  "parent_class": "WheeledVehiclePawn",
+  "template_id": "bike",
+  "category": "General",
+  "variables": [
+    {
+      "name": "DeltaTime",
+      "type": "real (double)"
+    },
+    {
+      "name": "MaxSteeringAngle",
+      "type": "real (double)"
+    },
+    {
+      "name": "SteeringAngle",
+      "type": "real (double)"
+    }
+  ],
+  "components": [
+    {
+      "name": "Mesh",
+      "type": "StaticMeshComponent"
+    },
+    {
+      "name": "Camera",
+      "type": "CameraComponent"
+    }
+  ],
+  "events": [
+    "`ReceiveTick`"
+  ],
+  "functions": [
+    "`AddControllerPitchInput()`",
+    "`AddControllerYawInput()`",
+    "`SetThrottleInput()`",
+    "`SetBrakeInput()`",
+    "`SetSteeringInput()`",
+    "`Steering()`",
+    "`GetSocketTransform()`",
+    "`K2_SetRelativeRotation()`",
+    "`K2_SetRelativeLocation()`",
+    "`Cycling()`",
+    "`AddImpulse()`",
+    "`IsInAir()`",
+    "`MakeVector()`",
+    "`BreakTransform()`",
+    "`BreakVector()`",
+    "`BreakRotator()`",
+    "`MakeRotator()`",
+    "`FInterpTo()`",
+    "`GetForwardSpeed()`",
+    "`K2_AddLocalRotation()`",
+    "`Add_IntInt()`",
+    "`Less_IntInt()`",
+    "`Subtract_DoubleDouble()`",
+    "`Multiply_DoubleDouble()`",
+    "`ExecuteUbergraph_BP_Bike()`",
+    "`Divide_DoubleDouble()`",
+    "`EqualEqual_DoubleDouble()`",
+    "`Greater_DoubleDouble()`"
+  ],
+  "graph_sections": [],
+  "interfaces": [],
+  "structs_used": [],
+  "key_patterns": {
+    "has_replication": false,
+    "has_timers": false,
+    "has_overlap_events": false,
+    "has_enhanced_input": false,
+    "has_timeline": false,
+    "has_data_tables": false,
+    "has_dynamic_material": false,
+    "has_camera_fade": false
+  },
+  "source_file": "BP_Bike.md"
+}

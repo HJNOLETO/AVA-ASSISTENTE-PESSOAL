@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: Setup e Conceitos Unreal</title>
+    <link rel="stylesheet" href="../../recursos/css/estilo.css">
+    <script src="../../recursos/js/quiz.js" defer></script>
+</head>
+<body>
+    <button id="dark-mode-toggle">Alternar Modo Escuro</button>
+    <header>
+        <h1>Quiz: Setup e Conceitos Unreal</h1>
+        <p>Teste seus conhecimentos sobre a arquitetura C++ da Unreal Engine.</p>
+    </header>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Início</a> <span>&gt;</span> <a href="../modulo.html">Módulo 04</a> <span>&gt;</span> Quiz
+        </div>
+
+        <div class="content-area">
+            <h2 id="quiz-titulo">Autoavaliação: Setup e Conceitos Unreal</h2>
+            <p>Responda às questões abaixo e clique em "Verificar Respostas" para receber feedback imediato.</p>
+
+            <form id="quiz-form">
+                <!-- Questão 1: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="UCLASS()" data-explanation="A macro 'UCLASS()' é a primeira e mais fundamental macro de reflexão, marcando a classe para o Unreal Header Tool (UHT).">
+                    <h4>Questão 1 (Múltipla Escolha): Qual macro é essencial para que o Unreal Header Tool (UHT) gere o código de reflexão para uma classe C++?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q0" value="UPROPERTY()"> UPROPERTY()</label>
+                        <label><input type="radio" name="q0" value="UFUNCTION()"> UFUNCTION()</label>
+                        <label><input type="radio" name="q0" value="UCLASS()"> UCLASS()</label>
+                        <label><input type="radio" name="q0" value="USTRUCT()"> USTRUCT()</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 2: Verdadeiro/Falso -->
+                <div class="quiz-question" data-correct-answer="Falso" data-explanation="A Unreal Engine usa seu próprio sistema de build, o Unreal Build Tool (UBT), que lê arquivos .Build.cs.">
+                    <h4>Questão 2 (Verdadeiro/Falso): A Unreal Engine utiliza o sistema de build padrão do C++ (como CMake ou Makefiles) para compilar projetos.</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q1" value="Verdadeiro"> Verdadeiro</label>
+                        <label><input type="radio" name="q1" value="Falso"> Falso</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 3: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="AActor" data-explanation="AActor é a classe base para objetos que podem ser colocados no mundo do jogo.">
+                    <h4>Questão 3 (Múltipla Escolha): Se você está criando um objeto que pode ser colocado no nível (ex: uma porta, uma luz), de qual classe base ele deve herdar?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q2" value="UObject"> UObject</label>
+                        <label><input type="radio" name="q2" value="AActor"> AActor</label>
+                        <label><input type="radio" name="q2" value="APawn"> APawn</label>
+                        <label><input type="radio" name="q2" value="UActorComponent"> UActorComponent</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 4: Exercício de Código (Debug) -->
+                <div class="quiz-question" data-correct-answer="UPROPERTY" data-explanation="A macro 'UPROPERTY' é usada para marcar atributos (variáveis) para o sistema de reflexão.">
+                    <h4>Questão 4 (Exercício de Código): Qual macro deve substituir `[MACRO]` para que a variável `Vida` seja visível no editor de detalhes?</h4>
+                    <pre><code>[MACRO](EditAnywhere)
+float Vida = 100.0f;</code></pre>
+                    <textarea rows="1" name="q3" placeholder="Insira a macro..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 5: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="Permitir que classes C++ sejam acessíveis em Blueprints." data-explanation="A integração com Blueprints é o principal uso visível do sistema de reflexão para o desenvolvedor.">
+                    <h4>Questão 5 (Múltipla Escolha): Qual é a principal função do Sistema de Reflexão da Unreal Engine?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q4" value="Substituir o pré-processador C++."> Substituir o pré-processador C++.</label>
+                        <label><input type="radio" name="q4" value="Permitir que classes C++ sejam acessíveis em Blueprints."> Permitir que classes C++ sejam acessíveis em Blueprints.</label>
+                        <label><input type="radio" name="q4" value="Gerenciar a memória RAM do sistema operacional."> Gerenciar a memória RAM do sistema operacional.</label>
+                        <label><input type="radio" name="q4" value="Compilar o código C++ mais rapidamente."> Compilar o código C++ mais rapidamente.</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 6: Verdadeiro/Falso -->
+                <div class="quiz-question" data-correct-answer="Verdadeiro" data-explanation="A Unreal Engine usa um Garbage Collector para objetos UObject, o que significa que você não deve usar 'delete' neles.">
+                    <h4>Questão 6 (Verdadeiro/Falso): Objetos que herdam de `UObject` são gerenciados pelo sistema de Coleta de Lixo (Garbage Collection) da Unreal Engine.</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q5" value="Verdadeiro"> Verdadeiro</label>
+                        <label><input type="radio" name="q5" value="Falso"> Falso</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 7: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="UFUNCTION" data-explanation="A macro 'UFUNCTION' é usada para marcar métodos (funções) para o sistema de reflexão.">
+                    <h4>Questão 7 (Múltipla Escolha): Qual macro é usada para marcar um método C++ para que ele possa ser chamado por outros objetos C++ ou Blueprints?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q6" value="UCLASS"> UCLASS</label>
+                        <label><input type="radio" name="q6" value="UPROPERTY"> UPROPERTY</label>
+                        <label><input type="radio" name="q6" value="UFUNCTION"> UFUNCTION</label>
+                        <label><input type="radio" name="q6" value="USTRUCT"> USTRUCT</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 8: Exercício de Código (Debug) -->
+                <div class="quiz-question" data-correct-answer="BeginPlay" data-explanation="A função 'BeginPlay' é o ponto de entrada para a lógica de jogo de um Actor, sendo chamada quando o jogo começa.">
+                    <h4>Questão 8 (Exercício de Código): Qual função virtual de `AActor` é o ponto de entrada para a lógica de jogo, sendo chamada uma vez quando o jogo começa?</h4>
+                    <pre><code>void AMinhaClasse::[FUNÇÃO]()
+{
+    Super::[FUNÇÃO]();
+    // Lógica de inicialização
+}</code></pre>
+                    <textarea rows="1" name="q7" placeholder="Insira o nome da função..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 9: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="TObjectPtr<T>" data-explanation="TObjectPtr é o tipo de ponteiro recomendado para referenciar UObjects, pois ele é rastreado pelo Garbage Collector.">
+                    <h4>Questão 9 (Múltipla Escolha): Qual é o tipo de ponteiro recomendado para referenciar um `UObject` em C++ da Unreal, que é seguro para o Garbage Collector?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q8" value="std::shared_ptr<T>"> std::shared_ptr<T></label>
+                        <label><input type="radio" name="q8" value="T*"> T*</label>
+                        <label><input type="radio" name="q8" value="TObjectPtr<T>"> TObjectPtr<T></label>
+                        <label><input type="radio" name="q8" value="TWeakObjectPtr<T>"> TWeakObjectPtr<T></label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 10: Questão Conceitual Aplicada -->
+                <div class="quiz-question" data-correct-answer="O arquivo .Build.cs é um arquivo C# que define as dependências do módulo, os caminhos de inclusão e as configurações de compilação. Ele é lido pelo Unreal Build Tool (UBT) para gerar os arquivos de projeto (ex: .sln) que o Visual Studio usa." data-explanation="O UBT e o .Build.cs são a base do sistema de build da Unreal.">
+                    <h4>Questão 10 (Conceitual Aplicada): Qual é a função do arquivo `.Build.cs` no sistema de build da Unreal Engine?</h4>
+                    <textarea rows="3" name="q9" placeholder="Responda aqui..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Verificar Respostas</button>
+            </form>
+            <div id="quiz-result"></div>
+
+            <div class="nav-buttons">
+                <a href="../modulo.html" class="prev">&laquo; Voltar ao Módulo</a>
+                <a href="../02-Tipos-Unreal-e-Macros/teoria.md" class="next">Próxima Lição: Tipos Unreal e Macros &raquo;</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

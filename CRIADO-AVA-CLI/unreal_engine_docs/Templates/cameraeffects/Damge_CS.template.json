@@ -1,0 +1,29 @@
+{
+  "name": "Damge_CS",
+  "parent_class": "LegacyCameraShake",
+  "template_id": "damge_cs",
+  "category": "CameraEffects",
+  "variables": [],
+  "components": [
+    {
+      "name": "Camera",
+      "type": "CameraComponent"
+    }
+  ],
+  "events": [],
+  "functions": [],
+  "graph_sections": [],
+  "interfaces": [],
+  "structs_used": [],
+  "key_patterns": {
+    "has_replication": false,
+    "has_timers": false,
+    "has_overlap_events": false,
+    "has_enhanced_input": false,
+    "has_timeline": false,
+    "has_data_tables": false,
+    "has_dynamic_material": false,
+    "has_camera_fade": false
+  },
+  "source_file": "Damge_CS.md"
+}

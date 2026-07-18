@@ -1,0 +1,50 @@
+{
+  "name": "BP_Door",
+  "parent_class": "BP_InteractionObject_C",
+  "template_id": "door",
+  "category": "Interaction",
+  "variables": [
+    {
+      "name": "DoorIsOpened",
+      "type": "bool"
+    }
+  ],
+  "components": [],
+  "events": [
+    "`Interact`",
+    "`PlaySound (Multicast)`",
+    "`RotationDoor__UpdateFunc`",
+    "`RotationDoor__FinishedFunc`"
+  ],
+  "functions": [
+    "`PlaySoundAtLocation()`",
+    "`K2_GetActorLocation()`",
+    "`PlaySound (Multicast)()`",
+    "`K2_SetRelativeRotation()`",
+    "`Not_PreBool()`",
+    "`MakeRotator()`",
+    "`BreakRotator()`",
+    "`SelectRotator()`",
+    "`EqualEqual_DoubleDouble()`",
+    "`Play()`",
+    "`Reverse()`",
+    "`ReverseFromEnd()`",
+    "`FlushNetDormancy()`",
+    "`MarkPropertyDirtyFromRepIndex()`",
+    "`ExecuteUbergraph_BP_Door()`"
+  ],
+  "graph_sections": [],
+  "interfaces": [],
+  "structs_used": [],
+  "key_patterns": {
+    "has_replication": true,
+    "has_timers": false,
+    "has_overlap_events": false,
+    "has_enhanced_input": false,
+    "has_timeline": false,
+    "has_data_tables": false,
+    "has_dynamic_material": false,
+    "has_camera_fade": false
+  },
+  "source_file": "BP_Door.md"
+}

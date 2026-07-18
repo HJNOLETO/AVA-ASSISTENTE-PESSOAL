@@ -1,0 +1,269 @@
+{
+  "name": "AC_WeaponSystem",
+  "parent_class": "ActorComponent",
+  "template_id": "weapon_system",
+  "category": "Weapons",
+  "variables": [
+    {
+      "name": "CharacterReference",
+      "type": "object (Character)"
+    },
+    {
+      "name": "Current Weapon Index",
+      "type": "int"
+    },
+    {
+      "name": "WeaponIsLocked",
+      "type": "bool"
+    },
+    {
+      "name": "InitialWeapon",
+      "type": "struct (S_StoredWeapons)"
+    },
+    {
+      "name": "CurrentWeapon",
+      "type": "object (BP_WeaponBase_C)"
+    },
+    {
+      "name": "SpawnedWeapons",
+      "type": "object (BP_WeaponBase_C)"
+    },
+    {
+      "name": "HideWeapon",
+      "type": "bool"
+    },
+    {
+      "name": "Overlay State",
+      "type": "byte (ALS_OverlayState)"
+    },
+    {
+      "name": "MaxWeaponLimit",
+      "type": "int"
+    },
+    {
+      "name": "PegarMunicaoArmaIgual",
+      "type": "bool"
+    },
+    {
+      "name": "HasSameWeapon",
+      "type": "bool"
+    },
+    {
+      "name": "AmmoAdd",
+      "type": "int"
+    },
+    {
+      "name": "ShowMenu",
+      "type": "bool"
+    },
+    {
+      "name": "UMGInventory",
+      "type": "object (UMG_Inventory_C)"
+    },
+    {
+      "name": "TargetStart",
+      "type": "real (double)"
+    },
+    {
+      "name": "TraceRange",
+      "type": "real (double)"
+    },
+    {
+      "name": "TargetRadius",
+      "type": "real (float)"
+    },
+    {
+      "name": "TargetLock",
+      "type": "bool"
+    },
+    {
+      "name": "TargetActor",
+      "type": "object (Actor)"
+    },
+    {
+      "name": "TargetTimer",
+      "type": "struct (TimerHandle)"
+    },
+    {
+      "name": "IsHit",
+      "type": "bool"
+    },
+    {
+      "name": "BlendWeight",
+      "type": "real (double)"
+    },
+    {
+      "name": "BoneName",
+      "type": "name"
+    },
+    {
+      "name": "HitReactionCurve",
+      "type": "object (CurveFloat)"
+    }
+  ],
+  "components": [
+    {
+      "name": "Collision",
+      "type": "SphereComponent"
+    },
+    {
+      "name": "Mesh",
+      "type": "StaticMeshComponent"
+    },
+    {
+      "name": "WeaponMesh",
+      "type": "StaticMeshComponent"
+    },
+    {
+      "name": "Root",
+      "type": "SceneComponent"
+    },
+    {
+      "name": "Camera",
+      "type": "CameraComponent"
+    },
+    {
+      "name": "RotatingMovement",
+      "type": "RotatingMovementComponent"
+    }
+  ],
+  "events": [
+    "`EventTargetLock`",
+    "`HitReact`",
+    "`ResetHit`",
+    "`PickupWeapon`",
+    "`SwitchWeapon`",
+    "`SpawnWeapons`",
+    "`DropWeapon`",
+    "`UpdateHUD_Local`",
+    "`HolsterWeapon`",
+    "`Fire`",
+    "`CyclingWeapons`",
+    "`Reload`",
+    "`SwitchFireMode`",
+    "`AddAmmo`",
+    "`ReceiveBeginPlay`",
+    "`CreateRadialMenu`",
+    "`WeaponIsSelected`"
+  ],
+  "functions": [
+    "`GetController()`",
+    "`SetControlRotation()`",
+    "`GetPlayerCameraManager()`",
+    "`K2_GetComponentLocation()`",
+    "`FindLookAtRotation()`",
+    "`PrintString()`",
+    "`GetCharacterDead()`",
+    "`BPI_Get_CurrentStates()`",
+    "`GetAnimInstance()`",
+    "`CheckWeaponType()`",
+    "`Conv_ByteToInt()`",
+    "`K2_DestroyActor()`",
+    "`Less_IntInt()`",
+    "`Not_PreBool()`",
+    "`SphereTraceSingleForObjects()`",
+    "`SetAllBodiesSimulatePhysics()`",
+    "`ResetHit()`",
+    "`Delay()`",
+    "`SetCollisionEnabled()`",
+    "`AddImpulse()`",
+    "`GetForwardVector()`",
+    "`BreakHitResult()`",
+    "`K2_SetTimer()`",
+    "`K2_ClearAndInvalidateTimerHandle()`",
+    "`SetAllBodiesBelowSimulatePhysics()`",
+    "`SetAllBodiesBelowPhysicsBlendWeight()`",
+    "`SetAllBodiesPhysicsBlendWeight()`",
+    "`GetFloatValue()`",
+    "`GetTimeRange()`",
+    "`SelectFloat()`",
+    "`Divide_DoubleDouble()`",
+    "`GetWorldDeltaSeconds()`",
+    "`NotEqual_DoubleDouble()`",
+    "`Greater_IntInt()`",
+    "`Subtract_IntInt()`",
+    "`AnimNotify_EquipWeapon()`",
+    "`AnimBP_SetAnimations()`",
+    "`SetActorHiddenInGame()`",
+    "`WeaponFire()`",
+    "`K2_DetachFromActor()`",
+    "`SetWeaponIsDropped()`",
+    "`GetWeaponData()`",
+    "`AddRadialImpulse()`",
+    "`K2_GetActorLocation()`",
+    "`BPI_Set_OverlayState()`",
+    "`GetPlayLength()`",
+    "`WeaponFireMode()`",
+    "`UnequipAnimations()`",
+    "`GetOwner()`",
+    "`SetOwner()`",
+    "`EquipAnimations()`",
+    "`CanReload?()`",
+    "`AddAmmoToBP()`",
+    "`K2_SetActorRelativeRotation()`",
+    "`UpdateHUD_WeaponData()`",
+    "`SetWeaponDataHUD()`",
+    "`PlayAnimation()`",
+    "`ALS_UnequipState()`",
+    "`ShootingAnimation()`",
+    "`K2_AttachToComponent()`",
+    "`WeaponIsSelected()`",
+    "`ALS_EquipState()`",
+    "`SwitchWeapon()`",
+    "`WeaponReload()`",
+    "`SetLifeSpan()`",
+    "`IsValid()`",
+    "`EqualEqual_NameName()`",
+    "`EqualEqual_ClassClass()`",
+    "`K2_AddActorLocalRotation()`",
+    "`IsPlayerControlled()`",
+    "`SetActive()`",
+    "`HolsterWeapon()`",
+    "`AnimNotify_UnequipWeapon()`",
+    "`GetSocketLocation()`",
+    "`K2_SetActorLocationAndRotation()`",
+    "`GetHUD()`",
+    "`MakeTransform()`",
+    "`AddToViewport()`",
+    "`GetPlayerController()`",
+    "`Get Selection Option()`",
+    "`SetRenderTransformAngle()`",
+    "`CenterMousePosition()`",
+    "`SetInputMode_GameAndUIEx()`",
+    "`SetIgnoreLookInput()`",
+    "`SetGlobalTimeDilation()`",
+    "`RemoveFromParent()`",
+    "`SetInputMode_GameOnly()`",
+    "`Add_IntInt()`",
+    "`EqualEqual_ByteByte()`",
+    "`Add_VectorVector()`",
+    "`BeginDeferredActorSpawnFromClass()`",
+    "`FinishSpawningActor()`",
+    "`SetObjectPropertyByName()`",
+    "`SetStructurePropertyByName()`",
+    "`GetDataTableRowFromName()`",
+    "`Create()`",
+    "`FlushNetDormancy()`",
+    "`OnRep_CurrentAmmoInBP()`",
+    "`MarkPropertyDirtyFromRepIndex()`",
+    "`ExecuteUbergraph_AC_WeaponSystem()`",
+    "`K2_GetRootComponent()`"
+  ],
+  "graph_sections": [],
+  "interfaces": [],
+  "structs_used": [
+    "TimerHandle",
+    "S_StoredWeapons"
+  ],
+  "key_patterns": {
+    "has_replication": true,
+    "has_timers": true,
+    "has_overlap_events": false,
+    "has_enhanced_input": false,
+    "has_timeline": false,
+    "has_data_tables": true,
+    "has_dynamic_material": false,
+    "has_camera_fade": false
+  },
+  "source_file": "AC_WeaponSystem.md"
+}

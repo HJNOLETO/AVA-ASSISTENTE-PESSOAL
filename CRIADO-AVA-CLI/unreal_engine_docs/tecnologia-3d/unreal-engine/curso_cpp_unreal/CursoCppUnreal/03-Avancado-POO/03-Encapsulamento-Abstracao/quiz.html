@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: Encapsulamento e Abstração</title>
+    <link rel="stylesheet" href="../../recursos/css/estilo.css">
+    <script src="../../recursos/js/quiz.js" defer></script>
+</head>
+<body>
+    <button id="dark-mode-toggle">Alternar Modo Escuro</button>
+    <header>
+        <h1>Quiz: Encapsulamento e Abstração</h1>
+        <p>Teste seus conhecimentos sobre segurança e design de classes.</p>
+    </header>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Início</a> <span>&gt;</span> <a href="../modulo.html">Módulo 03</a> <span>&gt;</span> Quiz
+        </div>
+
+        <div class="content-area">
+            <h2 id="quiz-titulo">Autoavaliação: Encapsulamento e Abstração</h2>
+            <p>Responda às questões abaixo e clique em "Verificar Respostas" para receber feedback imediato.</p>
+
+            <form id="quiz-form">
+                <!-- Questão 1: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="private" data-explanation="O especificador 'private' restringe o acesso aos membros apenas à própria classe, sendo o principal mecanismo do encapsulamento.">
+                    <h4>Questão 1 (Múltipla Escolha): Qual especificador de acesso é usado para proteger os atributos de uma classe, restringindo o acesso apenas aos métodos da própria classe?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q0" value="public"> public</label>
+                        <label><input type="radio" name="q0" value="protected"> protected</label>
+                        <label><input type="radio" name="q0" value="private"> private</label>
+                        <label><input type="radio" name="q0" value="friend"> friend</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 2: Verdadeiro/Falso -->
+                <div class="quiz-question" data-correct-answer="Verdadeiro" data-explanation="O Setter permite adicionar lógica de validação, garantindo que o estado do objeto seja sempre válido.">
+                    <h4>Questão 2 (Verdadeiro/Falso): O principal benefício de usar um Setter em vez de acesso direto a um atributo é a capacidade de incluir lógica de validação.</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q1" value="Verdadeiro"> Verdadeiro</label>
+                        <label><input type="radio" name="q1" value="Falso"> Falso</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 3: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="Abstração" data-explanation="A abstração foca no 'o que' (a funcionalidade) e esconde o 'como' (a implementação).">
+                    <h4>Questão 3 (Múltipla Escolha): Qual pilar da POO se concentra em mostrar apenas as informações essenciais e esconder os detalhes complexos de implementação?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q2" value="Encapsulamento"> Encapsulamento</label>
+                        <label><input type="radio" name="q2" value="Herança"> Herança</label>
+                        <label><input type="radio" name="q2" value="Polimorfismo"> Polimorfismo</label>
+                        <label><input type="radio" name="q2" value="Abstração"> Abstração</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 4: Exercício de Código (Debug) -->
+                <div class="quiz-question" data-correct-answer="Erro de compilação" data-explanation="A classe 'Arma' é abstrata porque contém uma Função Virtual Pura ('atacar() = 0;'). Classes abstratas não podem ser instanciadas.">
+                    <h4>Questão 4 (Exercício de Código): O que acontece ao tentar compilar a linha `Arma arma;`?</h4>
+                    <pre><code>class Arma {
+public:
+    virtual void atacar() = 0;
+};
+// Arma arma;</code></pre>
+                    <textarea rows="1" name="q3" placeholder="Insira a saída esperada..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 5: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="Função Virtual Pura" data-explanation="Uma Função Virtual Pura é declarada com '= 0' e não tem implementação na classe base.">
+                    <h4>Questão 5 (Múltipla Escolha): Qual termo descreve uma função virtual que é declarada com `= 0` e não possui implementação na classe base?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q4" value="Função Estática"> Função Estática</label>
+                        <label><input type="radio" name="q4" value="Função Amiga"> Função Amiga</label>
+                        <label><input type="radio" name="q4" value="Função Virtual Pura"> Função Virtual Pura</label>
+                        <label><input type="radio" name="q4" value="Função Sobrecarga"> Função Sobrecarga</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 6: Verdadeiro/Falso -->
+                <div class="quiz-question" data-correct-answer="Falso" data-explanation="Uma classe derivada só se torna concreta (instanciável) se implementar TODAS as Funções Virtuais Puras da classe base.">
+                    <h4>Questão 6 (Verdadeiro/Falso): Uma classe derivada de uma classe abstrata pode ser instanciada mesmo que não implemente todas as Funções Virtuais Puras.</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q5" value="Verdadeiro"> Verdadeiro</label>
+                        <label><input type="radio" name="q5" value="Falso"> Falso</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 7: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="protected" data-explanation="O 'protected' permite que a classe base e as derivadas acessem o membro, mas o esconde do código externo, sendo ideal para atributos que as subclasses precisam manipular.">
+                    <h4>Questão 7 (Múltipla Escolha): Qual especificador de acesso é o mais adequado para um atributo que deve ser acessível apenas pela classe base e suas classes derivadas, mas não pelo código externo?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q6" value="public"> public</label>
+                        <label><input type="radio" name="q6" value="protected"> protected</label>
+                        <label><input type="radio" name="q6" value="private"> private</label>
+                        <label><input type="radio" name="q6" value="static"> static</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 8: Exercício de Código (Debug) -->
+                <div class="quiz-question" data-correct-answer="100" data-explanation="O Setter tem uma validação que impede que a vida seja maior que 100. O valor 150 é ignorado e a vida permanece em 100.">
+                    <h4>Questão 8 (Exercício de Código): Qual será o valor final de `heroi.get_vida()`?</h4>
+                    <pre><code>class Personagem {
+private: int vida = 100;
+public:
+    void set_vida(int v) { if (v <= 100) vida = v; }
+    int get_vida() { return vida; }
+};
+Personagem heroi;
+heroi.set_vida(50);
+heroi.set_vida(150);
+// std::cout << heroi.get_vida();</code></pre>
+                    <textarea rows="1" name="q7" placeholder="Insira o valor final..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 9: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="UFUNCTION(BlueprintCallable)" data-explanation="O 'BlueprintCallable' expõe o método C++ para ser chamado diretamente em Blueprints, mantendo o encapsulamento do código C++.">
+                    <h4>Questão 9 (Múltipla Escolha): Na Unreal Engine, como você expõe um método C++ para ser chamado a partir de um Blueprint, mantendo o encapsulamento do código C++?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q8" value="UCLASS"> UCLASS</label>
+                        <label><input type="radio" name="q8" value="UPROPERTY(EditAnywhere)"> UPROPERTY(EditAnywhere)</label>
+                        <label><input type="radio" name="q8" value="UFUNCTION(BlueprintCallable)"> UFUNCTION(BlueprintCallable)</label>
+                        <label><input type="radio" name="q8" value="Usando apenas o especificador public."> Usando apenas o especificador public.</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 10: Questão Conceitual Aplicada -->
+                <div class="quiz-question" data-correct-answer="Uma classe abstrata 'IInteractable' (Interface) com uma função virtual pura 'virtual void Interact(APawn* Instigator) = 0;'. Qualquer objeto que implemente essa interface (ex: 'ADoor', 'APickup') deve fornecer sua própria lógica de interação, abstraindo o processo de interação para o jogador." data-explanation="Interfaces e classes abstratas são a forma mais pura de abstração, definindo um contrato de comportamento que as classes concretas devem seguir.">
+                    <h4>Questão 10 (Conceitual Aplicada): Em um jogo, como você usaria uma Classe Abstrata para implementar um sistema de `Interação`? Cite a função virtual pura.</h4>
+                    <textarea rows="3" name="q9" placeholder="Responda aqui..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Verificar Respostas</button>
+            </form>
+            <div id="quiz-result"></div>
+
+            <div class="nav-buttons">
+                <a href="../modulo.html" class="prev">&laquo; Voltar ao Módulo</a>
+                <a href="../04-Classes-Abstratas-Interfaces/teoria.md" class="next">Próxima Lição: Classes Abstratas e Interfaces &raquo;</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

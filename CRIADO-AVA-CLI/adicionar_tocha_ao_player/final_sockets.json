@@ -1,0 +1,22 @@
+{
+  "mesh_name": "Mannequin",
+  "mesh_sockets": [
+    "FP_Camera",
+    "FP_Camera",
+    "TP_CameraTrace_L",
+    "TP_CameraTrace_R",
+    "WeaponBack",
+    "PistolSocket",
+    "WeaponHand",
+    "RifleBack",
+    "SMGSocket",
+    "MagSocket",
+    "JetpackPosition",
+    "Footstep_L",
+    "Footstep_R"
+  ],
+  "mesh_socket_count": 13,
+  "skeleton_name": "ALS_Mannequin_Skeleton",
+  "skeleton_sockets": [],
+  "sk_socket_count": 0
+}

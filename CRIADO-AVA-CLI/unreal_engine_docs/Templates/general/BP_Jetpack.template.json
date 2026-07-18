@@ -1,0 +1,71 @@
+{
+  "name": "BP_Jetpack",
+  "parent_class": "BP_InteractionObject_C",
+  "template_id": "jetpack",
+  "category": "General",
+  "variables": [
+    {
+      "name": "IsJetpack",
+      "type": "bool"
+    }
+  ],
+  "components": [
+    {
+      "name": "Mesh",
+      "type": "StaticMeshComponent"
+    },
+    {
+      "name": "Light",
+      "type": "PointLightComponent"
+    },
+    {
+      "name": "RotatingMovement",
+      "type": "RotatingMovementComponent"
+    }
+  ],
+  "events": [
+    "`Interact`",
+    "`ResetDoOnce`",
+    "`JetpackEffects`"
+  ],
+  "functions": [
+    "`GetComponents()`",
+    "`K2_AttachToComponent()`",
+    "`SetActive()`",
+    "`K2_DetachFromActor()`",
+    "`K2_SetActorTransform()`",
+    "`GetTransform()`",
+    "`ResetDoOnce()`",
+    "`K2_GetComponentToWorld()`",
+    "`SpawnSoundAtLocation()`",
+    "`SetHiddenInGame()`",
+    "`SetIntensity()`",
+    "`SetIntParameter()`",
+    "`SetFloatParameter()`",
+    "`SetColorParameter()`",
+    "`SetLightColor()`",
+    "`GetAnimInstance()`",
+    "`IsJetpack()`",
+    "`BreakTransform()`",
+    "`MakeTransform()`",
+    "`K2_SetRelativeRotation()`",
+    "`FInterpTo()`",
+    "`MakeRotator()`",
+    "`ExecuteUbergraph_BP_Jetpack()`",
+    "`Multiply_DoubleDouble()`"
+  ],
+  "graph_sections": [],
+  "interfaces": [],
+  "structs_used": [],
+  "key_patterns": {
+    "has_replication": false,
+    "has_timers": false,
+    "has_overlap_events": false,
+    "has_enhanced_input": false,
+    "has_timeline": false,
+    "has_data_tables": false,
+    "has_dynamic_material": false,
+    "has_camera_fade": false
+  },
+  "source_file": "BP_Jetpack.md"
+}

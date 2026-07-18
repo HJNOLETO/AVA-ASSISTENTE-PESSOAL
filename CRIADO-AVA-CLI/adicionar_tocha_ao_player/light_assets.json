@@ -1,0 +1,343 @@
+{
+  "light_classes": {
+    "/Game": []
+  },
+  "flashlight": {
+    "/Game": []
+  },
+  "lantern": {
+    "/Game": []
+  },
+  "tocha": {
+    "/Game": []
+  },
+  "fogo": {
+    "/Game": []
+  },
+  "fire": {
+    "/Game": [
+      {
+        "name": "E_FireMode",
+        "class": "UserDefinedEnum"
+      },
+      {
+        "name": "FragmentingFire",
+        "class": "ParticleSystem"
+      },
+      {
+        "name": "Pistol_fire",
+        "class": "SoundCue"
+      },
+      {
+        "name": "Rifle_fire",
+        "class": "SoundCue"
+      },
+      {
+        "name": "aks74u-fire",
+        "class": "SoundWave"
+      },
+      {
+        "name": "rpg7-fire",
+        "class": "SoundWave"
+      },
+      {
+        "name": "svd-fire",
+        "class": "SoundWave"
+      },
+      {
+        "name": "FragmentingFire2",
+        "class": "ParticleSystem"
+      },
+      {
+        "name": "FirstPerson_Fire",
+        "class": "AnimSequence"
+      },
+      {
+        "name": "FirstPersonFire_Montage",
+        "class": "AnimMontage"
+      },
+      {
+        "name": "MM_Shotgun_Fire",
+        "class": "AnimSequence"
+      },
+      {
+        "name": "MM_Rifle_Fire",
+        "class": "AnimSequence"
+      },
+      {
+        "name": "MM_Rifle_DryFire_Additive",
+        "class": "AnimSequence"
+      },
+      {
+        "name": "MM_Rifle_DryFire",
+        "class": "AnimSequence"
+      },
+      {
+        "name": "MM_Pistol_Fire",
+        "class": "AnimSequence"
+      },
+      {
+        "name": "MM_Pistol_DryFire_Additive",
+        "class": "AnimSequence"
+      },
+      {
+        "name": "MM_Pistol_DryFire",
+        "class": "AnimSequence"
+      },
+      {
+        "name": "MM_Rifle_Idle_Hipfire_AO_RU",
+        "class": "AnimSequence"
+      },
+      {
+        "name": "MM_Rifle_Idle_Hipfire_AO_RD",
+        "class": "AnimSequence"
+      },
+      {
+        "name": "MM_Rifle_Idle_Hipfire_AO_RC",
+        "class": "AnimSequence"
+      },
+      {
+        "name": "MM_Rifle_Idle_Hipfire_AO_RBU",
+        "class": "AnimSequence"
+      },
+      {
+        "name": "MM_Rifle_Idle_Hipfire_AO_RBD",
+        "class": "AnimSequence"
+      },
+      {
+        "name": "MM_Rifle_Idle_Hipfire_AO_RBC",
+        "class": "AnimSequence"
+      },
+      {
+        "name": "MM_Rifle_Idle_Hipfire_AO_LU",
+        "class": "AnimSequence"
+      },
+      {
+        "name": "MM_Rifle_Idle_Hipfire_AO_LD",
+        "class": "AnimSequence"
+      },
+      {
+        "name": "MM_Rifle_Idle_Hipfire_AO_LC",
+        "class": "AnimSequence"
+      },
+      {
+        "name": "MM_Rifle_Idle_Hipfire_AO_LBU",
+        "class": "AnimSequence"
+      },
+      {
+        "name": "MM_Rifle_Idle_Hipfire_AO_LBD",
+        "class": "AnimSequence"
+      },
+      {
+        "name": "MM_Rifle_Idle_Hipfire_AO_LBC",
+        "class": "AnimSequence"
+      },
+      {
+        "name": "MM_Rifle_Idle_Hipfire_AO_CU",
+        "class": "AnimSequence"
+      },
+      {
+        "name": "MM_Rifle_Idle_Hipfire_AO_CD",
+        "class": "AnimSequence"
+      },
+      {
+        "name": "MM_Rifle_Idle_Hipfire_AO_CC",
+        "class": "AnimSequence"
+      },
+      {
+        "name": "MM_Pistol_Idle_Hipfire",
+        "class": "AnimSequence"
+      },
+      {
+        "name": "MF_Pistol_Idle_Hipfire",
+        "class": "AnimSequence"
+      },
+      {
+        "name": "MF_Pistol_Hipfire_OverridePose",
+        "class": "AnimSequence"
+      },
+      {
+        "name": "MM_Rifle_Idle_Hipfire",
+        "class": "AnimSequence"
+      },
+      {
+        "name": "MM_Rifle_Hipfire_OverridePose",
+        "class": "AnimSequence"
+      },
+      {
+        "name": "MF_Rifle_Idle_Hipfire",
+        "class": "AnimSequence"
+      },
+      {
+        "name": "MM_Shotgun_Idle_Hipfire",
+        "class": "AnimSequence"
+      },
+      {
+        "name": "MF_Shotgun_Idle_Hipfire",
+        "class": "AnimSequence"
+      },
+      {
+        "name": "T_FireSheet4",
+        "class": "Texture2D"
+      },
+      {
+        "name": "T_FireSheet3",
+        "class": "Texture2D"
+      },
+      {
+        "name": "T_FireSheet2",
+        "class": "Texture2D"
+      },
+      {
+        "name": "T_FireSheet",
+        "class": "Texture2D"
+      },
+      {
+        "name": "SM_MExtinguisherFire",
+        "class": "StaticMesh"
+      },
+      {
+        "name": "Fire01_Cue",
+        "class": "SoundCue"
+      },
+      {
+        "name": "Fire01",
+        "class": "SoundWave"
+      },
+      {
+        "name": "Fire_Sparks01_Cue",
+        "class": "SoundCue"
+      },
+      {
+        "name": "Fire_Sparks01",
+        "class": "SoundWave"
+      },
+      {
+        "name": "Blueprint_Effect_Fire",
+        "class": "Blueprint"
+      }
+    ]
+  },
+  "particles": [
+    {
+      "name": "Concrete_impact_Dyn",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Bloody_Overkill_Dyn",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Grass_impact_Dyn",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Mud_impact_Dyn2",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Sand_impact_2_Dyn",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Generic_Impact",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Dirt_impact_2_Dyn",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Gravel_impact_2_Dyn",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Metal_impact_Dyn",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Water_impact_Dyn",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Wood_impact_Dyn",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Generic_Impact",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Acid_impact_Dyn",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Acid_impact_Sparklers",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Asphalt_impact_Dyn",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Bark_Impact_Dyn",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Brick_impact_Dyn",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "BrickDebris",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "CarbonFibre_impact_Dyn",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Ceramic_impact_Dyn",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "CeramicDebris",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Dirt_impact_Dyn2",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Dirt_impact_2_Dyn",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Electrical_Debris",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Electrical_impact_Dyn",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "EnergyShield_impact_Dyn",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Fabric_impact_Dyn",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Blood_cloud_Dyn",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Glass_Debris",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Glass_impact_Dyn",
+      "class": "ParticleSystem"
+    }
+  ]
+}

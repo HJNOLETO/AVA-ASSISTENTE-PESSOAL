@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: Classes Abstratas e Interfaces</title>
+    <link rel="stylesheet" href="../../recursos/css/estilo.css">
+    <script src="../../recursos/js/quiz.js" defer></script>
+</head>
+<body>
+    <button id="dark-mode-toggle">Alternar Modo Escuro</button>
+    <header>
+        <h1>Quiz: Classes Abstratas e Interfaces</h1>
+        <p>Teste seus conhecimentos sobre abstração pura e contratos de comportamento.</p>
+    </header>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Início</a> <span>&gt;</span> <a href="../modulo.html">Módulo 03</a> <span>&gt;</span> Quiz
+        </div>
+
+        <div class="content-area">
+            <h2 id="quiz-titulo">Autoavaliação: Classes Abstratas e Interfaces</h2>
+            <p>Responda às questões abaixo e clique em "Verificar Respostas" para receber feedback imediato.</p>
+
+            <form id="quiz-form">
+                <!-- Questão 1: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="Contém pelo menos uma Função Virtual Pura." data-explanation="A presença de uma FVP é o que torna uma classe abstrata e impede sua instanciação.">
+                    <h4>Questão 1 (Múltipla Escolha): O que torna uma classe C++ uma Classe Abstrata?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q0" value="Contém apenas métodos privados."> Contém apenas métodos privados.</label>
+                        <label><input type="radio" name="q0" value="Contém pelo menos uma Função Virtual Pura."> Contém pelo menos uma Função Virtual Pura.</label>
+                        <label><input type="radio" name="q0" value="Não possui construtor."> Não possui construtor.</label>
+                        <label><input type="radio" name="q0" value="É herdada de outra classe."> É herdada de outra classe.</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 2: Verdadeiro/Falso -->
+                <div class="quiz-question" data-correct-answer="Verdadeiro" data-explanation="Interfaces (classes abstratas puras) definem um contrato de comportamento que as classes derivadas devem seguir.">
+                    <h4>Questão 2 (Verdadeiro/Falso): O principal objetivo de uma Interface é definir um contrato de comportamento que as classes que a implementam devem seguir.</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q1" value="Verdadeiro"> Verdadeiro</label>
+                        <label><input type="radio" name="q1" value="Falso"> Falso</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 3: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="Não pode ser instanciada." data-explanation="A principal restrição de uma classe abstrata é que ela não pode ser instanciada diretamente.">
+                    <h4>Questão 3 (Múltipla Escolha): Qual é a principal restrição de uma Classe Abstrata?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q2" value="Não pode ter atributos."> Não pode ter atributos.</label>
+                        <label><input type="radio" name="q2" value="Não pode ser herdada."> Não pode ser herdada.</label>
+                        <label><input type="radio" name="q2" value="Não pode ser instanciada."> Não pode ser instanciada.</label>
+                        <label><input type="radio" name="q2" value="Não pode ter construtor."> Não pode ter construtor.</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 4: Exercício de Código (Debug) -->
+                <div class="quiz-question" data-correct-answer="Erro de compilação" data-explanation="A classe 'Circulo' herda de 'Forma' mas não implementa a FVP 'calcular_area()'. Portanto, 'Circulo' também é abstrata e não pode ser instanciada.">
+                    <h4>Questão 4 (Exercício de Código): O que acontece ao tentar compilar a linha `Circulo c;`?</h4>
+                    <pre><code>class Forma { public: virtual float calcular_area() = 0; };
+class Circulo : public Forma { /* Não implementa calcular_area */ };
+// Circulo c;</code></pre>
+                    <textarea rows="1" name="q3" placeholder="Insira a saída esperada..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 5: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="Herança Múltipla" data-explanation="Interfaces são a forma segura de simular herança múltipla em C++, permitindo que uma classe herde o 'contrato' de múltiplas fontes.">
+                    <h4>Questão 5 (Múltipla Escolha): Em C++, as Interfaces são a forma mais segura de simular qual conceito da POO?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q4" value="Encapsulamento"> Encapsulamento</label>
+                        <label><input type="radio" name="q4" value="Herança Múltipla"> Herança Múltipla</label>
+                        <label><input type="radio" name="q4" value="Polimorfismo Estático"> Polimorfismo Estático</label>
+                        <label><input type="radio" name="q4" value="Sobrecarga de Operadores"> Sobrecarga de Operadores</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 6: Verdadeiro/Falso -->
+                <div class="quiz-question" data-correct-answer="Falso" data-explanation="Classes Abstratas podem ter atributos e métodos concretos (com implementação) que são herdados pelas subclasses. Interfaces (abstração pura) não devem ter.">
+                    <h4>Questão 6 (Verdadeiro/Falso): Uma Classe Abstrata não pode ter atributos ou métodos com implementação.</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q5" value="Verdadeiro"> Verdadeiro</label>
+                        <label><input type="radio" name="q5" value="Falso"> Falso</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 7: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="IInteractable" data-explanation="A convenção de nomeclatura para Interfaces é prefixar com 'I'.">
+                    <h4>Questão 7 (Múltipla Escolha): Qual seria o nome mais apropriado para uma Interface que define o comportamento de interação em um jogo?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q6" value="InteractableClass"> InteractableClass</label>
+                        <label><input type="radio" name="q6" value="AInteractable"> AInteractable</label>
+                        <label><input type="radio" name="q6" value="IInteractable"> IInteractable</label>
+                        <label><input type="radio" name="q6" value="UInteractable"> UInteractable</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 8: Exercício de Código (Debug) -->
+                <div class="quiz-question" data-correct-answer="Porta aberta" data-explanation="O ponteiro da Interface ('IInteragivel*') aponta para o objeto concreto ('Porta'). O polimorfismo garante que o método 'interagir()' da 'Porta' seja chamado.">
+                    <h4>Questão 8 (Exercício de Código): Qual será a saída do código?</h4>
+                    <pre><code>class IInteragivel { public: virtual void interagir() = 0; };
+class Porta : public IInteragivel { public: void interagir() override { std::cout << "Porta aberta"; } };
+IInteragivel* i = new Porta();
+i->interagir();</code></pre>
+                    <textarea rows="1" name="q7" placeholder="Insira a saída esperada..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 9: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="Definir um conjunto de funcionalidades que classes não relacionadas podem compartilhar." data-explanation="Interfaces são usadas para definir um 'contrato' de comportamento que pode ser implementado por classes em diferentes hierarquias.">
+                    <h4>Questão 9 (Múltipla Escolha): Em um contexto de jogo, qual é o melhor uso para uma Interface?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q8" value="Definir a hierarquia principal de classes (ex: Personagem -> Guerreiro)."> Definir a hierarquia principal de classes (ex: Personagem -> Guerreiro).</label>
+                        <label><input type="radio" name="q8" value="Definir um conjunto de funcionalidades que classes não relacionadas podem compartilhar."> Definir um conjunto de funcionalidades que classes não relacionadas podem compartilhar.</label>
+                        <label><input type="radio" name="q8" value="Armazenar dados globais do jogo."> Armazenar dados globais do jogo.</label>
+                        <label><input type="radio" name="q8" value="Gerenciar a memória dinâmica."> Gerenciar a memória dinâmica.</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 10: Questão Conceitual Aplicada -->
+                <div class="quiz-question" data-correct-answer="A classe abstrata seria 'AActor' ou 'APawn'. A FVP seria 'virtual void SetupInputComponent() = 0;' (simulando a obrigatoriedade de configurar a entrada). A Interface seria 'IHealthComponent' com a FVP 'virtual void TakeDamage(float Damage) = 0;'. A classe 'ACharacter' herdaria de 'APawn' e implementaria 'IHealthComponent'." data-explanation="Classes abstratas definem a estrutura, e interfaces definem o comportamento obrigatório.">
+                    <h4>Questão 10 (Conceitual Aplicada): Em um contexto Unreal, dê um exemplo de uma Classe Abstrata e uma Interface que seriam usadas juntas em uma classe de personagem.</h4>
+                    <textarea rows="3" name="q9" placeholder="Responda aqui..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Verificar Respostas</button>
+            </form>
+            <div id="quiz-result"></div>
+
+            <div class="nav-buttons">
+                <a href="../modulo.html" class="prev">&laquo; Voltar ao Módulo</a>
+                <a href="../projeto-integrador/desafio.md" class="next">Próximo: Projeto Integrador &raquo;</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

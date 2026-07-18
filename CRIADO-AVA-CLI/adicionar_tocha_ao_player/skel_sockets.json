@@ -1,0 +1,4 @@
+{
+  "skeleton": "ALS_Mannequin_Skeleton",
+  "error": "'Skeleton' object has no attribute 'num_sockets'"
+}

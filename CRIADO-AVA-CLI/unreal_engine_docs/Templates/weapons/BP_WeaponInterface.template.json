@@ -1,0 +1,29 @@
+{
+  "name": "BP_WeaponInterface",
+  "parent_class": "Interface",
+  "template_id": "weapon_interface",
+  "category": "Weapons",
+  "variables": [],
+  "components": [
+    {
+      "name": "Mesh",
+      "type": "StaticMeshComponent"
+    }
+  ],
+  "events": [],
+  "functions": [],
+  "graph_sections": [],
+  "interfaces": [],
+  "structs_used": [],
+  "key_patterns": {
+    "has_replication": false,
+    "has_timers": false,
+    "has_overlap_events": false,
+    "has_enhanced_input": false,
+    "has_timeline": false,
+    "has_data_tables": false,
+    "has_dynamic_material": false,
+    "has_camera_fade": false
+  },
+  "source_file": "BP_WeaponInterface.md"
+}

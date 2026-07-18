@@ -1,0 +1,57 @@
+{
+  "name": "BP_InteractionObject",
+  "parent_class": "Actor",
+  "template_id": "interaction_object",
+  "category": "Interaction",
+  "variables": [
+    {
+      "name": "Character",
+      "type": "object (Actor)"
+    },
+    {
+      "name": "IsActive",
+      "type": "bool"
+    },
+    {
+      "name": "DoOnce",
+      "type": "bool"
+    }
+  ],
+  "components": [
+    {
+      "name": "Overlap",
+      "type": "SphereComponent"
+    },
+    {
+      "name": "Trigger",
+      "type": "SphereComponent"
+    }
+  ],
+  "events": [
+    "`BndEvt__BP_InteractionObject_Trigger_K2Node_ComponentBoundEvent_0_ComponentBeginOverlapSignature__DelegateSignature`",
+    "`BndEvt__BP_InteractionObject_Trigger_K2Node_ComponentBoundEvent_1_ComponentEndOverlapSignature__DelegateSignature`",
+    "`Interact`",
+    "`ResetDoOnce`"
+  ],
+  "functions": [
+    "`GetPlayerPawn()`",
+    "`TriggerOverlapEnd()`",
+    "`GetComponents()`",
+    "`EqualEqual_ObjectObject()`",
+    "`ExecuteUbergraph_BP_InteractionObject()`"
+  ],
+  "graph_sections": [],
+  "interfaces": [],
+  "structs_used": [],
+  "key_patterns": {
+    "has_replication": false,
+    "has_timers": false,
+    "has_overlap_events": true,
+    "has_enhanced_input": false,
+    "has_timeline": false,
+    "has_data_tables": false,
+    "has_dynamic_material": false,
+    "has_camera_fade": false
+  },
+  "source_file": "BP_InteractionObject.md"
+}

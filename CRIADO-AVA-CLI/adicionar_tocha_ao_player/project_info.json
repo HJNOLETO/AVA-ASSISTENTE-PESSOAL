@@ -1,0 +1,528 @@
+{
+  "project_dir": "../../../../../../Users/hijon/Documents/UnrealEngine/PROJETO-GTA-29-10-2025/ProjetoGTA/ProjetoGTA/",
+  "project_name": "ProjetoGTA",
+  "project_file": "../../../../../../Users/hijon/Documents/UnrealEngine/PROJETO-GTA-29-10-2025/ProjetoGTA/ProjetoGTA/ProjetoGTA.uproject",
+  "saved_dir": "../../../../../../Users/hijon/Documents/UnrealEngine/PROJETO-GTA-29-10-2025/ProjetoGTA/ProjetoGTA/Saved/",
+  "map_name": "TestMap",
+  "map_path": "/Game/Maps/TestMap.TestMap",
+  "actors": [
+    {
+      "label": "InstancedFoliageActor",
+      "class": "InstancedFoliageActor",
+      "x": 0.0,
+      "y": 0.0,
+      "z": 0.0
+    },
+    {
+      "label": "Floor",
+      "class": "StaticMeshActor",
+      "x": 224.3,
+      "y": 0.0,
+      "z": -0.5
+    },
+    {
+      "label": "DirectionalLight",
+      "class": "DirectionalLight",
+      "x": 0.0,
+      "y": 0.0,
+      "z": 400.0
+    },
+    {
+      "label": "SkyAtmosphere",
+      "class": "SkyAtmosphere",
+      "x": 0.0,
+      "y": 0.0,
+      "z": 500.0
+    },
+    {
+      "label": "SkyLight",
+      "class": "SkyLight",
+      "x": 0.0,
+      "y": 0.0,
+      "z": 600.0
+    },
+    {
+      "label": "ExponentialHeightFog",
+      "class": "ExponentialHeightFog",
+      "x": -5600.0,
+      "y": -50.0,
+      "z": -6850.0
+    },
+    {
+      "label": "VolumetricCloud",
+      "class": "VolumetricCloud",
+      "x": 0.0,
+      "y": 0.0,
+      "z": 700.0
+    },
+    {
+      "label": "SM_SkySphere",
+      "class": "StaticMeshActor",
+      "x": 0.0,
+      "y": 0.0,
+      "z": 0.0
+    },
+    {
+      "label": "PlayerStart",
+      "class": "PlayerStart",
+      "x": -15035.3,
+      "y": -7769.4,
+      "z": 4024.5
+    },
+    {
+      "label": "Cube",
+      "class": "StaticMeshActor",
+      "x": 158.3,
+      "y": 837.3,
+      "z": 171.2
+    },
+    {
+      "label": "Cube2",
+      "class": "StaticMeshActor",
+      "x": 158.3,
+      "y": -667.7,
+      "z": 0.8
+    },
+    {
+      "label": "Cube3",
+      "class": "StaticMeshActor",
+      "x": 158.3,
+      "y": -840.2,
+      "z": 0.8
+    },
+    {
+      "label": "Cube4",
+      "class": "StaticMeshActor",
+      "x": 158.3,
+      "y": -1007.7,
+      "z": 0.8
+    },
+    {
+      "label": "Cube5",
+      "class": "StaticMeshActor",
+      "x": 1398.6,
+      "y": -753.6,
+      "z": 99.0
+    },
+    {
+      "label": "Cube6",
+      "class": "StaticMeshActor",
+      "x": -1235.4,
+      "y": -753.6,
+      "z": 99.0
+    },
+    {
+      "label": "Cube7",
+      "class": "StaticMeshActor",
+      "x": 168.2,
+      "y": -3681.8,
+      "z": 12.2
+    },
+    {
+      "label": "Cube8",
+      "class": "StaticMeshActor",
+      "x": 168.2,
+      "y": -3481.3,
+      "z": 6.4
+    },
+    {
+      "label": "BP_Door",
+      "class": "BP_Door_C",
+      "x": -4798.8,
+      "y": -418.9,
+      "z": -0.5
+    },
+    {
+      "label": "SphereReflectionCapture",
+      "class": "SphereReflectionCapture",
+      "x": -2980.1,
+      "y": 307.9,
+      "z": 365.9
+    },
+    {
+      "label": "TextRenderActor",
+      "class": "TextRenderActor",
+      "x": -1698.7,
+      "y": -427.3,
+      "z": 40.2
+    },
+    {
+      "label": "TriggerBox",
+      "class": "TriggerBox",
+      "x": -3754.1,
+      "y": 1555.2,
+      "z": 143.9
+    },
+    {
+      "label": "Cube10",
+      "class": "StaticMeshActor",
+      "x": -3857.9,
+      "y": -828.9,
+      "z": -46.5
+    },
+    {
+      "label": "Cube11",
+      "class": "StaticMeshActor",
+      "x": -3857.9,
+      "y": -588.4,
+      "z": -46.5
+    },
+    {
+      "label": "Cube12",
+      "class": "StaticMeshActor",
+      "x": -3857.9,
+      "y": -350.4,
+      "z": -46.5
+    },
+    {
+      "label": "Cube13",
+      "class": "StaticMeshActor",
+      "x": -3857.9,
+      "y": -114.3,
+      "z": -46.5
+    },
+    {
+      "label": "Cube14",
+      "class": "StaticMeshActor",
+      "x": -3857.9,
+      "y": 122.2,
+      "z": -46.5
+    },
+    {
+      "label": "Cube15",
+      "class": "StaticMeshActor",
+      "x": -2858.2,
+      "y": -828.9,
+      "z": -46.5
+    },
+    {
+      "label": "Cube16",
+      "class": "StaticMeshActor",
+      "x": -2858.2,
+      "y": -581.0,
+      "z": -46.5
+    },
+    {
+      "label": "BP_Jetpack",
+      "class": "BP_Jetpack_C",
+      "x": -3456.8,
+      "y": 1235.7,
+      "z": 43.9
+    },
+    {
+      "label": "BP_Zone_Ladder2",
+      "class": "BP_Zone_Ladder_C",
+      "x": -3467.1,
+      "y": 624.9,
+      "z": -38.7
+    },
+    {
+      "label": "Cube17",
+      "class": "StaticMeshActor",
+      "x": -3413.5,
+      "y": 640.4,
+      "z": 552.0
+    },
+    {
+      "label": "Cube18",
+      "class": "StaticMeshActor",
+      "x": -2110.1,
+      "y": -838.4,
+      "z": 71.4
+    },
+    {
+      "label": "Cube19",
+      "class": "StaticMeshActor",
+      "x": -2110.1,
+      "y": 1582.0,
+      "z": 115.0
+    },
+    {
+      "label": "Cube20",
+      "class": "StaticMeshActor",
+      "x": -4574.6,
+      "y": 1582.0,
+      "z": 115.0
+    },
+    {
+      "label": "Cube21",
+      "class": "StaticMeshActor",
+      "x": -4574.6,
+      "y": -1177.5,
+      "z": 49.5
+    },
+    {
+      "label": "Cube9",
+      "class": "StaticMeshActor",
+      "x": -4798.3,
+      "y": -32.3,
+      "z": 130.6
+    },
+    {
+      "label": "Cube22",
+      "class": "StaticMeshActor",
+      "x": -4798.3,
+      "y": -804.8,
+      "z": 130.6
+    },
+    {
+      "label": "Cube23",
+      "class": "StaticMeshActor",
+      "x": -4798.3,
+      "y": -406.4,
+      "z": 20.2
+    },
+    {
+      "label": "BP_MissionMarker",
+      "class": "BP_MissionMarker_C",
+      "x": -1830.7,
+      "y": 274.6,
+      "z": -0.5
+    },
+    {
+      "label": "SM_PlaceMarker",
+      "class": "StaticMeshActor",
+      "x": -1563.7,
+      "y": 2350.1,
+      "z": 186.6
+    },
+    {
+      "label": "BP_MissionMarker2",
+      "class": "BP_MissionMarker_C",
+      "x": -1317.2,
+      "y": 638.5,
+      "z": -0.5
+    },
+    {
+      "label": "Cube24",
+      "class": "StaticMeshActor",
+      "x": 0.0,
+      "y": 0.0,
+      "z": 0.0
+    },
+    {
+      "label": "BP_AmmoBox3",
+      "class": "BP_AmmoBox_C",
+      "x": -2112.6,
+      "y": -1327.7,
+      "z": 121.2
+    },
+    {
+      "label": "BP_AmmoBox2",
+      "class": "BP_AmmoBox_C",
+      "x": -2409.1,
+      "y": -1327.7,
+      "z": 121.2
+    },
+    {
+      "label": "Cube25",
+      "class": "StaticMeshActor",
+      "x": -2598.8,
+      "y": -1337.2,
+      "z": 71.4
+    },
+    {
+      "label": "BP_AmmoBox4",
+      "class": "BP_AmmoBox_C",
+      "x": -2508.5,
+      "y": -1327.7,
+      "z": 121.2
+    },
+    {
+      "label": "BP_AmmoBox5",
+      "class": "BP_AmmoBox_C",
+      "x": -2631.2,
+      "y": -1327.7,
+      "z": 121.2
+    },
+    {
+      "label": "BP_AmmoBox6",
+      "class": "BP_AmmoBox_C",
+      "x": -2747.7,
+      "y": -1327.7,
+      "z": 121.2
+    },
+    {
+      "label": "BP_AmmoBox7",
+      "class": "BP_AmmoBox_C",
+      "x": -2987.8,
+      "y": -1327.7,
+      "z": 121.2
+    },
+    {
+      "label": "BP_AmmoBox8",
+      "class": "BP_AmmoBox_C",
+      "x": -2248.1,
+      "y": -1327.7,
+      "z": 121.2
+    },
+    {
+      "label": "BP_AmmoBox9",
+      "class": "BP_AmmoBox_C",
+      "x": -2859.4,
+      "y": -1327.7,
+      "z": 121.2
+    },
+    {
+      "label": "Parede_Teste",
+      "class": "StaticMeshActor",
+      "x": -2604.2,
+      "y": -1628.8,
+      "z": 187.0
+    },
+    {
+      "label": "BP_WeaponBase2",
+      "class": "BP_WeaponBase_C",
+      "x": -2566.4,
+      "y": -1352.5,
+      "z": 129.2
+    },
+    {
+      "label": "BP_WeaponBase3",
+      "class": "BP_WeaponBase_C",
+      "x": -2686.0,
+      "y": -1352.5,
+      "z": 131.7
+    },
+    {
+      "label": "BP_WeaponBase5",
+      "class": "BP_WeaponBase_C",
+      "x": -2802.0,
+      "y": -1352.5,
+      "z": 140.3
+    },
+    {
+      "label": "BP_WeaponBase7",
+      "class": "BP_WeaponBase_C",
+      "x": -2920.0,
+      "y": -1352.5,
+      "z": 134.3
+    },
+    {
+      "label": "BP_Beretta4",
+      "class": "BP_Beretta_C",
+      "x": -2189.7,
+      "y": -1352.5,
+      "z": 126.5
+    },
+    {
+      "label": "BP_MP5",
+      "class": "BP_MP5_C",
+      "x": -2459.8,
+      "y": -1333.1,
+      "z": 131.6
+    },
+    {
+      "label": "BP_Remington2",
+      "class": "BP_Remington_C",
+      "x": -2327.4,
+      "y": -1352.5,
+      "z": 132.9
+    },
+    {
+      "label": "Parede_Teste2",
+      "class": "StaticMeshActor",
+      "x": -4074.8,
+      "y": -1628.8,
+      "z": 298.7
+    },
+    {
+      "label": "Cube26",
+      "class": "StaticMeshActor",
+      "x": -4163.1,
+      "y": -1607.1,
+      "z": 242.2
+    },
+    {
+      "label": "Cube27",
+      "class": "StaticMeshActor",
+      "x": -3548.1,
+      "y": -1607.1,
+      "z": 153.4
+    },
+    {
+      "label": "Cube28",
+      "class": "StaticMeshActor",
+      "x": -3688.9,
+      "y": -1607.1,
+      "z": 236.8
+    },
+    {
+      "label": "Cube29",
+      "class": "StaticMeshActor",
+      "x": -3899.8,
+      "y": -1607.1,
+      "z": 236.8
+    },
+    {
+      "label": "Cube30",
+      "class": "StaticMeshActor",
+      "x": -3813.2,
+      "y": -1607.1,
+      "z": 321.4
+    },
+    {
+      "label": "Cube31",
+      "class": "StaticMeshActor",
+      "x": -4047.4,
+      "y": -1607.1,
+      "z": 411.6
+    },
+    {
+      "label": "Cube32",
+      "class": "StaticMeshActor",
+      "x": -3809.1,
+      "y": -1607.1,
+      "z": 521.4
+    },
+    {
+      "label": "Cube33",
+      "class": "StaticMeshActor",
+      "x": -4021.9,
+      "y": -1607.1,
+      "z": 521.4
+    },
+    {
+      "label": "Cube34",
+      "class": "StaticMeshActor",
+      "x": -4216.2,
+      "y": -1607.1,
+      "z": 573.2
+    },
+    {
+      "label": "LevelGame-ThePirateLost2",
+      "class": "StaticMeshActor",
+      "x": -18710.0,
+      "y": -2174.3,
+      "z": 1937.3
+    },
+    {
+      "label": "SM_PlaceMarker2",
+      "class": "StaticMeshActor",
+      "x": -8134.4,
+      "y": 495.6,
+      "z": 186.6
+    },
+    {
+      "label": "ALS_NPC",
+      "class": "ALS_NPC_C",
+      "x": -1446.4,
+      "y": -1179.5,
+      "z": 91.3
+    },
+    {
+      "label": "ALS_NPC2",
+      "class": "ALS_NPC_C",
+      "x": -1446.4,
+      "y": -999.8,
+      "z": 91.3
+    },
+    {
+      "label": "ALS_NPC3",
+      "class": "ALS_NPC_C",
+      "x": -7857.4,
+      "y": -841.6,
+      "z": 89.5
+    }
+  ]
+}

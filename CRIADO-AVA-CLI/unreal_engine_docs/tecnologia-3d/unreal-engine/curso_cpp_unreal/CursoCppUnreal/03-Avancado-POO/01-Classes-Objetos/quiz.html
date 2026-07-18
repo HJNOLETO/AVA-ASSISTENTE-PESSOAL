@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: Classes e Objetos</title>
+    <link rel="stylesheet" href="../../recursos/css/estilo.css">
+    <script src="../../recursos/js/quiz.js" defer></script>
+</head>
+<body>
+    <button id="dark-mode-toggle">Alternar Modo Escuro</button>
+    <header>
+        <h1>Quiz: Classes e Objetos</h1>
+        <p>Teste seus conhecimentos sobre a base da Programação Orientada a Objetos.</p>
+    </header>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Início</a> <span>&gt;</span> <a href="../modulo.html">Módulo 03</a> <span>&gt;</span> Quiz
+        </div>
+
+        <div class="content-area">
+            <h2 id="quiz-titulo">Autoavaliação: Classes e Objetos</h2>
+            <p>Responda às questões abaixo e clique em "Verificar Respostas" para receber feedback imediato.</p>
+
+            <form id="quiz-form">
+                <!-- Questão 1: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="Classe" data-explanation="A classe é o molde ou projeto, enquanto o objeto é a instância concreta desse molde.">
+                    <h4>Questão 1 (Múltipla Escolha): Em POO, qual termo descreve o molde ou projeto que define a estrutura e o comportamento de um tipo de entidade?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q0" value="Objeto"> Objeto</label>
+                        <label><input type="radio" name="q0" value="Método"> Método</label>
+                        <label><input type="radio" name="q0" value="Classe"> Classe</label>
+                        <label><input type="radio" name="q0" value="Atributo"> Atributo</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 2: Verdadeiro/Falso -->
+                <div class="quiz-question" data-correct-answer="Verdadeiro" data-explanation="O construtor é chamado automaticamente para inicializar o objeto, e o destrutor é chamado para liberar recursos quando o objeto é destruído.">
+                    <h4>Questão 2 (Verdadeiro/Falso): O construtor e o destrutor são métodos especiais que são chamados automaticamente durante o ciclo de vida de um objeto.</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q1" value="Verdadeiro"> Verdadeiro</label>
+                        <label><input type="radio" name="q1" value="Falso"> Falso</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 3: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="->" data-explanation="O operador seta '->' é usado para acessar membros de um objeto através de um ponteiro.">
+                    <h4>Questão 3 (Múltipla Escolha): Qual operador é usado para acessar um método de um objeto quando você tem um ponteiro para esse objeto (ex: `ptr_objeto` para `metodo()`)?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q2" value="."> .</label>
+                        <label><input type="radio" name="q2" value="::"> ::</label>
+                        <label><input type="radio" name="q2" value="->"> -></label>
+                        <label><input type="radio" name="q2" value="*"> *</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 4: Exercício de Código (Debug) -->
+                <div class="quiz-question" data-correct-answer="100" data-explanation="O construtor com parâmetros é chamado, inicializando 'vida' para 100.">
+                    <h4>Questão 4 (Exercício de Código): Qual será o valor de `heroi.vida`?</h4>
+                    <pre><code>class Personagem {
+public:
+    int vida;
+    Personagem(int v) { vida = v; }
+};
+Personagem heroi(100);
+// std::cout << heroi.vida;</code></pre>
+                    <textarea rows="1" name="q3" placeholder="Insira o valor final..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 5: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="O destrutor é chamado automaticamente." data-explanation="Objetos criados na Stack (sem 'new') têm seu destrutor chamado automaticamente quando saem do escopo.">
+                    <h4>Questão 5 (Múltipla Escolha): O que acontece com um objeto criado na Stack (ex: `Personagem heroi;`) quando ele sai do escopo?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q4" value="O destrutor é chamado automaticamente."> O destrutor é chamado automaticamente.</label>
+                        <label><input type="radio" name="q4" value="Você deve chamar `delete heroi;`."> Você deve chamar `delete heroi;`.</label>
+                        <label><input type="radio" name="q4" value="O objeto permanece na memória até o fim do programa."> O objeto permanece na memória até o fim do programa.</label>
+                        <label><input type="radio" name="q4" value="Ocorre um vazamento de memória."> Ocorre um vazamento de memória.</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 6: Verdadeiro/Falso -->
+                <div class="quiz-question" data-correct-answer="Falso" data-explanation="O construtor não pode ter um tipo de retorno, nem mesmo 'void'.">
+                    <h4>Questão 6 (Verdadeiro/Falso): Um construtor pode ter um tipo de retorno `void`.</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q5" value="Verdadeiro"> Verdadeiro</label>
+                        <label><input type="radio" name="q5" value="Falso"> Falso</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 7: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="Atributos" data-explanation="Os atributos (membros de dados) armazenam o estado do objeto.">
+                    <h4>Questão 7 (Múltipla Escolha): Qual componente de uma classe é responsável por armazenar o estado (dados) de um objeto?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q6" value="Métodos"> Métodos</label>
+                        <label><input type="radio" name="q6" value="Construtores"> Construtores</label>
+                        <label><input type="radio" name="q6" value="Atributos"> Atributos</label>
+                        <label><input type="radio" name="q6" value="Destrutores"> Destrutores</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 8: Exercício de Código (Debug) -->
+                <div class="quiz-question" data-correct-answer="90" data-explanation="O ponteiro 'ptr' aponta para o objeto 'heroi'. A linha 'ptr->vida -= 10;' acessa e modifica a vida do objeto 'heroi' através do ponteiro.">
+                    <h4>Questão 8 (Exercício de Código): Qual será o valor final de `heroi.vida`?</h4>
+                    <pre><code>class Personagem {
+public: int vida = 100; };
+Personagem heroi;
+Personagem* ptr = &heroi;
+ptr->vida -= 10;
+// std::cout << heroi.vida;</code></pre>
+                    <textarea rows="1" name="q7" placeholder="Insira o valor final..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 9: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="UCLASS" data-explanation="A macro 'UCLASS' é usada para marcar classes C++ que a Unreal Engine deve reconhecer e integrar ao seu sistema de reflexão.">
+                    <h4>Questão 9 (Múltipla Escolha): Qual macro da Unreal Engine é usada para marcar uma classe C++ para que ela possa ser usada em Blueprints?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q8" value="UFUNCTION"> UFUNCTION</label>
+                        <label><input type="radio" name="q8" value="UPROPERTY"> UPROPERTY</label>
+                        <label><input type="radio" name="q8" value="UCLASS"> UCLASS</label>
+                        <label><input type="radio" name="q8" value="USTRUCT"> USTRUCT</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 10: Questão Conceitual Aplicada -->
+                <div class="quiz-question" data-correct-answer="Uma classe 'Item' poderia ter atributos como 'nome' (string), 'peso' (int) e 'valor' (int). O método 'usar()' implementaria a lógica de consumo ou equipagem. O construtor garantiria que todos os itens sejam criados com valores iniciais válidos." data-explanation="Classes são usadas para modelar entidades do jogo, encapsulando seus dados e comportamentos.">
+                    <h4>Questão 10 (Conceitual Aplicada): Como você usaria uma classe para modelar um `Item` em um jogo? Cite pelo menos dois atributos e um método.</h4>
+                    <textarea rows="3" name="q9" placeholder="Responda aqui..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Verificar Respostas</button>
+            </form>
+            <div id="quiz-result"></div>
+
+            <div class="nav-buttons">
+                <a href="../modulo.html" class="prev">&laquo; Voltar ao Módulo</a>
+                <a href="../02-Heranca-Polimorfismo/teoria.md" class="next">Próxima Lição: Herança e Polimorfismo &raquo;</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

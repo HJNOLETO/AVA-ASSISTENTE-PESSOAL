@@ -1,0 +1,27 @@
+[AVA DETECTOU MUDANCAS NO PROJETO]
+
+Novas pastas (1):
+  + MedievalSwords (4 assets)
+Pastas modificadas (20):
+  ~ A_Surface_Footstep: 274 -> 274 (0)
+  ~ AdvancedLocomotionV4: 349 -> 349 (0)
+  ~ BallisticsVFX: 1272 -> 1272 (0)
+  ~ Blueprints: 770 -> 770 (0)
+  ~ Collections: 0 -> 0 (0)
+  ~ CustomMovement: 89 -> 89 (0)
+  ~ Decals: 9 -> 9 (0)
+  ~ Developers: 0 -> 0 (0)
+  ~ FBX_NOLETO: 42 -> 42 (0)
+  ~ FPS_Weapon_Bundle: 209 -> 209 (0)
+  ~ Geometry: 4 -> 4 (0)
+  ~ GoodSky: 49 -> 49 (0)
+  ~ Maps: 2 -> 2 (0)
+  ~ Meshes: 7 -> 7 (0)
+  ~ ModernCityEnvironment01: 1159 -> 1159 (0)
+  ~ Sounds: 294 -> 294 (0)
+  ~ StackOBot: 2 -> 2 (0)
+  ~ StarterContent: 267 -> 267 (0)
+  ~ ThirdPerson: 6 -> 6 (0)
+  ~ sA_PickupSet_1: 64 -> 64 (0)
+
+Total: 4868 -> 4872 assets (+4)

@@ -1,0 +1,95 @@
+{
+  "name": "AC_Interaction",
+  "parent_class": "ActorComponent",
+  "template_id": "interaction",
+  "category": "Interaction",
+  "variables": [
+    {
+      "name": "Character",
+      "type": "object (Character)"
+    },
+    {
+      "name": "InteractionAllObjects",
+      "type": "object (BP_InteractionObject_C)"
+    },
+    {
+      "name": "InteractionObject",
+      "type": "object (BP_InteractionObject_C)"
+    },
+    {
+      "name": "Distance",
+      "type": "real (double)"
+    },
+    {
+      "name": "TriggerOverlap",
+      "type": "bool"
+    },
+    {
+      "name": "Interaction",
+      "type": "bool"
+    },
+    {
+      "name": "PickupAllObjects",
+      "type": "object (BP_PickupObject_C)"
+    },
+    {
+      "name": "PickupObject",
+      "type": "object (BP_PickupObject_C)"
+    }
+  ],
+  "components": [
+    {
+      "name": "Collision",
+      "type": "SphereComponent"
+    },
+    {
+      "name": "Overlap",
+      "type": "SphereComponent"
+    },
+    {
+      "name": "Trigger",
+      "type": "SphereComponent"
+    }
+  ],
+  "events": [
+    "`EventInteraction`",
+    "`TriggerOverlapEnd`",
+    "`ReceiveBeginPlay`"
+  ],
+  "functions": [
+    "`SelectPickupObject()`",
+    "`GetOwner()`",
+    "`Not_PreBool()`",
+    "`Interact()`",
+    "`SelectInteractionObject()`",
+    "`GetOverlappingComponents()`",
+    "`GetCollisionObjectType()`",
+    "`K2_GetActorLocation()`",
+    "`VSize()`",
+    "`BreakVector()`",
+    "`MakeVector()`",
+    "`IsValid()`",
+    "`Add_IntInt()`",
+    "`Less_IntInt()`",
+    "`EqualEqual_ByteByte()`",
+    "`EqualEqual_IntInt()`",
+    "`ExecuteUbergraph_AC_Interaction()`",
+    "`Greater_IntInt()`",
+    "`Subtract_VectorVector()`",
+    "`Less_DoubleDouble()`"
+  ],
+  "graph_sections": [],
+  "interfaces": [],
+  "structs_used": [],
+  "key_patterns": {
+    "has_replication": false,
+    "has_timers": false,
+    "has_overlap_events": false,
+    "has_enhanced_input": false,
+    "has_timeline": false,
+    "has_data_tables": false,
+    "has_dynamic_material": false,
+    "has_camera_fade": false
+  },
+  "source_file": "AC_Interaction.md"
+}

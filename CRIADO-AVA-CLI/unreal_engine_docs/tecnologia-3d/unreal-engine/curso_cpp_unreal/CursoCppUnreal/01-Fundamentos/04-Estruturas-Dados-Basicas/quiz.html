@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: Arrays e Strings</title>
+    <link rel="stylesheet" href="../../recursos/css/estilo.css">
+    <script src="../../recursos/js/quiz.js" defer></script>
+</head>
+<body>
+    <button id="dark-mode-toggle">Alternar Modo Escuro</button>
+    <header>
+        <h1>Quiz: Arrays e Strings</h1>
+        <p>Teste seus conhecimentos sobre arrays estáticos e manipulação de strings.</p>
+    </header>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Início</a> <span>&gt;</span> <a href="../modulo.html">Módulo 01</a> <span>&gt;</span> Quiz
+        </div>
+
+        <div class="content-area">
+            <h2 id="quiz-titulo">Autoavaliação: Arrays e Strings</h2>
+            <p>Responda às questões abaixo e clique em "Verificar Respostas" para receber feedback imediato.</p>
+
+            <form id="quiz-form">
+                <!-- Questão 1: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="0" data-explanation="O índice de um array em C++ (e na maioria das linguagens) começa em 0. O primeiro elemento é sempre acessado com o índice 0.">
+                    <h4>Questão 1 (Múltipla Escolha): Qual índice você usaria para acessar o primeiro elemento de um array em C++?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q0" value="1"> 1</label>
+                        <label><input type="radio" name="q0" value="0"> 0</label>
+                        <label><input type="radio" name="q0" value="-1"> -1</label>
+                        <label><input type="radio" name="q0" value="Tamanho do array"> Tamanho do array</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 2: Verdadeiro/Falso -->
+                <div class="quiz-question" data-correct-answer="Verdadeiro" data-explanation="Arrays estáticos têm seu tamanho fixado no momento da compilação e não podem ser redimensionados em tempo de execução.">
+                    <h4>Questão 2 (Verdadeiro/Falso): Uma característica fundamental dos arrays estáticos em C++ é que seu tamanho não pode ser alterado após a declaração.</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q1" value="Verdadeiro"> Verdadeiro</label>
+                        <label><input type="radio" name="q1" value="Falso"> Falso</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 3: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="std::string" data-explanation="A classe 'std::string' é a forma moderna e recomendada em C++ para manipulação de texto, pois gerencia automaticamente a memória e oferece métodos úteis como concatenação e busca.">
+                    <h4>Questão 3 (Múltipla Escolha): Qual é a forma preferida e mais segura de manipular strings em C++ moderno?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q2" value="char[] (C-style string)"> char[] (C-style string)</label>
+                        <label><input type="radio" name="q2" value="std::string"> std::string</label>
+                        <label><input type="radio" name="q2" value="int[]"> int[]</label>
+                        <label><input type="radio" name="q2" value="FString"> FString</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 4: Exercício de Código (Debug) -->
+                <div class="quiz-question" data-correct-answer="3" data-explanation="O array tem 5 elementos. O loop vai de i=0 até i < 5. Quando i=3, a condição é verdadeira. Quando i=4, a condição é verdadeira. Quando i=5, a condição é falsa e o loop para. O último valor impresso é 4.">
+                    <h4>Questão 4 (Exercício de Código): Qual será o último número impresso pelo seguinte loop?</h4>
+                    <pre><code>int arr[] = {1, 2, 3, 4, 5};
+int tamanho = 5;
+for (int i = 0; i < tamanho - 1; i++) {
+    std::cout << i;
+}</code></pre>
+                    <textarea rows="1" name="q3" placeholder="Insira o último número impresso..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 5: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="Acesso fora dos limites (Out-of-Bounds)" data-explanation="Acessar um índice que não existe no array é um erro grave que leva a um comportamento indefinido, pois o programa tenta acessar uma área de memória que não foi alocada para o array.">
+                    <h4>Questão 5 (Múltipla Escolha): Qual é o erro que ocorre ao tentar acessar `array[10]` em um array declarado com tamanho 5?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q4" value="Erro de Sintaxe"> Erro de Sintaxe</label>
+                        <label><input type="radio" name="q4" value="Overflow"> Overflow</label>
+                        <label><input type="radio" name="q4" value="Acesso fora dos limites (Out-of-Bounds)"> Acesso fora dos limites (Out-of-Bounds)</label>
+                        <label><input type="radio" name="q4" value="Erro de Casting"> Erro de Casting</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 6: Verdadeiro/Falso -->
+                <div class="quiz-question" data-correct-answer="Verdadeiro" data-explanation="A Unreal Engine usa sua própria classe de string, 'FString', que é otimizada para o motor e integrada ao seu sistema de reflexão, mas o conceito de sequência de caracteres é o mesmo do 'std::string'.">
+                    <h4>Questão 6 (Verdadeiro/Falso): O tipo `FString` da Unreal Engine é conceitualmente semelhante ao `std::string`, mas otimizado para o motor.</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q5" value="Verdadeiro"> Verdadeiro</label>
+                        <label><input type="radio" name="q5" value="Falso"> Falso</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 7: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="length()" data-explanation="O método 'length()' (ou 'size()') da classe 'std::string' retorna o número de caracteres na string.">
+                    <h4>Questão 7 (Múltipla Escolha): Qual método da `std::string` é usado para obter o número de caracteres que ela contém?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q6" value="sizeOf()"> sizeOf()</label>
+                        <label><input type="radio" name="q6" value="count()"> count()</label>
+                        <label><input type="radio" name="q6" value="length()"> length()</label>
+                        <label><input type="radio" name="q6" value="get_size()"> get_size()</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 8: Exercício de Código (Debug) -->
+                <div class="quiz-question" data-correct-answer="10" data-explanation="A string 'Espada' tem 6 caracteres. A string ' Longa' tem 6 caracteres (incluindo o espaço). A concatenação resulta em 12 caracteres.">
+                    <h4>Questão 8 (Exercício de Código): Qual será o tamanho da string `nome_completo`?</h4>
+                    <pre><code>std::string nome = "Espada";
+std::string sufixo = " Longa";
+std::string nome_completo = nome + sufixo;
+// std::cout << nome_completo.length();</code></pre>
+                    <textarea rows="1" name="q7" placeholder="Insira o valor final..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 9: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="Os elementos são armazenados em posições de memória contíguas." data-explanation="A contiguidade na memória é a principal característica dos arrays, o que permite acesso rápido a qualquer elemento através de aritmética de ponteiros (que você verá no Módulo 2).">
+                    <h4>Questão 9 (Múltipla Escolha): Qual é a principal vantagem de um array em relação à forma como ele armazena seus elementos?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q8" value="Pode armazenar diferentes tipos de dados."> Pode armazenar diferentes tipos de dados.</label>
+                        <label><input type="radio" name="q8" value="Pode mudar de tamanho dinamicamente."> Pode mudar de tamanho dinamicamente.</label>
+                        <label><input type="radio" name="q8" value="Os elementos são armazenados em posições de memória contíguas."> Os elementos são armazenados em posições de memória contíguas.</label>
+                        <label><input type="radio" name="q8" value="É mais lento para acessar."> É mais lento para acessar.</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 10: Questão Conceitual Aplicada -->
+                <div class="quiz-question" data-correct-answer="Um array estático seria adequado para armazenar o número fixo de slots de inventário (ex: 10 slots), pois o tamanho não muda. No entanto, para armazenar os itens em si, seria melhor usar um tipo dinâmico (como TArray da Unreal) para lidar com a adição e remoção de itens." data-explanation="Arrays estáticos são úteis para dados de tamanho fixo, mas para coleções que mudam (como inventários), tipos dinâmicos são preferíveis.">
+                    <h4>Questão 10 (Conceitual Aplicada): Em um sistema de inventário de jogo, para que você usaria um array estático de `int` (por exemplo, `int slots[10]`)?</h4>
+                    <textarea rows="3" name="q9" placeholder="Responda aqui..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Verificar Respostas</button>
+            </form>
+            <div id="quiz-result"></div>
+
+            <div class="nav-buttons">
+                <a href="../modulo.html" class="prev">&laquo; Voltar ao Módulo</a>
+                <a href="../projeto-integrador/desafio.md" class="next">Próximo: Projeto Integrador &raquo;</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

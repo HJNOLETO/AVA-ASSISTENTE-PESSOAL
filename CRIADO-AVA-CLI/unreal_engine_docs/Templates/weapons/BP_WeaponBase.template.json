@@ -1,0 +1,321 @@
+{
+  "name": "BP_WeaponBase",
+  "parent_class": "Actor",
+  "template_id": "weapon_base",
+  "category": "Weapons",
+  "variables": [
+    {
+      "name": "IsPickup",
+      "type": "bool"
+    },
+    {
+      "name": "AutoPickUp",
+      "type": "bool"
+    },
+    {
+      "name": "OwnerCharacter",
+      "type": "Object (Character)"
+    },
+    {
+      "name": "WeaponStored",
+      "type": "struct (S_StoredWeapons)"
+    },
+    {
+      "name": "Bullets in Shot",
+      "type": "int"
+    },
+    {
+      "name": "Fire Rate",
+      "type": "real (double)"
+    },
+    {
+      "name": "Weapon Spread",
+      "type": "real (double)"
+    },
+    {
+      "name": "Bullet Speed",
+      "type": "real (double)"
+    },
+    {
+      "name": "Projectile",
+      "type": "class (BP_ProjectileBase_C)"
+    },
+    {
+      "name": "Muzzle Flash FX",
+      "type": "Object (ParticleSystem)"
+    },
+    {
+      "name": "Fire Sound",
+      "type": "Object (SoundBase)"
+    },
+    {
+      "name": "Reload Sound",
+      "type": "Object (SoundBase)"
+    },
+    {
+      "name": "Reduce Accuracy While Moving",
+      "type": "bool"
+    },
+    {
+      "name": "Accuracy Penalty While Moving",
+      "type": "real (double)"
+    },
+    {
+      "name": "Reload Duration",
+      "type": "real (double)"
+    },
+    {
+      "name": "Char Animations",
+      "type": "struct (S_CharacterAnims)"
+    },
+    {
+      "name": "Weapon Animations",
+      "type": "struct (S_WeaponAnims)"
+    },
+    {
+      "name": "CurrentAmmoInMag",
+      "type": "int"
+    },
+    {
+      "name": "CurrentAmmoInBP",
+      "type": "int"
+    },
+    {
+      "name": "Current Fire Mode",
+      "type": "byte (E_FireMode)"
+    },
+    {
+      "name": "Current Weapon State",
+      "type": "byte (E_WeaponState)"
+    },
+    {
+      "name": "IsFiring",
+      "type": "bool"
+    },
+    {
+      "name": "IsReloading",
+      "type": "bool"
+    },
+    {
+      "name": "IsOnFireRateDelay",
+      "type": "bool"
+    },
+    {
+      "name": "NoAmmo",
+      "type": "bool"
+    },
+    {
+      "name": "CurrentRoundsInBurst",
+      "type": "int"
+    },
+    {
+      "name": "BulletRicochet",
+      "type": "bool"
+    },
+    {
+      "name": "NoAmmoSound",
+      "type": "Object (SoundBase)"
+    },
+    {
+      "name": "ReloadTimer",
+      "type": "struct (TimerHandle)"
+    },
+    {
+      "name": "TimerSpread",
+      "type": "struct (TimerHandle)"
+    },
+    {
+      "name": "WeaponPhysics",
+      "type": "bool"
+    },
+    {
+      "name": "WeaponRotating",
+      "type": "bool"
+    },
+    {
+      "name": "ProjectileSize",
+      "type": "byte (Projectile_Size)"
+    },
+    {
+      "name": "WeaponData",
+      "type": "struct (S_WeaponData)"
+    },
+    {
+      "name": "Bullets",
+      "type": "bool"
+    }
+  ],
+  "components": [
+    {
+      "name": "Collision",
+      "type": "SphereComponent"
+    },
+    {
+      "name": "Overlap",
+      "type": "SphereComponent"
+    },
+    {
+      "name": "Trigger",
+      "type": "SphereComponent"
+    },
+    {
+      "name": "WeaponCollision",
+      "type": "SphereComponent"
+    },
+    {
+      "name": "Mesh",
+      "type": "StaticMeshComponent"
+    },
+    {
+      "name": "Magazine",
+      "type": "StaticMeshComponent"
+    },
+    {
+      "name": "WeaponMesh",
+      "type": "StaticMeshComponent"
+    },
+    {
+      "name": "Camera",
+      "type": "CameraComponent"
+    },
+    {
+      "name": "RotatingMovement",
+      "type": "RotatingMovementComponent"
+    }
+  ],
+  "events": [
+    "`BndEvt__BP_WeaponBase_WeaponCollision_K2Node_ComponentBoundEvent_0_ComponentBeginOverlapSignature__DelegateSignature`",
+    "`BndEvt__BP_WeaponBase_WeaponCollision_K2Node_ComponentBoundEvent_1_ComponentEndOverlapSignature__DelegateSignature`",
+    "`SetWeaponIsDropped`",
+    "`UpdateHUD_WeaponData`",
+    "`AttachInHand`",
+    "`WeaponFire`",
+    "`WeaponReload`",
+    "`WeaponEffects`",
+    "`WeaponFireMode`",
+    "`AddAmmoToBP`",
+    "`DropMagazine`",
+    "`InsertMagazine`",
+    "`PickupMagazine`",
+    "`ReceiveBeginPlay`"
+  ],
+  "functions": [
+    "`MakeTransform()`",
+    "`ComposeRotators()`",
+    "`RandomFloatInRange()`",
+    "`MakeRotator()`",
+    "`SelectFloat()`",
+    "`Greater_DoubleDouble()`",
+    "`Subtract_VectorVector()`",
+    "`VSize()`",
+    "`GetForwardVector()`",
+    "`Multiply_VectorFloat()`",
+    "`DoesSocketExist()`",
+    "`PrintString()`",
+    "`LineTraceSingle()`",
+    "`SelectVector()`",
+    "`FindLookAtRotation()`",
+    "`GetPlayerCameraManager()`",
+    "`K2_GetComponentToWorld()`",
+    "`BreakHitResult()`",
+    "`BreakTransform()`",
+    "`Greater_IntInt()`",
+    "`NotEqual_IntInt()`",
+    "`Not_PreBool()`",
+    "`LessEqual_IntInt()`",
+    "`SetMaxSpread()`",
+    "`CantShoot()`",
+    "`CanShoot?()`",
+    "`SpawnProjectile()`",
+    "`RetriggerableDelay()`",
+    "`GetOwner()`",
+    "`PlaySoundAtLocation()`",
+    "`K2_GetActorLocation()`",
+    "`SpawnEmitterAttached()`",
+    "`K2_AttachToComponent()`",
+    "`PlayAnimation()`",
+    "`SetWeaponDataHUD()`",
+    "`SetSimulatePhysics()`",
+    "`Clamp()`",
+    "`SetActive()`",
+    "`SetVisibility()`",
+    "`SetMode_SingleShot()`",
+    "`SetMode_Burst()`",
+    "`SetMode_Auto()`",
+    "`NextWeaponMode()`",
+    "`SpawnMagazine()`",
+    "`SetCollisionEnabled()`",
+    "`Delay()`",
+    "`ReloadStart()`",
+    "`GetHUD()`",
+    "`WPN_SetWeaponToInteract()`",
+    "`GetChar_WeaponSystem()`",
+    "`GetVelocity()`",
+    "`Divide_DoubleDouble()`",
+    "`GetSocketTransform()`",
+    "`UpdateAmmoBP()`",
+    "`UpdateAmmoMag()`",
+    "`WPN_CantShoot()`",
+    "`Subtract_IntInt()`",
+    "`K2_ClearAndInvalidateTimerHandle()`",
+    "`CanReload?()`",
+    "`K2_SetTimer()`",
+    "`FInterpTo()`",
+    "`GetWorldDeltaSeconds()`",
+    "`FClamp()`",
+    "`Subtract_DoubleDouble()`",
+    "`LessEqual_DoubleDouble()`",
+    "`GetChar_CurrentWeapon()`",
+    "`GetSocketLocation()`",
+    "`Normal()`",
+    "`GetInstigator()`",
+    "`CalculateInitialDirection()`",
+    "`Reload()`",
+    "`CalcFinalDirection()`",
+    "`IsValid()`",
+    "`SpawnSoundAtLocation()`",
+    "`WeaponEffects()`",
+    "`CalculateDamage()`",
+    "`WPN_Recoil()`",
+    "`SetStaticMesh()`",
+    "`GetPlayLength()`",
+    "`SetSkinnedAssetAndUpdate()`",
+    "`FlushNetDormancy()`",
+    "`OnRep_CurrentAmmoInBP()`",
+    "`MarkPropertyDirtyFromRepIndex()`",
+    "`ExecuteUbergraph_BP_WeaponBase()`",
+    "`GetDataTableRowFromName()`",
+    "`OnRep_CurrentAmmoInMag()`",
+    "`Add_IntInt()`",
+    "`BeginDeferredActorSpawnFromClass()`",
+    "`FinishSpawningActor()`",
+    "`SetDoublePropertyByName()`",
+    "`SetBoolPropertyByName()`",
+    "`SetBytePropertyByName()`",
+    "`SetIntPropertyByName()`",
+    "`SetObjectPropertyByName()`",
+    "`OnRep_NoAmmo()`",
+    "`SetVectorPropertyByName()`",
+    "`EqualEqual_ByteByte()`"
+  ],
+  "graph_sections": [],
+  "interfaces": [],
+  "structs_used": [
+    "TimerHandle",
+    "S_StoredWeapons",
+    "S_WeaponAnims",
+    "S_WeaponData",
+    "S_CharacterAnims"
+  ],
+  "key_patterns": {
+    "has_replication": true,
+    "has_timers": true,
+    "has_overlap_events": true,
+    "has_enhanced_input": false,
+    "has_timeline": false,
+    "has_data_tables": true,
+    "has_dynamic_material": false,
+    "has_camera_fade": false
+  },
+  "source_file": "BP_WeaponBase.md"
+}

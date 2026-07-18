@@ -1,0 +1,204 @@
+{
+  "format_version": "1.0",
+  "tutorial_id": "Manual_Pratico_Implementacao",
+  "tutorial_title": "Manual_Pratico_Implementacao.md",
+  "blueprints": [
+    {
+      "blueprint": "BP_Door_Interactive",
+      "description": "Criando uma Porta Interativa do Zero",
+      "steps": [
+        {
+          "title": "Criar Blueprint e Componentes",
+          "actions": [
+            {
+              "action": "create_bp",
+              "name": "BP_Door_Interactive",
+              "parent_class": "Actor"
+            },
+            {
+              "action": "add_component",
+              "component_type": "StaticMeshComponent",
+              "component_name": "FrameMesh"
+            },
+            {
+              "action": "add_component",
+              "component_type": "StaticMeshComponent",
+              "component_name": "DoorMesh"
+            },
+            {
+              "action": "add_component",
+              "component_type": "BoxComponent",
+              "component_name": "InteractionTrigger"
+            }
+          ]
+        },
+        {
+          "title": "Criar Variaveis de Estado",
+          "actions": [
+            {
+              "action": "create_var",
+              "name": "IsOpen",
+              "type": "Boolean"
+            },
+            {
+              "action": "create_var",
+              "name": "OpenAngle",
+              "type": "Float",
+              "default_value": 90.0
+            }
+          ]
+        },
+        {
+          "title": "Compilar",
+          "actions": [
+            {
+              "action": "compile_bp"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blueprint": "BP_WeaponBase",
+      "description": "Sistema de Armas, Disparo (Line Trace), Mira e Recarga",
+      "steps": [
+        {
+          "title": "Criar Sistema de Arma",
+          "actions": [
+            {
+              "action": "create_from_template",
+              "template": "weapon_base",
+              "name": "BP_WeaponBase"
+            },
+            {
+              "action": "create_var",
+              "name": "CurrentAmmo",
+              "type": "Integer",
+              "default_value": 30
+            },
+            {
+              "action": "create_var",
+              "name": "MaxAmmo",
+              "type": "Integer",
+              "default_value": 30
+            },
+            {
+              "action": "create_var",
+              "name": "ReserveAmmo",
+              "type": "Integer",
+              "default_value": 90
+            },
+            {
+              "action": "create_var",
+              "name": "WeaponDamage",
+              "type": "Float",
+              "default_value": 35.0
+            }
+          ]
+        },
+        {
+          "title": "Criar Eventos do Sistema de Tiro",
+          "actions": [
+            {
+              "action": "add_event",
+              "event_name": "WeaponFire"
+            },
+            {
+              "action": "add_event",
+              "event_name": "WeaponReload"
+            },
+            {
+              "action": "add_event",
+              "event_name": "WeaponADS"
+            }
+          ]
+        },
+        {
+          "title": "Compilar",
+          "actions": [
+            {
+              "action": "compile_bp"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blueprint": "AC_PlayerStatus",
+      "description": "# 🛡️ MÓDULO 3: Distribuição de Dano e Colete (Escudo)",
+      "steps": [
+        {
+          "title": "Criar Componente de Status",
+          "actions": [
+            {
+              "action": "create_bp",
+              "name": "AC_PlayerStatus",
+              "parent_class": "ActorComponent"
+            },
+            {
+              "action": "create_var",
+              "name": "Health",
+              "type": "Float",
+              "default_value": 100.0
+            },
+            {
+              "action": "create_var",
+              "name": "MaxHealth",
+              "type": "Float",
+              "default_value": 100.0
+            },
+            {
+              "action": "create_var",
+              "name": "Armour",
+              "type": "Float",
+              "default_value": 100.0
+            },
+            {
+              "action": "create_var",
+              "name": "MaxArmour",
+              "type": "Float",
+              "default_value": 100.0
+            },
+            {
+              "action": "create_var",
+              "name": "Stamina",
+              "type": "Float",
+              "default_value": 100.0
+            },
+            {
+              "action": "create_var",
+              "name": "MaxStamina",
+              "type": "Float",
+              "default_value": 100.0
+            }
+          ]
+        },
+        {
+          "title": "Criar Eventos de Dano",
+          "actions": [
+            {
+              "action": "add_event",
+              "event_name": "CalculateDamageWithArmour"
+            },
+            {
+              "action": "add_event",
+              "event_name": "Death"
+            },
+            {
+              "action": "add_event",
+              "event_name": "Reanimate"
+            }
+          ]
+        },
+        {
+          "title": "Compilar",
+          "actions": [
+            {
+              "action": "compile_bp"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

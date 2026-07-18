@@ -1,0 +1,6 @@
+{
+  "skeleton": "ALS_Mannequin_Skeleton",
+  "sockets": [],
+  "socket_error": "'Skeleton' object has no attribute 'sockets'",
+  "mesh_error": "Mannequin mesh not found"
+}

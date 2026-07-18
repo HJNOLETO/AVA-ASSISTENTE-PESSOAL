@@ -1,0 +1,38 @@
+{
+  "name": "W_CustomCharacter",
+  "parent_class": "UserWidget",
+  "template_id": "custom_character",
+  "category": "Character",
+  "variables": [],
+  "components": [],
+  "events": [
+    "`BndEvt__W_CustomCharacter_LeftButton_K2Node_ComponentBoundEvent_1_OnButtonReleasedEvent__DelegateSignature`",
+    "`BndEvt__W_CustomCharacter_RightButton_K2Node_ComponentBoundEvent_3_OnButtonReleasedEvent__DelegateSignature`",
+    "`BndEvt__W_CustomCharacter_LeftButton_K2Node_ComponentBoundEvent_4_OnButtonPressedEvent__DelegateSignature`",
+    "`BndEvt__W_CustomCharacter_RightButton_K2Node_ComponentBoundEvent_5_OnButtonPressedEvent__DelegateSignature`",
+    "`PreConstruct` — *This node is disabled and will not be called.\\nDrag off pins to build functionality.*",
+    "`Construct` — *This node is disabled and will not be called.\\nDrag off pins to build functionality.*",
+    "`Tick` — *This node is disabled and will not be called.\\nDrag off pins to build functionality.*"
+  ],
+  "functions": [
+    "`GetActorOfClass()`",
+    "`EventRotateLeft()`",
+    "`EventStopRotate()`",
+    "`EventRotateRight()`",
+    "`ExecuteUbergraph_W_CustomCharacter()`"
+  ],
+  "graph_sections": [],
+  "interfaces": [],
+  "structs_used": [],
+  "key_patterns": {
+    "has_replication": false,
+    "has_timers": false,
+    "has_overlap_events": false,
+    "has_enhanced_input": false,
+    "has_timeline": false,
+    "has_data_tables": false,
+    "has_dynamic_material": false,
+    "has_camera_fade": false
+  },
+  "source_file": "W_CustomCharacter.md"
+}

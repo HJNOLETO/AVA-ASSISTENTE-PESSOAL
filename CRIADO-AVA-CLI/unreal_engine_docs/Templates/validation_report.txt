@@ -1,0 +1,78 @@
+======================================================================
+  RELATORIO DE VALIDACAO CROSS-BLUEPRINT — ProjetoGTA
+======================================================================
+  Total de issues: 522
+  ALTA: 1 | MEDIA: 508 | BAIXA: 13
+======================================================================
+
+## ALTA (1 issues)
+
+### tipo_inconsistente (1 ocorrencias)
+  [BP_PickupObject] Variavel "character" tem tipos diferentes: {'BP_PickupObject': 'object (Actor)', 'AC_Interaction': 'object (Character)', 'BP_InteractionObject': 'object (Actor)'}
+    Sugestao: Unifique o tipo da variavel em todos os Blueprints ou renomeie para evitar confusao.
+
+## MEDIA (508 issues)
+
+### heranca_duvidosa (12 ocorrencias)
+  [AnimBP_Bike] Parent class "VehicleAnimationInstance" nao encontrado nos templates nem nas classes nativas UE5 conhecidas.
+    Sugestao: Verifique se "VehicleAnimationInstance" existe como Blueprint no projeto ou se o nome esta correto.
+  [AnimBP_Motorcycle] Parent class "VehicleAnimationInstance" nao encontrado nos templates nem nas classes nativas UE5 conhecidas.
+    Sugestao: Verifique se "VehicleAnimationInstance" existe como Blueprint no projeto ou se o nome esta correto.
+  [AnimBP_Character] Parent class "AnimInstance" nao encontrado nos templates nem nas classes nativas UE5 conhecidas.
+    Sugestao: Verifique se "AnimInstance" existe como Blueprint no projeto ou se o nome esta correto.
+  [BP_Bike] Parent class "WheeledVehiclePawn" nao encontrado nos templates nem nas classes nativas UE5 conhecidas.
+    Sugestao: Verifique se "WheeledVehiclePawn" existe como Blueprint no projeto ou se o nome esta correto.
+  [BP_Motorcycle] Parent class "WheeledVehiclePawn" nao encontrado nos templates nem nas classes nativas UE5 conhecidas.
+    Sugestao: Verifique se "WheeledVehiclePawn" existe como Blueprint no projeto ou se o nome esta correto.
+  ... +7 mais ocorrencias
+
+### variavel_isolada_no_padrao (496 ocorrencias)
+  [AnimBP_Character] Variavel "bp character" existe apenas em AnimBP_Character, mas ['BP_Character', 'BP_Health', 'BP_ProjectileBase'] pertencem ao mesmo sistema "Sistema de Vida / Dano".
+    Sugestao: Considere se "bp character" deveria existir tambem em BP_Character, BP_Health.
+  [AnimBP_Character] Variavel "iscrouching" existe apenas em AnimBP_Character, mas ['BP_Character', 'BP_Health', 'BP_ProjectileBase'] pertencem ao mesmo sistema "Sistema de Vida / Dano".
+    Sugestao: Considere se "iscrouching" deveria existir tambem em BP_Character, BP_Health.
+  [AnimBP_Character] Variavel "isfalling" existe apenas em AnimBP_Character, mas ['BP_Character', 'BP_Health', 'BP_ProjectileBase'] pertencem ao mesmo sistema "Sistema de Vida / Dano".
+    Sugestao: Considere se "isfalling" deveria existir tambem em BP_Character, BP_Health.
+  [AnimBP_Character] Variavel "jumping" existe apenas em AnimBP_Character, mas ['BP_Character', 'BP_Health', 'BP_ProjectileBase'] pertencem ao mesmo sistema "Sistema de Vida / Dano".
+    Sugestao: Considere se "jumping" deveria existir tambem em BP_Character, BP_Health.
+  [AnimBP_Character] Variavel "damage anim" existe apenas em AnimBP_Character, mas ['BP_Character', 'BP_Health', 'BP_ProjectileBase'] pertencem ao mesmo sistema "Sistema de Vida / Dano".
+    Sugestao: Considere se "damage anim" deveria existir tambem em BP_Character, BP_Health.
+  ... +491 mais ocorrencias
+
+## BAIXA (13 issues)
+
+### parent_fuzzy_match (2 ocorrencias)
+  [ComponentsInterface] "Interface" nao encontrado exatamente, mas BPs com nome similar existem.
+    Sugestao: Verifique se "Interface" eh uma variante de algum BP existente (ex: _C vs sem _C).
+  [BP_WeaponInterface] "Interface" nao encontrado exatamente, mas BPs com nome similar existem.
+    Sugestao: Verifique se "Interface" eh uma variante de algum BP existente (ex: _C vs sem _C).
+
+### padrao_sem_vars_compartilhadas (4 ocorrencias)
+  [AnimBP_Bike] Os 15 BPs do padrao "Sistema de HUD / UI" nao compartilham nenhuma variavel.
+    Sugestao: Verifique se esses BPs realmente pertencem ao mesmo sistema ou se o agrupamento precisa de ajuste.
+  [AnimBP_Motorcycle] Os 3 BPs do padrao "Sistema de Veiculos" nao compartilham nenhuma variavel.
+    Sugestao: Verifique se esses BPs realmente pertencem ao mesmo sistema ou se o agrupamento precisa de ajuste.
+  [BP_Character] Os 5 BPs do padrao "Sistema de Camera" nao compartilham nenhuma variavel.
+    Sugestao: Verifique se esses BPs realmente pertencem ao mesmo sistema ou se o agrupamento precisa de ajuste.
+  [BP_Door] Os 3 BPs do padrao "Sistema de Replicacao (Multiplayer)" nao compartilham nenhuma variavel.
+    Sugestao: Verifique se esses BPs realmente pertencem ao mesmo sistema ou se o agrupamento precisa de ajuste.
+
+### espacos_em_nomes (5 ocorrencias)
+  [AnimBP_Character] Variaveis com espacos no nome: ['BP Character', 'Damage Anim', 'Tired Animation']
+    Sugestao: Substitua espacos por _ ou use PascalCase sem espacos.
+  [BP_AmmoBase] Variaveis com espacos no nome: ['Ammo Type', 'Weapon ID', 'Amount Ammo']
+    Sugestao: Substitua espacos por _ ou use PascalCase sem espacos.
+  [BP_AmmoBox] Variaveis com espacos no nome: ['Ammo Type', 'Weapon ID', 'Amount Ammo']
+    Sugestao: Substitua espacos por _ ou use PascalCase sem espacos.
+  [AC_WeaponSystem] Variaveis com espacos no nome: ['Current Weapon Index', 'Overlay State']
+    Sugestao: Substitua espacos por _ ou use PascalCase sem espacos.
+  [BP_WeaponBase] Variaveis com espacos no nome: ['Bullets in Shot', 'Fire Rate', 'Weapon Spread']
+    Sugestao: Substitua espacos por _ ou use PascalCase sem espacos.
+
+### mix_idiomas (1 ocorrencias)
+  [AC_WeaponSystem] Mix de idiomas: vars PT=['PegarMunicaoArmaIgual'], vars EN=['CharacterReference', 'Current Weapon Index', 'WeaponIsLocked']
+    Sugestao: Padronize para um idioma por BP: ou todas em PT ou todas em EN.
+
+### muitas_vars_tipo_raro (1 ocorrencias)
+  [BP_WeaponBase] 6 variaveis do tipo "struct": ['WeaponStored', 'Char Animations', 'Weapon Animations']...
+    Sugestao: Verifique se todas as 6 vars do tipo "struct" sao necessarias.

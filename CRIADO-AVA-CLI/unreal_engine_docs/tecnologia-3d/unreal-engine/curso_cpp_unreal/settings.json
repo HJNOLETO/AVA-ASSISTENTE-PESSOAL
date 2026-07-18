@@ -1,0 +1,228 @@
+{
+  // ===============================================
+  // Configurações Gerais do Workbench
+  // ===============================================
+  "workbench.startupEditor": "newUntitledFile",
+  "workbench.editor.labelFormat": "short",
+  "workbench.iconTheme": "material-icon-theme",
+  "workbench.colorTheme": "OM Theme (Default Dracula Italic)",
+  "workbench.list.smoothScrolling": true,
+  "workbench.editor.tabCloseButton": "right",
+  "workbench.editor.editorActionsLocation": "titleBar",
+  "workbench.editor.showTabs": "single",
+  "workbench.editor.tabActionLocation": "right",
+  "window.customTitleBarVisibility": "windowed",
+  "window.zoomLevel": 0,
+
+  "workbench.editorAssociations": [
+    {
+      "viewType": "jupyter.notebook.ipynb",
+      "filenamePattern": "*.ipynb"
+    }
+  ],
+
+  // ===============================================
+  // Gerenciamento de Arquivos e Pastas
+  // ===============================================
+  "explorer.compactFolders": false,
+  "explorer.confirmDelete": true,
+  "explorer.openEditors.sortOrder": "alphabetical",
+  "files.exclude": { "USE_GITIGNORE": true },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/coverage": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/.build": true,
+    "**/.gh-pages": true
+  },
+
+  // ===============================================
+  // Configurações do Editor
+  // ===============================================
+  // --- Display ---
+  "editor.fontFamily": "'Operator Mono Lig Book', 'SF Mono', Consolas, 'Source Code Pro', 'Dank Mono', 'Fira Code', Menlo, 'Inconsolata', monospace",
+  "editor.fontSize": 20,
+  "editor.fontLigatures": true,
+  "editor.minimap.enabled": false,
+  "editor.rulers": [79, 120],
+  "editor.renderLineHighlight": "gutter",
+  "editor.renderControlCharacters": false,
+
+  // --- Comportamento ---
+  "editor.tabSize": 2,
+  "editor.detectIndentation": true,
+  "editor.snippetSuggestions": "top",
+  "editor.suggestSelection": "first",
+  "editor.suggest.localityBonus": true,
+  "editor.wordBasedSuggestions": "off",
+  "editor.linkedEditing": true,
+  "editor.acceptSuggestionOnCommitCharacter": false,
+
+  // --- Formatação ---
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll": "explicit"
+  },
+
+  // ===============================================
+  // Terminal e Debug
+  // ===============================================
+  "terminal.integrated.copyOnSelection": false,
+  "terminal.integrated.cursorBlinking": true,
+  "terminal.integrated.cursorStyle": "line",
+  "terminal.integrated.fontFamily": "'Operator Mono Lig Book', 'Fira Code', 'SF Mono', Consolas, monospace",
+  "terminal.integrated.fontSize": 18,
+  "terminal.integrated.shell.linux": "zsh",
+  "terminal.integrated.defaultProfile.windows": "Command Prompt",
+  "debug.console.fontSize": 18,
+
+  // ===============================================
+  // Linguagens Específicas
+  // ===============================================
+  // --- JavaScript/TypeScript ---
+  "javascript.preferences.quoteStyle": "single",
+  "typescript.preferences.quoteStyle": "single",
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "javascript.suggest.autoImports": true,
+  "typescript.suggest.autoImports": true,
+  "[javascript]": {
+    "editor.suggestSelection": "recentlyUsed",
+    "editor.suggest.showKeywords": false
+  },
+
+  // --- Python ---
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.python",
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true
+  },
+  "python.formatting.autopep8Args": ["--indent-size=4"],
+  "python.linting.flake8Args": [],
+  "python.linting.pylintArgs": [
+    "--load-plugins=pylint_django",
+    "--errors-only"
+  ],
+  "python.testing.unittestEnabled": true,
+
+  // --- C/C++ ---
+  "[c]": {
+    "editor.defaultFormatter": "ms-vscode.cpptools",
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.formatOnSave": true,
+    "editor.wordBasedSuggestions": "off"
+  },
+  "[cpp]": {
+    "editor.defaultFormatter": "ms-vscode.cpptools",
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.formatOnSave": true,
+    "editor.wordBasedSuggestions": "off"
+  },
+  "C_Cpp.default.cppStandard": "c++17",
+  "C_Cpp.default.cStandard": "c11",
+  "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google, IndentWidth: 4, ColumnLimit: 120 }",
+  "C_Cpp.intelliSenseEngine": "default", // "default" = habilitado | "disabled" = desabilitado
+  "C_Cpp.errorSquiggles": "enabled",
+  "C_Cpp.autocomplete": "default",
+  "C_Cpp.default.compilerPath": "C:/MinGW/bin/g++.exe",
+  "C_Cpp.enhancedColorization": "enabled",
+
+  // --- Django ---
+  "files.associations": {
+    "*.html": "html",
+    "**/templates/*.html": "django-html",
+    "**/requirements{/**,*}.{txt,in}": "pip-requirements"
+  },
+
+  // ===============================================
+  // Extensões
+  // ===============================================
+  // --- Bracket Pair Colorizer 2 ---
+  "bracket-pair-colorizer-2.colors": [
+    "#8BE9FD",
+    "#50FA7B",
+    "#FFB86C",
+    "#FF79C6",
+    "#BD93F9",
+    "#F1FA8C"
+  ],
+  "bracket-pair-colorizer-2.colorMode": "Consecutive",
+  "bracket-pair-colorizer-2.showBracketsInGutter": true,
+  "bracket-pair-colorizer-2.showBracketsInRuler": true,
+  "bracket-pair-colorizer-2.unmatchedScopeColor": "#FF5555",
+
+  // --- Material Icon Theme ---
+  "material-icon-theme.hidesExplorerArrows": true,
+  "material-icon-theme.folders.theme": "classic",
+  "material-icon-theme.folders.color": "#6273a6",
+
+  // --- Code Runner ---
+  "code-runner.clearPreviousOutput": true,
+  "code-runner.executorMap": {
+    "python": "clear ; python -u",
+    "c": "cd $dir && gcc $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
+    "cpp": "cd $dir && g++ $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
+    "typescript": "npx ts-node --files --transpile-only"
+  },
+  "code-runner.runInTerminal": true,
+  "code-runner.ignoreSelection": true,
+
+  // --- CSpell ---
+  "cSpell.enabled": true,
+  "cSpell.language": "en,pt,pt_BR",
+  "cSpell.enableFiletypes": ["shellscript"],
+  "cSpell.customUserDictionaries": [
+    {
+      "name": "Custom",
+      "path": "~/Development/custom-cspell-dictionary.txt"
+    }
+  ],
+
+  // --- Action Buttons ---
+  "actionButtons.defaultColor": "#8be9fd",
+  "actionButtons.loadNpmCommands": false,
+  "actionButtons.commands": [
+    {
+      "name": "Open dictionary",
+      "color": "#8be9fd",
+      "command": "code -r ~/Development/custom-cspell-dictionary.txt"
+    }
+  ],
+
+  // ===============================================
+  // Outras Configurações
+  // ===============================================
+  "database-client.autoSync": true,
+  "geminicodeassist.project": "",
+  "roo-cline.allowedCommands": [
+    "npm test",
+    "npm install",
+    "tsc",
+    "git log",
+    "git diff",
+    "git show"
+  ],
+  "diffEditor.maxComputationTime": 0,
+  "yaml.schemas": {
+    "c:\\Users\\hijon\\.vscode\\extensions\\continue.continue-1.1.65-win32-x64\\config-yaml-schema.json": [
+      ".continue/**/*.yaml"
+    ]
+  },
+  "github.copilot.enable": {
+    "*": true,
+    "plaintext": false,
+    "markdown": true,
+    "scminput": false
+  },
+  "github.copilot.nextEditSuggestions.enabled": true,
+  "docker.extension.enableComposeLanguageServer": false
+}

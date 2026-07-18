@@ -1,0 +1,56 @@
+{
+  "name": "BP_PhysicalMag",
+  "parent_class": "StaticMeshActor",
+  "template_id": "physical_mag",
+  "category": "Weapons",
+  "variables": [
+    {
+      "name": "Velocity",
+      "type": "struct (Vector)"
+    },
+    {
+      "name": "TimeToDestroy",
+      "type": "real (double)"
+    },
+    {
+      "name": "MagazineMesh",
+      "type": "object (StaticMesh)"
+    }
+  ],
+  "components": [
+    {
+      "name": "Mesh",
+      "type": "StaticMeshComponent"
+    },
+    {
+      "name": "Magazine",
+      "type": "StaticMeshComponent"
+    }
+  ],
+  "events": [
+    "`ReceiveBeginPlay`"
+  ],
+  "functions": [
+    "`SetSimulatePhysics()`",
+    "`SetAllPhysicsLinearVelocity()`",
+    "`K2_SetTimerDelegate()`",
+    "`SetStaticMesh()`",
+    "`ExecuteUbergraph_BP_PhysicalMag()`"
+  ],
+  "graph_sections": [],
+  "interfaces": [],
+  "structs_used": [
+    "Vector"
+  ],
+  "key_patterns": {
+    "has_replication": false,
+    "has_timers": true,
+    "has_overlap_events": false,
+    "has_enhanced_input": false,
+    "has_timeline": false,
+    "has_data_tables": false,
+    "has_dynamic_material": false,
+    "has_camera_fade": false
+  },
+  "source_file": "BP_PhysicalMag.md"
+}

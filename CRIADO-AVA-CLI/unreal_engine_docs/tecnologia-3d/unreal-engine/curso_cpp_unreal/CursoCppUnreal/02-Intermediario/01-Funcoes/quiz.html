@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: Funções</title>
+    <link rel="stylesheet" href="../../recursos/css/estilo.css">
+    <script src="../../recursos/js/quiz.js" defer></script>
+</head>
+<body>
+    <button id="dark-mode-toggle">Alternar Modo Escuro</button>
+    <header>
+        <h1>Quiz: Funções</h1>
+        <p>Teste seus conhecimentos sobre a modularidade do código C++.</p>
+    </header>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Início</a> <span>&gt;</span> <a href="../modulo.html">Módulo 02</a> <span>&gt;</span> Quiz
+        </div>
+
+        <div class="content-area">
+            <h2 id="quiz-titulo">Autoavaliação: Funções</h2>
+            <p>Responda às questões abaixo e clique em "Verificar Respostas" para receber feedback imediato.</p>
+
+            <form id="quiz-form">
+                <!-- Questão 1: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="void" data-explanation="O tipo de retorno 'void' é usado quando uma função não precisa retornar nenhum valor para o código que a chamou.">
+                    <h4>Questão 1 (Múltipla Escolha): Qual tipo de retorno deve ser usado para uma função que apenas imprime uma mensagem na tela e não precisa retornar um valor?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q0" value="int"> int</label>
+                        <label><input type="radio" name="q0" value="bool"> bool</label>
+                        <label><input type="radio" name="q0" value="void"> void</label>
+                        <label><input type="radio" name="q0" value="auto"> auto</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 2: Verdadeiro/Falso -->
+                <div class="quiz-question" data-correct-answer="Falso" data-explanation="A sobrecarga de funções (overload) é determinada pelo número e/ou tipo dos parâmetros. O tipo de retorno não é considerado na assinatura da função.">
+                    <h4>Questão 2 (Verdadeiro/Falso): Duas funções podem ter o mesmo nome e os mesmos parâmetros, desde que tenham tipos de retorno diferentes.</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q1" value="Verdadeiro"> Verdadeiro</label>
+                        <label><input type="radio" name="q1" value="Falso"> Falso</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 3: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="Passagem por valor" data-explanation="Por padrão, C++ usa passagem por valor, o que significa que a função trabalha com uma cópia do argumento, e a variável original permanece inalterada.">
+                    <h4>Questão 3 (Múltipla Escolha): Qual é o mecanismo padrão de passagem de argumentos em C++ que garante que a variável original fora da função não seja alterada?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q2" value="Passagem por referência"> Passagem por referência</label>
+                        <label><input type="radio" name="q2" value="Passagem por ponteiro"> Passagem por ponteiro</label>
+                        <label><input type="radio" name="q2" value="Passagem por valor"> Passagem por valor</label>
+                        <label><input type="radio" name="q2" value="Passagem por cópia"> Passagem por cópia</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 4: Exercício de Código (Debug) -->
+                <div class="quiz-question" data-correct-answer="10" data-explanation="A variável 'x' dentro da função é uma variável local diferente da 'x' fora da função. A função não altera a 'x' externa.">
+                    <h4>Questão 4 (Exercício de Código): Qual será o valor impresso de `x` no `main`?</h4>
+                    <pre><code>void mudar_x() {
+    int x = 5;
+}
+int main() {
+    int x = 10;
+    mudar_x();
+    std::cout << x;
+    return 0;
+}</code></pre>
+                    <textarea rows="1" name="q3" placeholder="Insira o valor final..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 5: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="A variável é criada na primeira chamada e persiste até o fim do programa." data-explanation="Variáveis estáticas locais têm escopo local (só podem ser acessadas na função), mas seu tempo de vida é o do programa, mantendo seu valor entre as chamadas da função.">
+                    <h4>Questão 5 (Múltipla Escolha): Qual é a principal característica de uma variável local declarada com a palavra-chave `static`?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q4" value="A variável é criada e destruída a cada chamada da função."> A variável é criada e destruída a cada chamada da função.</label>
+                        <label><input type="radio" name="q4" value="A variável é acessível de qualquer lugar do programa."> A variável é acessível de qualquer lugar do programa.</label>
+                        <label><input type="radio" name="q4" value="A variável é criada na primeira chamada e persiste até o fim do programa."> A variável é criada na primeira chamada e persiste até o fim do programa.</label>
+                        <label><input type="radio" name="q4" value="A variável só pode armazenar números inteiros."> A variável só pode armazenar números inteiros.</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 6: Verdadeiro/Falso -->
+                <div class="quiz-question" data-correct-answer="Verdadeiro" data-explanation="A palavra-chave 'inline' é uma sugestão ao compilador para que ele substitua a chamada da função pelo corpo da função, eliminando a sobrecarga de tempo de execução da chamada.">
+                    <h4>Questão 6 (Verdadeiro/Falso): O uso de `inline` é uma sugestão ao compilador para otimizar a chamada de funções pequenas.</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q5" value="Verdadeiro"> Verdadeiro</label>
+                        <label><input type="radio" name="q5" value="Falso"> Falso</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 7: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="UFUNCTION" data-explanation="A macro 'UFUNCTION' é usada na Unreal Engine para expor métodos C++ ao sistema de reflexão, permitindo que sejam chamados a partir de Blueprints ou outros sistemas do motor.">
+                    <h4>Questão 7 (Múltipla Escolha): Qual macro da Unreal Engine é usada para permitir que uma função C++ seja chamada a partir de um Blueprint?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q6" value="UPROPERTY"> UPROPERTY</label>
+                        <label><input type="radio" name="q6" value="UCLASS"> UCLASS</label>
+                        <label><input type="radio" name="q6" value="UFUNCTION"> UFUNCTION</label>
+                        <label><input type="radio" name="q6" value="USTRUCT"> USTRUCT</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 8: Exercício de Código (Debug) -->
+                <div class="quiz-question" data-correct-answer="10" data-explanation="A função 'aplicar_buff' usa o valor padrão de 10 para 'cura' quando o segundo argumento é omitido. 50 + 10 = 60.">
+                    <h4>Questão 8 (Exercício de Código): Qual será o valor de `vida_final`?</h4>
+                    <pre><code>int aplicar_buff(int vida, int cura = 10) {
+    return vida + cura;
+}
+int vida_final = aplicar_buff(50);</code></pre>
+                    <textarea rows="1" name="q7" placeholder="Insira o valor final..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 9: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="Modularidade" data-explanation="A modularidade é o princípio de dividir um programa em módulos menores e independentes (funções), o que facilita a manutenção e o entendimento do código.">
+                    <h4>Questão 9 (Múltipla Escolha): O princípio de dividir um programa em funções menores e independentes é conhecido como:</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q8" value="Encapsulamento"> Encapsulamento</label>
+                        <label><input type="radio" name="q8" value="Polimorfismo"> Polimorfismo</label>
+                        <label><input type="radio" name="q8" value="Modularidade"> Modularidade</label>
+                        <label><input type="radio" name="q8" value="Herança"> Herança</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 10: Questão Conceitual Aplicada -->
+                <div class="quiz-question" data-correct-answer="Uma função 'void ApplyDamage(float damage)' seria usada para aplicar dano ao personagem. Uma função 'bool IsDead()' seria usada para verificar se a vida do personagem chegou a zero." data-explanation="Funções são usadas para encapsular a lógica de jogo, como aplicar dano, verificar estados, ou calcular valores.">
+                    <h4>Questão 10 (Conceitual Aplicada): Dê um exemplo de duas funções (com tipos de retorno diferentes) que seriam usadas em uma classe de personagem de jogo.</h4>
+                    <textarea rows="3" name="q9" placeholder="Responda aqui..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Verificar Respostas</button>
+            </form>
+            <div id="quiz-result"></div>
+
+            <div class="nav-buttons">
+                <a href="../modulo.html" class="prev">&laquo; Voltar ao Módulo</a>
+                <a href="../02-Ponteiros-Referencias/teoria.md" class="next">Próxima Lição: Ponteiros e Referências &raquo;</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

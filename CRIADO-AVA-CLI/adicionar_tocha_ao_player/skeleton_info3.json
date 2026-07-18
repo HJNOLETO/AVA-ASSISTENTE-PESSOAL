@@ -1,0 +1,5 @@
+{
+  "mesh_name": "Mannequin",
+  "mesh_type": "<class 'SkeletalMesh'>",
+  "error-get-skel": "'SkeletalMesh' object has no attribute 'get_skeleton'"
+}

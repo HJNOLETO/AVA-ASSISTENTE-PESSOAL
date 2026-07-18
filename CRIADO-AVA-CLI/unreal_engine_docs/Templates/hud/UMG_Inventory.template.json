@@ -1,0 +1,36 @@
+{
+  "name": "UMG_Inventory",
+  "parent_class": "UserWidget",
+  "template_id": "inventory",
+  "category": "HUD",
+  "variables": [],
+  "components": [
+    {
+      "name": "CanvasPanel_0",
+      "type": "CanvasPanel"
+    },
+    {
+      "name": "BackgroundBlur_207",
+      "type": "BackgroundBlur"
+    },
+    {
+      "name": "Cor",
+      "type": "Image"
+    },
+    {
+      "name": "Overlay_86",
+      "type": "Overlay"
+    },
+    {
+      "name": "WeaponName",
+      "type": "TextBlock"
+    }
+  ],
+  "events": [],
+  "functions": [],
+  "graph_sections": [],
+  "interfaces": [],
+  "structs_used": [],
+  "key_patterns": {},
+  "source_file": "UMG_Inventory.md"
+}

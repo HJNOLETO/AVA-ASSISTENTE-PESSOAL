@@ -1,0 +1,60 @@
+{
+  "name": "BP_Motorcycle",
+  "parent_class": "WheeledVehiclePawn",
+  "template_id": "motorcycle",
+  "category": "General",
+  "variables": [],
+  "components": [
+    {
+      "name": "Mesh",
+      "type": "StaticMeshComponent"
+    },
+    {
+      "name": "Camera",
+      "type": "CameraComponent"
+    }
+  ],
+  "events": [
+    "`ReceiveTick`",
+    "`Timeline_0__UpdateFunc`",
+    "`Timeline_0__FinishedFunc`"
+  ],
+  "functions": [
+    "`AddControllerYawInput()`",
+    "`AddTorqueInRadians()`",
+    "`SetCenterOfMass()`",
+    "`WakeAllRigidBodies()`",
+    "`AddImpulse()`",
+    "`IsInAir()`",
+    "`VLerp()`",
+    "`SetThrottleInput()`",
+    "`ResetVehicle()`",
+    "`SetBrakeInput()`",
+    "`SetSteeringInput()`",
+    "`SetFloatParameter()`",
+    "`GetForwardSpeed()`",
+    "`GetRightVector()`",
+    "`AddControllerPitchInput()`",
+    "`Not_PreBool()`",
+    "`Add_IntInt()`",
+    "`Less_IntInt()`",
+    "`Multiply_VectorVector()`",
+    "`Conv_DoubleToVector()`",
+    "`Multiply_DoubleDouble()`",
+    "`ExecuteUbergraph_BP_Motorcycle()`"
+  ],
+  "graph_sections": [],
+  "interfaces": [],
+  "structs_used": [],
+  "key_patterns": {
+    "has_replication": false,
+    "has_timers": false,
+    "has_overlap_events": false,
+    "has_enhanced_input": false,
+    "has_timeline": true,
+    "has_data_tables": false,
+    "has_dynamic_material": false,
+    "has_camera_fade": false
+  },
+  "source_file": "BP_Motorcycle.md"
+}

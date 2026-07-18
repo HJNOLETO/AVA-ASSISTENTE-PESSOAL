@@ -1,0 +1,68 @@
+{
+  "name": "WBCrosshair",
+  "parent_class": "UserWidget",
+  "template_id": "wbcrosshair",
+  "category": "HUD",
+  "variables": [],
+  "components": [
+    {
+      "name": "CanvasPanel_0",
+      "type": "CanvasPanel"
+    },
+    {
+      "name": "bottom",
+      "type": "Border"
+    },
+    {
+      "name": "BorderSlot_6",
+      "type": "BorderSlot"
+    },
+    {
+      "name": "Border_134",
+      "type": "Border"
+    },
+    {
+      "name": "right",
+      "type": "Border"
+    },
+    {
+      "name": "BorderSlot_5",
+      "type": "BorderSlot"
+    },
+    {
+      "name": "Border_133",
+      "type": "Border"
+    },
+    {
+      "name": "left",
+      "type": "Border"
+    },
+    {
+      "name": "BorderSlot_0",
+      "type": "BorderSlot"
+    },
+    {
+      "name": "Border_96",
+      "type": "Border"
+    },
+    {
+      "name": "top",
+      "type": "Border"
+    },
+    {
+      "name": "BorderSlot_8",
+      "type": "BorderSlot"
+    },
+    {
+      "name": "Border_140",
+      "type": "Border"
+    }
+  ],
+  "events": [],
+  "functions": [],
+  "graph_sections": [],
+  "interfaces": [],
+  "structs_used": [],
+  "key_patterns": {},
+  "source_file": "WBCrosshair.md"
+}

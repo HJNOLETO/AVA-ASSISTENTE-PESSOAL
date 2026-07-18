@@ -1,0 +1,40 @@
+[CATALOGO DE ASSETS - PROJETOGTA]
+
+Armas disponiveis (2):
+  Meshes: SK, SM
+  Materials de arma: M_Scope_25x56, M_Scope_25x56_Lens, M_Scope_25x56_Lens_NoAlpha, M_Suppressor5, M_Tc4_Sight
+
+Blueprints do jogo (27):
+  - AC_Interaction
+  - AC_PlayerStatus
+  - AC_WeaponSystem
+  - BP_AVA_Test
+  - BP_AmmoBase
+  - BP_AmmoBox
+  - BP_Armour
+  - BP_Bike
+  - BP_Character
+  - BP_CharacterViewer
+  - BP_Door
+  - BP_Door
+
+Sons disponiveis (294):
+  - 1911-1
+  - 1911-empty
+  - 1911-magin
+  - 1911-magout
+  - 1911-safety
+  - 1911-slideback
+  - 1911-slideforward
+  - Conc-16
+  - Conc-17
+  - Conc-18
+
+Ambiente (ModernCityEnvironment01): 344 meshes, 257 materiais, 520 texturas
+
+Props basicos (StarterContent): 20 meshes
+  SM_AssetPlatform, SM_Arrows, SM_Bush, SM_Chair, SM_CornerFrame, SM_Couch, SM_Door, SM_DoorFrame
+
+Decals de impacto (BallisticsVFX): 64
+
+VFX de pickup (sA_PickupSet_1): NE_CoinBurst, NE_Light, NE_PickupCricle, NE_SimpleBurst, NE_SimpleSprite

@@ -1,0 +1,1544 @@
+{
+  "generated_from": "43 templates",
+  "shared_variables": [
+    {
+      "variable": "Character",
+      "count": 4,
+      "blueprints": [
+        "BP_PickupObject",
+        "UMG_Slot",
+        "AC_Interaction",
+        "BP_InteractionObject"
+      ],
+      "types": [
+        "object (Actor)",
+        "object (ALS_Base_CharacterBP_C)",
+        "object (Character)"
+      ],
+      "categories": [
+        "General",
+        "Interaction"
+      ]
+    }
+  ],
+  "shared_events": [
+    {
+      "event": "Interact",
+      "count": 7,
+      "blueprints": [
+        "BP_AmmoBox",
+        "BP_Armour",
+        "BP_Health",
+        "BP_Jetpack",
+        "BP_PickupObject",
+        "BP_Door",
+        "BP_InteractionObject"
+      ]
+    },
+    {
+      "event": "Resetdoonce",
+      "count": 6,
+      "blueprints": [
+        "BP_AmmoBox",
+        "BP_Armour",
+        "BP_Health",
+        "BP_Jetpack",
+        "BP_PickupObject",
+        "BP_InteractionObject"
+      ]
+    },
+    {
+      "event": "Preconstructthisnodeisdisabledandwillnotbecalledndragoffpinstobuildfunctionality",
+      "count": 4,
+      "blueprints": [
+        "W_CustomCharacter",
+        "UMG_Inventory",
+        "W_Main",
+        "W_PickupItem"
+      ]
+    },
+    {
+      "event": "Receivebeginplaythisnodeisdisabledandwillnotbecalledndragoffpinstobuildfunctionality",
+      "count": 4,
+      "blueprints": [
+        "BP_AmmoBase",
+        "BP_MissionMarker",
+        "BP_TimeOfDay",
+        "Projectile_Rifle"
+      ]
+    },
+    {
+      "event": "Receiveactorbeginoverlapthisnodeisdisabledandwillnotbecalledndragoffpinstobuildfunctionality",
+      "count": 4,
+      "blueprints": [
+        "BP_AmmoBase",
+        "BP_MissionMarker",
+        "BP_TimeOfDay",
+        "Projectile_Rifle"
+      ]
+    },
+    {
+      "event": "Receivetickthisnodeisdisabledandwillnotbecalledndragoffpinstobuildfunctionality",
+      "count": 4,
+      "blueprints": [
+        "BP_AmmoBase",
+        "BP_MissionMarker",
+        "BP_TimeOfDay",
+        "Projectile_Rifle"
+      ]
+    },
+    {
+      "event": "Tickthisnodeisdisabledandwillnotbecalledndragoffpinstobuildfunctionality",
+      "count": 3,
+      "blueprints": [
+        "W_CustomCharacter",
+        "UMG_Inventory",
+        "W_PickupItem"
+      ]
+    },
+    {
+      "event": "Construct",
+      "count": 3,
+      "blueprints": [
+        "UMG_Inventory",
+        "UMG_Slot",
+        "W_Main"
+      ]
+    }
+  ],
+  "shared_functions": [
+    {
+      "function": "Isvalid",
+      "count": 9,
+      "blueprints": [
+        "AnimBP_Motorcycle",
+        "BP_AmmoBase",
+        "BP_TimeOfDay",
+        "UMG_Inventory",
+        "UMG_Slot",
+        "W_Main",
+        "AC_Interaction",
+        "AC_WeaponSystem",
+        "BP_WeaponBase"
+      ]
+    },
+    {
+      "function": "Notprebool",
+      "count": 7,
+      "blueprints": [
+        "AnimBP_Character",
+        "BP_Character",
+        "BP_Motorcycle",
+        "AC_Interaction",
+        "BP_Door",
+        "AC_WeaponSystem",
+        "BP_WeaponBase"
+      ]
+    },
+    {
+      "function": "Lessintint",
+      "count": 7,
+      "blueprints": [
+        "BP_Character",
+        "BP_Bike",
+        "BP_Motorcycle",
+        "UMG_Slot",
+        "W_Main",
+        "AC_Interaction",
+        "AC_WeaponSystem"
+      ]
+    },
+    {
+      "function": "Kgetactorlocation",
+      "count": 6,
+      "blueprints": [
+        "BP_Character",
+        "AC_Interaction",
+        "BP_Door",
+        "AC_WeaponSystem",
+        "BP_ProjectileBase",
+        "BP_WeaponBase"
+      ]
+    },
+    {
+      "function": "Addintint",
+      "count": 6,
+      "blueprints": [
+        "BP_Character",
+        "BP_Bike",
+        "BP_Motorcycle",
+        "AC_Interaction",
+        "AC_WeaponSystem",
+        "BP_WeaponBase"
+      ]
+    },
+    {
+      "function": "Kdestroyactor",
+      "count": 6,
+      "blueprints": [
+        "BP_AmmoBase",
+        "BP_AmmoBox",
+        "BP_Armour",
+        "BP_Health",
+        "BP_MissionMarker",
+        "AC_WeaponSystem"
+      ]
+    },
+    {
+      "function": "Multiplydoubledouble",
+      "count": 5,
+      "blueprints": [
+        "AnimBP_Motorcycle",
+        "BP_CharacterViewer",
+        "BP_Bike",
+        "BP_Jetpack",
+        "BP_Motorcycle"
+      ]
+    },
+    {
+      "function": "Dividedoubledouble",
+      "count": 5,
+      "blueprints": [
+        "BP_Character",
+        "BP_Bike",
+        "W_Main",
+        "AC_WeaponSystem",
+        "BP_WeaponBase"
+      ]
+    },
+    {
+      "function": "Breakrotator",
+      "count": 5,
+      "blueprints": [
+        "BP_Character",
+        "BP_CharacterViewer",
+        "BP_Bike",
+        "BP_Door",
+        "BP_ProjectileBase"
+      ]
+    },
+    {
+      "function": "Getcomponents",
+      "count": 5,
+      "blueprints": [
+        "BP_Armour",
+        "BP_Health",
+        "BP_Jetpack",
+        "BP_PickupObject",
+        "BP_InteractionObject"
+      ]
+    },
+    {
+      "function": "Makevector",
+      "count": 4,
+      "blueprints": [
+        "AnimBP_Motorcycle",
+        "BP_Character",
+        "BP_Bike",
+        "AC_Interaction"
+      ]
+    },
+    {
+      "function": "Subtractdoubledouble",
+      "count": 4,
+      "blueprints": [
+        "AnimBP_Motorcycle",
+        "BP_Character",
+        "BP_Bike",
+        "BP_WeaponBase"
+      ]
+    },
+    {
+      "function": "Delay",
+      "count": 4,
+      "blueprints": [
+        "AnimBP_Character",
+        "BP_Character",
+        "AC_WeaponSystem",
+        "BP_WeaponBase"
+      ]
+    },
+    {
+      "function": "Kattachtocomponent",
+      "count": 4,
+      "blueprints": [
+        "BP_Character",
+        "BP_Jetpack",
+        "AC_WeaponSystem",
+        "BP_WeaponBase"
+      ]
+    },
+    {
+      "function": "Getplayercameramanager",
+      "count": 4,
+      "blueprints": [
+        "BP_Character",
+        "BP_MissionMarker",
+        "AC_WeaponSystem",
+        "BP_WeaponBase"
+      ]
+    },
+    {
+      "function": "Getplayercontroller",
+      "count": 4,
+      "blueprints": [
+        "BP_Character",
+        "BP_CharacterViewer",
+        "BP_MissionMarker",
+        "AC_WeaponSystem"
+      ]
+    },
+    {
+      "function": "Breaktransform",
+      "count": 4,
+      "blueprints": [
+        "BP_Character",
+        "BP_Bike",
+        "BP_Jetpack",
+        "BP_WeaponBase"
+      ]
+    },
+    {
+      "function": "Ksetrelativerotation",
+      "count": 4,
+      "blueprints": [
+        "BP_CharacterViewer",
+        "BP_Bike",
+        "BP_Jetpack",
+        "BP_Door"
+      ]
+    },
+    {
+      "function": "Equalequalbytebyte",
+      "count": 4,
+      "blueprints": [
+        "W_Main",
+        "AC_Interaction",
+        "AC_WeaponSystem",
+        "BP_WeaponBase"
+      ]
+    }
+  ],
+  "architectural_patterns": [
+    {
+      "id": "health_system",
+      "name": "Sistema de Vida / Dano",
+      "keywords": [
+        "health",
+        "damage",
+        "death",
+        "vida",
+        "dano",
+        "morrer",
+        "dead",
+        "isdead",
+        "sethealth",
+        "sethp"
+      ],
+      "blueprints": [
+        {
+          "bp": "AnimBP_Character",
+          "category": "Character",
+          "score": 9,
+          "match": [
+            "var:Damage Anim",
+            "var:Dead",
+            "evt:`DamageAnimation`",
+            "evt:`IsDead`",
+            "evt:`IsDead`"
+          ]
+        },
+        {
+          "bp": "BP_Character",
+          "category": "Character",
+          "score": 15,
+          "match": [
+            "var:Dead",
+            "evt:`ReceiveAnyDamage`",
+            "evt:`Death`",
+            "evt:`IsDead`",
+            "evt:`IsDead`"
+          ]
+        },
+        {
+          "bp": "BP_Health",
+          "category": "General",
+          "score": 3,
+          "match": [
+            "func:`SetHealth()`",
+            "func:`SetHealth()`",
+            "func:`ExecuteUbergraph_BP_Health()`"
+          ]
+        },
+        {
+          "bp": "BP_ProjectileBase",
+          "category": "Weapons",
+          "score": 2,
+          "match": [
+            "var:Damage",
+            "func:`ApplyDamage()`"
+          ]
+        }
+      ],
+      "bp_count": 4
+    },
+    {
+      "id": "weapon_fire_system",
+      "name": "Sistema de Disparo / Arma",
+      "keywords": [
+        "weaponfire",
+        "can_shoot",
+        "spawnprojectile",
+        "ammo",
+        "munition",
+        "fire_rate",
+        "spread",
+        "reload",
+        "recarga"
+      ],
+      "blueprints": [
+        {
+          "bp": "BP_AmmoBase",
+          "category": "General",
+          "score": 6,
+          "match": [
+            "var:Ammo Type",
+            "var:Amount Ammo",
+            "evt:`BndEvt__BP_AmmoBase_AmmoCollision_K2Nod",
+            "func:`AmmoPickup()`",
+            "func:`ExecuteUbergraph_BP_AmmoBase()`"
+          ]
+        },
+        {
+          "bp": "BP_AmmoBox",
+          "category": "General",
+          "score": 4,
+          "match": [
+            "var:Ammo Type",
+            "var:Amount Ammo",
+            "func:`AmmoPickup()`",
+            "func:`ExecuteUbergraph_BP_AmmoBox()`"
+          ]
+        },
+        {
+          "bp": "W_Main",
+          "category": "General",
+          "score": 3,
+          "match": [
+            "var:NoAmmoColor",
+            "evt:`UpdateAmmoBP`",
+            "evt:`UpdateAmmoMag`"
+          ]
+        },
+        {
+          "bp": "UMG_Slot",
+          "category": "HUD",
+          "score": 3,
+          "match": [
+            "comp:AmmoBox",
+            "comp:AmmoMagazine",
+            "comp:AmmoStored"
+          ]
+        },
+        {
+          "bp": "AC_WeaponSystem",
+          "category": "Weapons",
+          "score": 9,
+          "match": [
+            "var:AmmoAdd",
+            "evt:`Reload`",
+            "evt:`AddAmmo`",
+            "func:`WeaponFire()`",
+            "func:`WeaponFireMode()`"
+          ]
+        },
+        {
+          "bp": "BP_WeaponBase",
+          "category": "Weapons",
+          "score": 24,
+          "match": [
+            "var:Weapon Spread",
+            "var:Reload Sound",
+            "var:Reload Duration",
+            "var:CurrentAmmoInMag",
+            "var:CurrentAmmoInBP"
+          ]
+        }
+      ],
+      "bp_count": 6
+    },
+    {
+      "id": "interaction_system",
+      "name": "Sistema de Interacao / Pickup",
+      "keywords": [
+        "interact",
+        "pickup",
+        "overlap",
+        "interaction",
+        "select"
+      ],
+      "blueprints": [
+        {
+          "bp": "BP_AmmoBase",
+          "category": "General",
+          "score": 4,
+          "match": [
+            "evt:`ReceiveActorBeginOverlap` — *This node ",
+            "evt:`BndEvt__BP_AmmoBase_AmmoCollision_K2Nod",
+            "func:`AmmoPickup()`",
+            "comp:Overlap"
+          ]
+        },
+        {
+          "bp": "BP_AmmoBox",
+          "category": "General",
+          "score": 2,
+          "match": [
+            "evt:`Interact`",
+            "func:`AmmoPickup()`"
+          ]
+        },
+        {
+          "bp": "BP_MissionMarker",
+          "category": "General",
+          "score": 3,
+          "match": [
+            "evt:`ReceiveActorBeginOverlap` — *This node ",
+            "evt:`BndEvt__BP_MissionMarker_Collision_K2No",
+            "comp:Overlap"
+          ]
+        },
+        {
+          "bp": "BP_PickupObject",
+          "category": "General",
+          "score": 10,
+          "match": [
+            "evt:`BndEvt__BP_InteractionObject_Trigger_K2",
+            "evt:`BndEvt__BP_InteractionObject_Trigger_K2",
+            "evt:`BndEvt__BP_InteractionObject_Trigger_K2",
+            "evt:`BndEvt__BP_InteractionObject_Trigger_K2",
+            "evt:`BndEvt__BP_InteractionObject_Trigger_K2"
+          ]
+        },
+        {
+          "bp": "BP_TimeOfDay",
+          "category": "General",
+          "score": 2,
+          "match": [
+            "evt:`ReceiveActorBeginOverlap` — *This node ",
+            "comp:Overlap"
+          ]
+        },
+        {
+          "bp": "UMG_RadialMenu",
+          "category": "HUD",
+          "score": 2,
+          "match": [
+            "comp:Selection",
+            "comp:BorderSelection"
+          ]
+        },
+        {
+          "bp": "AC_Interaction",
+          "category": "Interaction",
+          "score": 22,
+          "match": [
+            "var:InteractionAllObjects",
+            "var:InteractionAllObjects",
+            "var:InteractionObject",
+            "var:InteractionObject",
+            "var:TriggerOverlap"
+          ]
+        },
+        {
+          "bp": "BP_Door",
+          "category": "Interaction",
+          "score": 2,
+          "match": [
+            "evt:`Interact`",
+            "func:`SelectRotator()`"
+          ]
+        },
+        {
+          "bp": "BP_InteractionObject",
+          "category": "Interaction",
+          "score": 11,
+          "match": [
+            "evt:`BndEvt__BP_InteractionObject_Trigger_K2",
+            "evt:`BndEvt__BP_InteractionObject_Trigger_K2",
+            "evt:`BndEvt__BP_InteractionObject_Trigger_K2",
+            "evt:`BndEvt__BP_InteractionObject_Trigger_K2",
+            "evt:`BndEvt__BP_InteractionObject_Trigger_K2"
+          ]
+        },
+        {
+          "bp": "AC_WeaponSystem",
+          "category": "Weapons",
+          "score": 5,
+          "match": [
+            "evt:`PickupWeapon`",
+            "evt:`WeaponIsSelected`",
+            "func:`SelectFloat()`",
+            "func:`WeaponIsSelected()`",
+            "func:`Get Selection Option()`"
+          ]
+        },
+        {
+          "bp": "BP_WeaponBase",
+          "category": "Weapons",
+          "score": 9,
+          "match": [
+            "var:IsPickup",
+            "var:AutoPickUp",
+            "evt:`BndEvt__BP_WeaponBase_WeaponCollision_K",
+            "evt:`BndEvt__BP_WeaponBase_WeaponCollision_K",
+            "evt:`PickupMagazine`"
+          ]
+        },
+        {
+          "bp": "Projectile_Rifle",
+          "category": "Weapons",
+          "score": 2,
+          "match": [
+            "evt:`ReceiveActorBeginOverlap` — *This node ",
+            "comp:Overlap"
+          ]
+        }
+      ],
+      "bp_count": 12
+    },
+    {
+      "id": "physics_system",
+      "name": "Sistema de Fisica",
+      "keywords": [
+        "physics",
+        "simulate",
+        "mass",
+        "damping",
+        "velocity",
+        "impulse",
+        "movement"
+      ],
+      "blueprints": [
+        {
+          "bp": "AnimBP_Character",
+          "category": "Character",
+          "score": 2,
+          "match": [
+            "func:`GetVelocity()`",
+            "func:`GetMovementComponent()`"
+          ]
+        },
+        {
+          "bp": "BP_Character",
+          "category": "Character",
+          "score": 5,
+          "match": [
+            "evt:`BPI_Set_MovementAction`",
+            "evt:`BPI_Set_MovementState`",
+            "func:`AddMovementInput()`",
+            "func:`SetSimulatePhysics()`",
+            "func:`SetSimulatePhysics()`"
+          ]
+        },
+        {
+          "bp": "BP_Motorcycle",
+          "category": "General",
+          "score": 2,
+          "match": [
+            "func:`SetCenterOfMass()`",
+            "func:`AddImpulse()`"
+          ]
+        },
+        {
+          "bp": "AC_WeaponSystem",
+          "category": "Weapons",
+          "score": 9,
+          "match": [
+            "func:`SetAllBodiesSimulatePhysics()`",
+            "func:`SetAllBodiesSimulatePhysics()`",
+            "func:`AddImpulse()`",
+            "func:`SetAllBodiesBelowSimulatePhysics()`",
+            "func:`SetAllBodiesBelowSimulatePhysics()`"
+          ]
+        },
+        {
+          "bp": "BP_PhysicalMag",
+          "category": "Weapons",
+          "score": 5,
+          "match": [
+            "var:Velocity",
+            "func:`SetSimulatePhysics()`",
+            "func:`SetSimulatePhysics()`",
+            "func:`SetAllPhysicsLinearVelocity()`",
+            "func:`SetAllPhysicsLinearVelocity()`"
+          ]
+        },
+        {
+          "bp": "BP_ProjectileBase",
+          "category": "Weapons",
+          "score": 4,
+          "match": [
+            "func:`IsSimulatingPhysics()`",
+            "func:`AddImpulseAtLocation()`",
+            "func:`GetVelocity()`",
+            "comp:ProjectileMovement"
+          ]
+        },
+        {
+          "bp": "BP_WeaponBase",
+          "category": "Weapons",
+          "score": 5,
+          "match": [
+            "var:WeaponPhysics",
+            "func:`SetSimulatePhysics()`",
+            "func:`SetSimulatePhysics()`",
+            "func:`GetVelocity()`",
+            "comp:RotatingMovement"
+          ]
+        }
+      ],
+      "bp_count": 7
+    },
+    {
+      "id": "hud_system",
+      "name": "Sistema de HUD / UI",
+      "keywords": [
+        "hud",
+        "widget",
+        "ui",
+        "menu",
+        "radial",
+        "slot",
+        "crosshair",
+        "inventory",
+        "inventario"
+      ],
+      "blueprints": [
+        {
+          "bp": "AnimBP_Bike",
+          "category": "Animation",
+          "score": 2,
+          "match": [
+            "evt:`BlueprintUpdateAnimation` — *This node ",
+            "func:`TryGetPawnOwner()` — *This node is disabled and will not be called.\\nDrag off pins to build functionality.*"
+          ]
+        },
+        {
+          "bp": "W_CustomCharacter",
+          "category": "Character",
+          "score": 3,
+          "match": [
+            "evt:`PreConstruct` — *This node is disabled ",
+            "evt:`Construct` — *This node is disabled and",
+            "evt:`Tick` — *This node is disabled and will"
+          ]
+        },
+        {
+          "bp": "BP_AmmoBase",
+          "category": "General",
+          "score": 3,
+          "match": [
+            "evt:`ReceiveBeginPlay` — *This node is disab",
+            "evt:`ReceiveActorBeginOverlap` — *This node ",
+            "evt:`ReceiveTick` — *This node is disabled a"
+          ]
+        },
+        {
+          "bp": "BP_MissionMarker",
+          "category": "General",
+          "score": 4,
+          "match": [
+            "evt:`ReceiveBeginPlay` — *This node is disab",
+            "evt:`ReceiveActorBeginOverlap` — *This node ",
+            "evt:`ReceiveTick` — *This node is disabled a",
+            "func:`VisibilityHUD()`"
+          ]
+        },
+        {
+          "bp": "BP_TimeOfDay",
+          "category": "General",
+          "score": 3,
+          "match": [
+            "evt:`ReceiveBeginPlay` — *This node is disab",
+            "evt:`ReceiveActorBeginOverlap` — *This node ",
+            "evt:`ReceiveTick` — *This node is disabled a"
+          ]
+        },
+        {
+          "bp": "UMG_Inventory",
+          "category": "General",
+          "score": 3,
+          "match": [
+            "evt:`PreConstruct` — *This node is disabled ",
+            "evt:`Tick` — *This node is disabled and will",
+            "func:`ExecuteUbergraph_UMG_Inventory()`"
+          ]
+        },
+        {
+          "bp": "UMG_Slot",
+          "category": "General",
+          "score": 2,
+          "match": [
+            "var:WeaponSlot",
+            "func:`ExecuteUbergraph_UMG_Slot()`"
+          ]
+        },
+        {
+          "bp": "W_Main",
+          "category": "General",
+          "score": 5,
+          "match": [
+            "evt:`SetWeaponDataHUD`",
+            "evt:`PreConstruct` — *This node is disabled ",
+            "func:`ProjectWorldLocationToWidgetPosition()`",
+            "func:`SlotAsCanvasSlot()`",
+            "func:`SetActiveWidgetIndex()`"
+          ]
+        },
+        {
+          "bp": "W_PickupItem",
+          "category": "General",
+          "score": 3,
+          "match": [
+            "evt:`PreConstruct` — *This node is disabled ",
+            "evt:`Construct` — *This node is disabled and",
+            "evt:`Tick` — *This node is disabled and will"
+          ]
+        },
+        {
+          "bp": "UMG_RadialMenu",
+          "category": "HUD",
+          "score": 2,
+          "match": [
+            "comp:MenuRadial",
+            "comp:MenuRadial"
+          ]
+        },
+        {
+          "bp": "WBCrosshair",
+          "category": "HUD",
+          "score": 4,
+          "match": [
+            "comp:BorderSlot_6",
+            "comp:BorderSlot_5",
+            "comp:BorderSlot_0",
+            "comp:BorderSlot_8"
+          ]
+        },
+        {
+          "bp": "W_CustomCharacter",
+          "category": "HUD",
+          "score": 2,
+          "match": [
+            "comp:ButtonSlot_0",
+            "comp:ButtonSlot_0"
+          ]
+        },
+        {
+          "bp": "AC_WeaponSystem",
+          "category": "Weapons",
+          "score": 16,
+          "match": [
+            "var:ShowMenu",
+            "var:UMGInventory",
+            "evt:`UpdateHUD_Local`",
+            "evt:`CreateRadialMenu`",
+            "evt:`CreateRadialMenu`"
+          ]
+        },
+        {
+          "bp": "BP_WeaponBase",
+          "category": "Weapons",
+          "score": 3,
+          "match": [
+            "evt:`UpdateHUD_WeaponData`",
+            "func:`SetWeaponDataHUD()`",
+            "func:`GetHUD()`"
+          ]
+        },
+        {
+          "bp": "Projectile_Rifle",
+          "category": "Weapons",
+          "score": 3,
+          "match": [
+            "evt:`ReceiveBeginPlay` — *This node is disab",
+            "evt:`ReceiveActorBeginOverlap` — *This node ",
+            "evt:`ReceiveTick` — *This node is disabled a"
+          ]
+        }
+      ],
+      "bp_count": 15
+    },
+    {
+      "id": "animation_system",
+      "name": "Sistema de Animacao",
+      "keywords": [
+        "anim",
+        "animation",
+        "montage",
+        "blend",
+        "als"
+      ],
+      "blueprints": [
+        {
+          "bp": "AnimBP_Bike",
+          "category": "Animation",
+          "score": 2,
+          "match": [
+            "evt:`BlueprintUpdateAnimation` — *This node ",
+            "evt:`BlueprintUpdateAnimation` — *This node "
+          ]
+        },
+        {
+          "bp": "AnimBP_Motorcycle",
+          "category": "Animation",
+          "score": 5,
+          "match": [
+            "evt:`BlueprintUpdateAnimation`",
+            "evt:`BlueprintUpdateAnimation`",
+            "evt:`EvaluateGraphExposedInputs_ExecuteUberg",
+            "evt:`EvaluateGraphExposedInputs_ExecuteUberg",
+            "func:`ExecuteUbergraph_AnimBP_Motorcycle()`"
+          ]
+        },
+        {
+          "bp": "AnimBP_Character",
+          "category": "Character",
+          "score": 34,
+          "match": [
+            "var:Damage Anim",
+            "var:Tired Animation",
+            "var:Tired Animation",
+            "evt:`BlueprintUpdateAnimation`",
+            "evt:`BlueprintUpdateAnimation`"
+          ]
+        },
+        {
+          "bp": "BP_Character",
+          "category": "Character",
+          "score": 7,
+          "match": [
+            "evt:`Reanimate`",
+            "evt:`DamageAnimation`",
+            "evt:`DamageAnimation`",
+            "func:`GetAnimInstance()`",
+            "func:`StopAnimMontage()`"
+          ]
+        },
+        {
+          "bp": "AC_WeaponSystem",
+          "category": "Weapons",
+          "score": 18,
+          "match": [
+            "var:BlendWeight",
+            "func:`GetAnimInstance()`",
+            "func:`SetAllBodiesBelowPhysicsBlendWeight()`",
+            "func:`SetAllBodiesPhysicsBlendWeight()`",
+            "func:`AnimNotify_EquipWeapon()`"
+          ]
+        },
+        {
+          "bp": "BP_WeaponBase",
+          "category": "Weapons",
+          "score": 6,
+          "match": [
+            "var:Char Animations",
+            "var:Char Animations",
+            "var:Weapon Animations",
+            "var:Weapon Animations",
+            "func:`PlayAnimation()`"
+          ]
+        }
+      ],
+      "bp_count": 6
+    },
+    {
+      "id": "vehicle_system",
+      "name": "Sistema de Veiculos",
+      "keywords": [
+        "vehicle",
+        "bike",
+        "motorcycle",
+        "moto",
+        "roda",
+        "wheel",
+        "throttle",
+        "steer"
+      ],
+      "blueprints": [
+        {
+          "bp": "AnimBP_Motorcycle",
+          "category": "Animation",
+          "score": 8,
+          "match": [
+            "var:Steering",
+            "evt:`EvaluateGraphExposedInputs_ExecuteUberg",
+            "evt:`EvaluateGraphExposedInputs_ExecuteUberg",
+            "evt:`EvaluateGraphExposedInputs_ExecuteUberg",
+            "evt:`EvaluateGraphExposedInputs_ExecuteUberg"
+          ]
+        },
+        {
+          "bp": "BP_Bike",
+          "category": "General",
+          "score": 6,
+          "match": [
+            "var:MaxSteeringAngle",
+            "var:SteeringAngle",
+            "func:`SetThrottleInput()`",
+            "func:`SetSteeringInput()`",
+            "func:`Steering()`"
+          ]
+        },
+        {
+          "bp": "BP_Motorcycle",
+          "category": "General",
+          "score": 5,
+          "match": [
+            "func:`SetThrottleInput()`",
+            "func:`ResetVehicle()`",
+            "func:`SetSteeringInput()`",
+            "func:`ExecuteUbergraph_BP_Motorcycle()`",
+            "func:`ExecuteUbergraph_BP_Motorcycle()`"
+          ]
+        }
+      ],
+      "bp_count": 3
+    },
+    {
+      "id": "camera_system",
+      "name": "Sistema de Camera",
+      "keywords": [
+        "camera",
+        "shake",
+        "camerafade",
+        "springarm",
+        "cameraboom",
+        "lag",
+        "cs_"
+      ],
+      "blueprints": [
+        {
+          "bp": "BP_Character",
+          "category": "Character",
+          "score": 13,
+          "match": [
+            "var:CameraCrouch",
+            "var:CameraSmooth",
+            "evt:`CameraSuave__UpdateFunc`",
+            "evt:`CameraSuave__FinishedFunc`",
+            "func:`GetPlayerCameraManager()`"
+          ]
+        },
+        {
+          "bp": "BP_CharacterViewer",
+          "category": "Character",
+          "score": 3,
+          "match": [
+            "var:RotateCamera?",
+            "comp:Camera",
+            "comp:SpringArm"
+          ]
+        },
+        {
+          "bp": "BP_MissionMarker",
+          "category": "General",
+          "score": 4,
+          "match": [
+            "func:`GetPlayerCameraManager()`",
+            "func:`StartCameraFade()`",
+            "func:`StartCameraFade()`",
+            "comp:Camera"
+          ]
+        },
+        {
+          "bp": "AC_WeaponSystem",
+          "category": "Weapons",
+          "score": 2,
+          "match": [
+            "func:`GetPlayerCameraManager()`",
+            "comp:Camera"
+          ]
+        },
+        {
+          "bp": "BP_WeaponBase",
+          "category": "Weapons",
+          "score": 2,
+          "match": [
+            "func:`GetPlayerCameraManager()`",
+            "comp:Camera"
+          ]
+        }
+      ],
+      "bp_count": 5
+    },
+    {
+      "id": "replication_system",
+      "name": "Sistema de Replicacao (Multiplayer)",
+      "keywords": [
+        "on_rep",
+        "replication",
+        "multicast",
+        "dormancy",
+        "net"
+      ],
+      "detect_by": "key_patterns",
+      "pattern_key": "has_replication",
+      "blueprints": [
+        {
+          "bp": "BP_Door",
+          "category": "Interaction",
+          "match": "key_pattern.has_replication"
+        },
+        {
+          "bp": "AC_WeaponSystem",
+          "category": "Weapons",
+          "match": "key_pattern.has_replication"
+        },
+        {
+          "bp": "BP_WeaponBase",
+          "category": "Weapons",
+          "match": "key_pattern.has_replication"
+        }
+      ],
+      "bp_count": 3
+    }
+  ],
+  "dependency_graph": {
+    "nodes": [
+      {
+        "name": "AnimBP_Bike",
+        "category": "Animation",
+        "parent": "VehicleAnimationInstance"
+      },
+      {
+        "name": "AnimBP_Motorcycle",
+        "category": "Animation",
+        "parent": "VehicleAnimationInstance"
+      },
+      {
+        "name": "Damge_CS",
+        "category": "CameraEffects",
+        "parent": "LegacyCameraShake"
+      },
+      {
+        "name": "AnimBP_Character",
+        "category": "Character",
+        "parent": "AnimInstance"
+      },
+      {
+        "name": "BP_Character",
+        "category": "Character",
+        "parent": "Character"
+      },
+      {
+        "name": "BP_CharacterViewer",
+        "category": "Character",
+        "parent": "Character"
+      },
+      {
+        "name": "W_CustomCharacter",
+        "category": "Character",
+        "parent": "UserWidget"
+      },
+      {
+        "name": "ProjetoGTA_GameMode",
+        "category": "GameMode",
+        "parent": "GameModeBase"
+      },
+      {
+        "name": "BP_AmmoBase",
+        "category": "General",
+        "parent": "Actor"
+      },
+      {
+        "name": "BP_AmmoBox",
+        "category": "General",
+        "parent": "BP_PickupObject_C"
+      },
+      {
+        "name": "BP_Armour",
+        "category": "General",
+        "parent": "BP_PickupObject_C"
+      },
+      {
+        "name": "BP_Bike",
+        "category": "General",
+        "parent": "WheeledVehiclePawn"
+      },
+      {
+        "name": "BP_Health",
+        "category": "General",
+        "parent": "BP_PickupObject_C"
+      },
+      {
+        "name": "BP_Jetpack",
+        "category": "General",
+        "parent": "BP_InteractionObject_C"
+      },
+      {
+        "name": "BP_MissionMarker",
+        "category": "General",
+        "parent": "Actor"
+      },
+      {
+        "name": "BP_Motorcycle",
+        "category": "General",
+        "parent": "WheeledVehiclePawn"
+      },
+      {
+        "name": "BP_PickupObject",
+        "category": "General",
+        "parent": "Actor"
+      },
+      {
+        "name": "BP_TimeOfDay",
+        "category": "General",
+        "parent": "Actor"
+      },
+      {
+        "name": "ComponentsInterface",
+        "category": "General",
+        "parent": "Interface"
+      },
+      {
+        "name": "MotoBWheel",
+        "category": "General",
+        "parent": "ChaosVehicleWheel"
+      },
+      {
+        "name": "MotoFWheel",
+        "category": "General",
+        "parent": "ChaosVehicleWheel"
+      },
+      {
+        "name": "RodaFrente",
+        "category": "General",
+        "parent": "ChaosVehicleWheel"
+      },
+      {
+        "name": "RodaTras",
+        "category": "General",
+        "parent": "ChaosVehicleWheel"
+      },
+      {
+        "name": "UMG_Inventory",
+        "category": "General",
+        "parent": "UserWidget"
+      },
+      {
+        "name": "UMG_Slot",
+        "category": "General",
+        "parent": "UserWidget"
+      },
+      {
+        "name": "W_Main",
+        "category": "General",
+        "parent": "UserWidget"
+      },
+      {
+        "name": "W_PickupItem",
+        "category": "General",
+        "parent": "UserWidget"
+      },
+      {
+        "name": "MenuCustom_GM",
+        "category": "HUD",
+        "parent": "GameModeBase"
+      },
+      {
+        "name": "UMG_Inventory",
+        "category": "HUD",
+        "parent": "UserWidget"
+      },
+      {
+        "name": "UMG_RadialMenu",
+        "category": "HUD",
+        "parent": "UserWidget"
+      },
+      {
+        "name": "UMG_Slot",
+        "category": "HUD",
+        "parent": "UserWidget"
+      },
+      {
+        "name": "WBCrosshair",
+        "category": "HUD",
+        "parent": "UserWidget"
+      },
+      {
+        "name": "W_CustomCharacter",
+        "category": "HUD",
+        "parent": "UserWidget"
+      },
+      {
+        "name": "W_PickupItem",
+        "category": "HUD",
+        "parent": "UserWidget"
+      },
+      {
+        "name": "AC_Interaction",
+        "category": "Interaction",
+        "parent": "ActorComponent"
+      },
+      {
+        "name": "BP_Door",
+        "category": "Interaction",
+        "parent": "BP_InteractionObject_C"
+      },
+      {
+        "name": "BP_InteractionObject",
+        "category": "Interaction",
+        "parent": "Actor"
+      },
+      {
+        "name": "AC_WeaponSystem",
+        "category": "Weapons",
+        "parent": "ActorComponent"
+      },
+      {
+        "name": "BP_PhysicalMag",
+        "category": "Weapons",
+        "parent": "StaticMeshActor"
+      },
+      {
+        "name": "BP_ProjectileBase",
+        "category": "Weapons",
+        "parent": "Actor"
+      },
+      {
+        "name": "BP_WeaponBase",
+        "category": "Weapons",
+        "parent": "Actor"
+      },
+      {
+        "name": "BP_WeaponInterface",
+        "category": "Weapons",
+        "parent": "Interface"
+      },
+      {
+        "name": "Projectile_Rifle",
+        "category": "Weapons",
+        "parent": "BP_ProjectileBase_C"
+      }
+    ],
+    "edges": [
+      {
+        "from": "VehicleAnimationInstance",
+        "to": "AnimBP_Bike",
+        "type": "inheritance"
+      },
+      {
+        "from": "VehicleAnimationInstance",
+        "to": "AnimBP_Motorcycle",
+        "type": "inheritance"
+      },
+      {
+        "from": "LegacyCameraShake",
+        "to": "Damge_CS",
+        "type": "inheritance"
+      },
+      {
+        "from": "AnimInstance",
+        "to": "AnimBP_Character",
+        "type": "inheritance"
+      },
+      {
+        "from": "Character",
+        "to": "BP_Character",
+        "type": "inheritance"
+      },
+      {
+        "from": "Character",
+        "to": "BP_CharacterViewer",
+        "type": "inheritance"
+      },
+      {
+        "from": "UserWidget",
+        "to": "W_CustomCharacter",
+        "type": "inheritance"
+      },
+      {
+        "from": "GameModeBase",
+        "to": "ProjetoGTA_GameMode",
+        "type": "inheritance"
+      },
+      {
+        "from": "Actor",
+        "to": "BP_AmmoBase",
+        "type": "inheritance"
+      },
+      {
+        "from": "BP_PickupObject",
+        "to": "BP_AmmoBox",
+        "type": "inheritance"
+      },
+      {
+        "from": "BP_PickupObject",
+        "to": "BP_Armour",
+        "type": "inheritance"
+      },
+      {
+        "from": "WheeledVehiclePawn",
+        "to": "BP_Bike",
+        "type": "inheritance"
+      },
+      {
+        "from": "BP_PickupObject",
+        "to": "BP_Health",
+        "type": "inheritance"
+      },
+      {
+        "from": "BP_InteractionObject",
+        "to": "BP_Jetpack",
+        "type": "inheritance"
+      },
+      {
+        "from": "Actor",
+        "to": "BP_MissionMarker",
+        "type": "inheritance"
+      },
+      {
+        "from": "WheeledVehiclePawn",
+        "to": "BP_Motorcycle",
+        "type": "inheritance"
+      },
+      {
+        "from": "Actor",
+        "to": "BP_PickupObject",
+        "type": "inheritance"
+      },
+      {
+        "from": "Actor",
+        "to": "BP_TimeOfDay",
+        "type": "inheritance"
+      },
+      {
+        "from": "Interface",
+        "to": "ComponentsInterface",
+        "type": "inheritance"
+      },
+      {
+        "from": "ChaosVehicleWheel",
+        "to": "MotoBWheel",
+        "type": "inheritance"
+      },
+      {
+        "from": "ChaosVehicleWheel",
+        "to": "MotoFWheel",
+        "type": "inheritance"
+      },
+      {
+        "from": "ChaosVehicleWheel",
+        "to": "RodaFrente",
+        "type": "inheritance"
+      },
+      {
+        "from": "ChaosVehicleWheel",
+        "to": "RodaTras",
+        "type": "inheritance"
+      },
+      {
+        "from": "UserWidget",
+        "to": "UMG_Inventory",
+        "type": "inheritance"
+      },
+      {
+        "from": "UserWidget",
+        "to": "UMG_Slot",
+        "type": "inheritance"
+      },
+      {
+        "from": "UserWidget",
+        "to": "W_Main",
+        "type": "inheritance"
+      },
+      {
+        "from": "UserWidget",
+        "to": "W_PickupItem",
+        "type": "inheritance"
+      },
+      {
+        "from": "GameModeBase",
+        "to": "MenuCustom_GM",
+        "type": "inheritance"
+      },
+      {
+        "from": "UserWidget",
+        "to": "UMG_Inventory",
+        "type": "inheritance"
+      },
+      {
+        "from": "UserWidget",
+        "to": "UMG_RadialMenu",
+        "type": "inheritance"
+      },
+      {
+        "from": "UserWidget",
+        "to": "UMG_Slot",
+        "type": "inheritance"
+      },
+      {
+        "from": "UserWidget",
+        "to": "WBCrosshair",
+        "type": "inheritance"
+      },
+      {
+        "from": "UserWidget",
+        "to": "W_CustomCharacter",
+        "type": "inheritance"
+      },
+      {
+        "from": "UserWidget",
+        "to": "W_PickupItem",
+        "type": "inheritance"
+      },
+      {
+        "from": "ActorComponent",
+        "to": "AC_Interaction",
+        "type": "inheritance"
+      },
+      {
+        "from": "BP_InteractionObject",
+        "to": "BP_Door",
+        "type": "inheritance"
+      },
+      {
+        "from": "Actor",
+        "to": "BP_InteractionObject",
+        "type": "inheritance"
+      },
+      {
+        "from": "ActorComponent",
+        "to": "AC_WeaponSystem",
+        "type": "inheritance"
+      },
+      {
+        "from": "StaticMeshActor",
+        "to": "BP_PhysicalMag",
+        "type": "inheritance"
+      },
+      {
+        "from": "Actor",
+        "to": "BP_ProjectileBase",
+        "type": "inheritance"
+      },
+      {
+        "from": "Actor",
+        "to": "BP_WeaponBase",
+        "type": "inheritance"
+      },
+      {
+        "from": "Interface",
+        "to": "BP_WeaponInterface",
+        "type": "inheritance"
+      },
+      {
+        "from": "BP_ProjectileBase",
+        "to": "Projectile_Rifle",
+        "type": "inheritance"
+      }
+    ]
+  }
+}

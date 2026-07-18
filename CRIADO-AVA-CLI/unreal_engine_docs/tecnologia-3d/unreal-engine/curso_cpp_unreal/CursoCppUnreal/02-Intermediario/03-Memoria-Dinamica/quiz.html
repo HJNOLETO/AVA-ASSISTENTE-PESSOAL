@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: Memória Dinâmica</title>
+    <link rel="stylesheet" href="../../recursos/css/estilo.css">
+    <script src="../../recursos/js/quiz.js" defer></script>
+</head>
+<body>
+    <button id="dark-mode-toggle">Alternar Modo Escuro</button>
+    <header>
+        <h1>Quiz: Memória Dinâmica</h1>
+        <p>Teste seus conhecimentos sobre Heap, Stack e Smart Pointers.</p>
+    </header>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Início</a> <span>&gt;</span> <a href="../modulo.html">Módulo 02</a> <span>&gt;</span> Quiz
+        </div>
+
+        <div class="content-area">
+            <h2 id="quiz-titulo">Autoavaliação: Memória Dinâmica</h2>
+            <p>Responda às questões abaixo e clique em "Verificar Respostas" para receber feedback imediato.</p>
+
+            <form id="quiz-form">
+                <!-- Questão 1: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="Heap" data-explanation="A memória dinâmica é alocada no Heap (montículo), enquanto variáveis locais e chamadas de função usam a Stack (pilha).">
+                    <h4>Questão 1 (Múltipla Escolha): Qual área de memória é usada para alocação dinâmica de memória em C++?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q0" value="Stack"> Stack</label>
+                        <label><input type="radio" name="q0" value="Heap"> Heap</label>
+                        <label><input type="radio" name="q0" value="Data Segment"> Data Segment</label>
+                        <label><input type="radio" name="q0" value="Code Segment"> Code Segment</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 2: Verdadeiro/Falso -->
+                <div class="quiz-question" data-correct-answer="Verdadeiro" data-explanation="Um vazamento de memória ocorre quando a memória alocada com 'new' não é liberada com 'delete', tornando-a inacessível e não reutilizável.">
+                    <h4>Questão 2 (Verdadeiro/Falso): Um vazamento de memória (memory leak) ocorre quando a memória alocada no Heap não é desalocada corretamente.</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q1" value="Verdadeiro"> Verdadeiro</label>
+                        <label><input type="radio" name="q1" value="Falso"> Falso</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 3: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="delete[]" data-explanation="Para desalocar um array que foi alocado com 'new Tipo[tamanho]', é obrigatório usar 'delete[]' para garantir que todos os elementos sejam destruídos corretamente.">
+                    <h4>Questão 3 (Múltipla Escolha): Qual operador deve ser usado para desalocar um array de inteiros alocado dinamicamente com `new int[10]`?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q2" value="delete"> delete</label>
+                        <label><input type="radio" name="q2" value="delete[]"> delete[]</label>
+                        <label><input type="radio" name="q2" value="free"> free</label>
+                        <label><input type="radio" name="q2" value="delete_array"> delete_array</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 4: Exercício de Código (Debug) -->
+                <div class="quiz-question" data-correct-answer="20" data-explanation="O 'unique_ptr' 'ptr_a' é movido para 'ptr_b'. O 'ptr_a' se torna nulo. O 'ptr_b' agora possui o valor 20.">
+                    <h4>Questão 4 (Exercício de Código): Qual será o valor impresso por `*ptr_b`?</h4>
+                    <pre><code>auto ptr_a = std::make_unique<int>(20);
+auto ptr_b = std::move(ptr_a);
+// std::cout << *ptr_b;</code></pre>
+                    <textarea rows="1" name="q3" placeholder="Insira o valor final..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 5: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="std::shared_ptr" data-explanation="O 'shared_ptr' usa uma contagem de referência para permitir que múltiplos ponteiros compartilhem a propriedade do mesmo recurso, liberando-o apenas quando a contagem chega a zero.">
+                    <h4>Questão 5 (Múltipla Escolha): Qual Smart Pointer é o mais adequado para um recurso que precisa ser compartilhado entre diferentes partes do código e ser liberado apenas quando ninguém mais o estiver usando?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q4" value="std::unique_ptr"> std::unique_ptr</label>
+                        <label><input type="radio" name="q4" value="std::raw_ptr"> std::raw_ptr</label>
+                        <label><input type="radio" name="q4" value="std::shared_ptr"> std::shared_ptr</label>
+                        <label><input type="radio" name="q4" value="std::weak_ptr"> std::weak_ptr</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 6: Verdadeiro/Falso -->
+                <div class="quiz-question" data-correct-answer="Verdadeiro" data-explanation="A principal função dos Smart Pointers é automatizar a desalocação de memória, garantindo que o destrutor do recurso seja chamado quando o Smart Pointer sair de escopo.">
+                    <h4>Questão 6 (Verdadeiro/Falso): O uso de Smart Pointers elimina a necessidade de chamar `delete` manualmente na maioria dos casos.</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q5" value="Verdadeiro"> Verdadeiro</label>
+                        <label><input type="radio" name="q5" value="Falso"> Falso</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 7: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="std::weak_ptr" data-explanation="O 'weak_ptr' é usado para observar um recurso gerenciado por um 'shared_ptr' sem incrementar a contagem de referência, sendo ideal para quebrar ciclos de referência.">
+                    <h4>Questão 7 (Múltipla Escolha): Qual Smart Pointer é usado para observar um recurso sem reivindicar a propriedade, sendo útil para quebrar ciclos de referência?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q6" value="std::unique_ptr"> std::unique_ptr</label>
+                        <label><input type="radio" name="q6" value="std::shared_ptr"> std::shared_ptr</label>
+                        <label><input type="radio" name="q6" value="std::weak_ptr"> std::weak_ptr</label>
+                        <label><input type="radio" name="q6" value="std::auto_ptr"> std::auto_ptr</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 8: Exercício de Código (Debug) -->
+                <div class="quiz-question" data-correct-answer="3" data-explanation="O 'shared_ptr' 'ptr_a' é criado (contagem 1). 'ptr_b' e 'ptr_c' são cópias, incrementando a contagem para 3.">
+                    <h4>Questão 8 (Exercício de Código): Qual será o valor de `ptr_a.use_count()`?</h4>
+                    <pre><code>auto ptr_a = std::make_shared<int>(10);
+std::shared_ptr<int> ptr_b = ptr_a;
+std::shared_ptr<int> ptr_c = ptr_a;
+// std::cout << ptr_a.use_count();</code></pre>
+                    <textarea rows="1" name="q7" placeholder="Insira o valor final..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 9: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="É rápido, mas o tamanho máximo é fixo." data-explanation="A Stack é rápida porque o gerenciamento é automático e o acesso é sequencial. No entanto, o tamanho máximo é limitado e fixo.">
+                    <h4>Questão 9 (Múltipla Escolha): Qual é uma característica da memória Stack (Pilha)?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q8" value="É lenta e o gerenciamento é manual."> É lenta e o gerenciamento é manual.</label>
+                        <label><input type="radio" name="q8" value="É rápida, mas o tamanho máximo é fixo."> É rápida, mas o tamanho máximo é fixo.</label>
+                        <label><input type="radio" name="q8" value="É usada para alocar grandes objetos de jogo."> É usada para alocar grandes objetos de jogo.</label>
+                        <label><input type="radio" name="q8" value="É onde ocorre o vazamento de memória."> É onde ocorre o vazamento de memória.</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 10: Questão Conceitual Aplicada -->
+                <div class="quiz-question" data-correct-answer="Em um jogo, o 'unique_ptr' seria ideal para um recurso que pertence exclusivamente a um objeto, como um 'WeaponComponent' que só pode ser possuído por um 'ACharacter'. O 'shared_ptr' seria usado para um recurso compartilhado, como um 'Material' ou 'Texture' que é usado por vários objetos de cenário." data-explanation="O 'unique_ptr' é para propriedade única (componentes, dados de um único objeto), e o 'shared_ptr' é para recursos compartilhados (materiais, texturas, dados globais).">
+                    <h4>Questão 10 (Conceitual Aplicada): Dê um exemplo de um recurso de jogo que seria gerenciado por um `std::unique_ptr` e um que seria gerenciado por um `std::shared_ptr`.</h4>
+                    <textarea rows="3" name="q9" placeholder="Responda aqui..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Verificar Respostas</button>
+            </form>
+            <div id="quiz-result"></div>
+
+            <div class="nav-buttons">
+                <a href="../modulo.html" class="prev">&laquo; Voltar ao Módulo</a>
+                <a href="../04-STL-Containers/teoria.md" class="next">Próxima Lição: Estruturas de Dados da STL &raquo;</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,33 @@
+{
+  "name": "UMG_Inventory",
+  "parent_class": "UserWidget",
+  "template_id": "inventory",
+  "category": "General",
+  "variables": [],
+  "components": [],
+  "events": [
+    "`PreConstruct` — *This node is disabled and will not be called.\\nDrag off pins to build functionality.*",
+    "`Construct`",
+    "`Tick` — *This node is disabled and will not be called.\\nDrag off pins to build functionality.*"
+  ],
+  "functions": [
+    "`GetCurrentIndex()`",
+    "`GetPlayerCharacter()`",
+    "`ExecuteUbergraph_UMG_Inventory()`",
+    "`IsValid()`"
+  ],
+  "graph_sections": [],
+  "interfaces": [],
+  "structs_used": [],
+  "key_patterns": {
+    "has_replication": false,
+    "has_timers": false,
+    "has_overlap_events": false,
+    "has_enhanced_input": false,
+    "has_timeline": false,
+    "has_data_tables": false,
+    "has_dynamic_material": false,
+    "has_camera_fade": false
+  },
+  "source_file": "UMG_Inventory.md"
+}

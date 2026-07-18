@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: Estruturas de Controle</title>
+    <link rel="stylesheet" href="../../recursos/css/estilo.css">
+    <script src="../../recursos/js/quiz.js" defer></script>
+</head>
+<body>
+    <button id="dark-mode-toggle">Alternar Modo Escuro</button>
+    <header>
+        <h1>Quiz: Estruturas de Controle</h1>
+        <p>Teste seus conhecimentos sobre condicionais e loops.</p>
+    </header>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Início</a> <span>&gt;</span> <a href="../modulo.html">Módulo 01</a> <span>&gt;</span> Quiz
+        </div>
+
+        <div class="content-area">
+            <h2 id="quiz-titulo">Autoavaliação: Estruturas de Controle</h2>
+            <p>Responda às questões abaixo e clique em "Verificar Respostas" para receber feedback imediato.</p>
+
+            <form id="quiz-form">
+                <!-- Questão 1: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="switch" data-explanation="O 'switch' é ideal para tomar decisões baseadas em um único valor que pode ter múltiplos estados discretos (como um código de erro ou um tipo de item), sendo mais limpo que múltiplos 'else if'.">
+                    <h4>Questão 1 (Múltipla Escolha): Qual estrutura de controle é mais eficiente para verificar o tipo de um item (ex: 1=Espada, 2=Poção, 3=Escudo) e executar um código diferente para cada um?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q0" value="if/else"> if/else</label>
+                        <label><input type="radio" name="q0" value="while"> while</label>
+                        <label><input type="radio" name="q0" value="switch"> switch</label>
+                        <label><input type="radio" name="q0" value="do-while"> do-while</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 2: Verdadeiro/Falso -->
+                <div class="quiz-question" data-correct-answer="Falso" data-explanation="O 'break' é essencial no 'switch' para evitar o 'fall-through', onde a execução continua para o próximo 'case' se não houver um 'break'.">
+                    <h4>Questão 2 (Verdadeiro/Falso): O comando `break` é opcional dentro de um bloco `case` de um `switch` e não afeta o fluxo de execução.</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q1" value="Verdadeiro"> Verdadeiro</label>
+                        <label><input type="radio" name="q1" value="Falso"> Falso</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 3: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="for" data-explanation="O loop 'for' é o mais adequado quando o número de iterações é conhecido ou facilmente calculável (como iterar sobre um array ou gerar um número fixo de inimigos).">
+                    <h4>Questão 3 (Múltipla Escolha): Qual loop é o mais apropriado para gerar exatamente 50 inimigos em um nível?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q2" value="while"> while</label>
+                        <label><input type="radio" name="q2" value="do-while"> do-while</label>
+                        <label><input type="radio" name="q2" value="for"> for</label>
+                        <label><input type="radio" name="q2" value="if"> if</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 4: Exercício de Código (Debug) -->
+                <div class="quiz-question" data-correct-answer="0 1 3 4" data-explanation="O 'continue' faz com que a iteração atual seja interrompida e o loop pule para a próxima. Quando i=2, o 'cout' é ignorado.">
+                    <h4>Questão 4 (Exercício de Código): Qual será a saída do seguinte loop? (Separe os números por espaço)</h4>
+                    <pre><code>for (int i = 0; i < 5; i++) {
+    if (i == 2) {
+        continue;
+    }
+    std::cout << i << " ";
+}</code></pre>
+                    <textarea rows="1" name="q3" placeholder="Insira a saída esperada..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 5: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="do-while" data-explanation="O 'do-while' garante que o bloco de código seja executado pelo menos uma vez antes de verificar a condição, sendo ideal para menus e validação de entrada.">
+                    <h4>Questão 5 (Múltipla Escolha): Qual loop garante que o bloco de código será executado pelo menos uma vez, mesmo que a condição inicial seja falsa?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q4" value="for"> for</label>
+                        <label><input type="radio" name="q4" value="while"> while</label>
+                        <label><input type="radio" name="q4" value="do-while"> do-while</label>
+                        <label><input type="radio" name="q4" value="if"> if</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 6: Verdadeiro/Falso -->
+                <div class="quiz-question" data-correct-answer="Verdadeiro" data-explanation="O operador ternário é uma forma concisa de escrever uma estrutura 'if-else' simples que retorna um valor.">
+                    <h4>Questão 6 (Verdadeiro/Falso): O operador ternário (`? :`) é uma forma abreviada de uma estrutura `if-else` que retorna um valor.</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q5" value="Verdadeiro"> Verdadeiro</label>
+                        <label><input type="radio" name="q5" value="Falso"> Falso</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 7: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="break" data-explanation="O comando 'break' é usado para sair imediatamente do loop mais interno em que ele está, encerrando a repetição.">
+                    <h4>Questão 7 (Múltipla Escolha): Qual comando é usado para sair imediatamente de um loop (for, while, do-while)?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q6" value="continue"> continue</label>
+                        <label><input type="radio" name="q6" value="return"> return</label>
+                        <label><input type="radio" name="q6" value="break"> break</label>
+                        <label><input type="radio" name="q6" value="exit"> exit</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 8: Exercício de Código (Debug) -->
+                <div class="quiz-question" data-correct-answer="Ataque" data-explanation="A condição (dano > 100) é falsa (50 não é maior que 100). Portanto, o valor após os dois pontos (:) é retornado, que é 'Ataque'.">
+                    <h4>Questão 8 (Exercício de Código): Qual valor será atribuído à variável `resultado`?</h4>
+                    <pre><code>int dano = 50;
+std::string resultado = (dano > 100) ? "Crítico" : "Ataque";</code></pre>
+                    <textarea rows="1" name="q7" placeholder="Insira o valor final..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 9: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="Um loop infinito, pois a condição nunca se torna falsa." data-explanation="Se a variável de controle ('i') não for alterada dentro do loop 'while', a condição ('i < 10') permanecerá sempre verdadeira, resultando em um loop infinito.">
+                    <h4>Questão 9 (Múltipla Escolha): O que acontece se você esquecer de incluir a linha `i++` no corpo de um loop `while (i < 10)`?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q8" value="O loop executa apenas uma vez."> O loop executa apenas uma vez.</label>
+                        <label><input type="radio" name="q8" value="O compilador gera um erro."> O compilador gera um erro.</label>
+                        <label><input type="radio" name="q8" value="Um loop infinito, pois a condição nunca se torna falsa."> Um loop infinito, pois a condição nunca se torna falsa.</label>
+                        <label><input type="radio" name="q8" value="O loop executa 10 vezes e para."> O loop executa 10 vezes e para.</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 10: Questão Conceitual Aplicada -->
+                <div class="quiz-question" data-correct-answer="O 'if/else' é usado para verificar se um ataque acertou (if (hit)), se o jogador pode pular (if (canJump)), ou para determinar qual animação deve ser reproduzida (if (isMoving))." data-explanation="As condicionais são a base da lógica de jogo, controlando o fluxo de eventos e as decisões do jogo em tempo real.">
+                    <h4>Questão 10 (Conceitual Aplicada): Dê um exemplo de uso de uma estrutura `if/else` na lógica de um jogo (excluindo o `switch`).</h4>
+                    <textarea rows="3" name="q9" placeholder="Responda aqui..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Verificar Respostas</button>
+            </form>
+            <div id="quiz-result"></div>
+
+            <div class="nav-buttons">
+                <a href="../modulo.html" class="prev">&laquo; Voltar ao Módulo</a>
+                <a href="../04-Estruturas-Dados-Basicas/teoria.md" class="next">Próxima Lição: Estruturas de Dados Básicas &raquo;</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,470 @@
+{
+  "time_of_day": {
+    "name": "BP_TimeOfDay",
+    "category": "General",
+    "parent_class": "Actor",
+    "file": "general/BP_TimeOfDay.template.json",
+    "stats": {
+      "variables": 1,
+      "components": 2,
+      "events": 3,
+      "functions": 4
+    }
+  },
+  "jetpack": {
+    "name": "BP_Jetpack",
+    "category": "General",
+    "parent_class": "BP_InteractionObject_C",
+    "file": "general/BP_Jetpack.template.json",
+    "stats": {
+      "variables": 1,
+      "components": 3,
+      "events": 3,
+      "functions": 24
+    }
+  },
+  "damge_cs": {
+    "name": "Damge_CS",
+    "category": "CameraEffects",
+    "parent_class": "LegacyCameraShake",
+    "file": "cameraeffects/Damge_CS.template.json",
+    "stats": {
+      "variables": 0,
+      "components": 1,
+      "events": 0,
+      "functions": 0
+    }
+  },
+  "character": {
+    "name": "BP_Character",
+    "category": "Character",
+    "parent_class": "Character",
+    "file": "character/BP_Character.template.json",
+    "stats": {
+      "variables": 6,
+      "components": 5,
+      "events": 22,
+      "functions": 64
+    }
+  },
+  "character_viewer": {
+    "name": "BP_CharacterViewer",
+    "category": "Character",
+    "parent_class": "Character",
+    "file": "character/BP_CharacterViewer.template.json",
+    "stats": {
+      "variables": 3,
+      "components": 3,
+      "events": 6,
+      "functions": 20
+    }
+  },
+  "menu_custom_gm": {
+    "name": "MenuCustom_GM",
+    "category": "HUD",
+    "parent_class": "GameModeBase",
+    "file": "hud/MenuCustom_GM.template.json",
+    "stats": {
+      "variables": 0,
+      "components": 0,
+      "events": 0,
+      "functions": 0
+    }
+  },
+  "projeto_gta_game_mode": {
+    "name": "ProjetoGTA_GameMode",
+    "category": "GameMode",
+    "parent_class": "GameModeBase",
+    "file": "gamemode/ProjetoGTA_GameMode.template.json",
+    "stats": {
+      "variables": 0,
+      "components": 0,
+      "events": 0,
+      "functions": 0
+    }
+  },
+  "anim_bp_character": {
+    "name": "AnimBP_Character",
+    "category": "Character",
+    "parent_class": "AnimInstance",
+    "file": "character/AnimBP_Character.template.json",
+    "stats": {
+      "variables": 8,
+      "components": 0,
+      "events": 26,
+      "functions": 11
+    }
+  },
+  "door": {
+    "name": "BP_Door",
+    "category": "Interaction",
+    "parent_class": "BP_InteractionObject_C",
+    "file": "interaction/BP_Door.template.json",
+    "stats": {
+      "variables": 1,
+      "components": 0,
+      "events": 4,
+      "functions": 15
+    }
+  },
+  "interaction": {
+    "name": "AC_Interaction",
+    "category": "Interaction",
+    "parent_class": "ActorComponent",
+    "file": "interaction/AC_Interaction.template.json",
+    "stats": {
+      "variables": 8,
+      "components": 3,
+      "events": 3,
+      "functions": 20
+    }
+  },
+  "ammo_box": {
+    "name": "BP_AmmoBox",
+    "category": "General",
+    "parent_class": "BP_PickupObject_C",
+    "file": "general/BP_AmmoBox.template.json",
+    "stats": {
+      "variables": 5,
+      "components": 1,
+      "events": 2,
+      "functions": 3
+    }
+  },
+  "armour": {
+    "name": "BP_Armour",
+    "category": "General",
+    "parent_class": "BP_PickupObject_C",
+    "file": "general/BP_Armour.template.json",
+    "stats": {
+      "variables": 0,
+      "components": 0,
+      "events": 2,
+      "functions": 4
+    }
+  },
+  "health": {
+    "name": "BP_Health",
+    "category": "General",
+    "parent_class": "BP_PickupObject_C",
+    "file": "general/BP_Health.template.json",
+    "stats": {
+      "variables": 0,
+      "components": 0,
+      "events": 2,
+      "functions": 4
+    }
+  },
+  "interaction_object": {
+    "name": "BP_InteractionObject",
+    "category": "Interaction",
+    "parent_class": "Actor",
+    "file": "interaction/BP_InteractionObject.template.json",
+    "stats": {
+      "variables": 3,
+      "components": 2,
+      "events": 4,
+      "functions": 5
+    }
+  },
+  "mission_marker": {
+    "name": "BP_MissionMarker",
+    "category": "General",
+    "parent_class": "Actor",
+    "file": "general/BP_MissionMarker.template.json",
+    "stats": {
+      "variables": 0,
+      "components": 3,
+      "events": 4,
+      "functions": 7
+    }
+  },
+  "pickup_object": {
+    "name": "BP_PickupObject",
+    "category": "General",
+    "parent_class": "Actor",
+    "file": "general/BP_PickupObject.template.json",
+    "stats": {
+      "variables": 3,
+      "components": 2,
+      "events": 4,
+      "functions": 5
+    }
+  },
+  "components_interface": {
+    "name": "ComponentsInterface",
+    "category": "General",
+    "parent_class": "Interface",
+    "file": "general/ComponentsInterface.template.json",
+    "stats": {
+      "variables": 0,
+      "components": 0,
+      "events": 0,
+      "functions": 0
+    }
+  },
+  "wbcrosshair": {
+    "name": "WBCrosshair",
+    "category": "HUD",
+    "parent_class": "UserWidget",
+    "file": "hud/WBCrosshair.template.json",
+    "stats": {
+      "variables": 0,
+      "components": 13,
+      "events": 0,
+      "functions": 0
+    }
+  },
+  "custom_character": {
+    "name": "W_CustomCharacter",
+    "category": "HUD",
+    "parent_class": "UserWidget",
+    "file": "hud/W_CustomCharacter.template.json",
+    "stats": {
+      "variables": 0,
+      "components": 8,
+      "events": 0,
+      "functions": 0
+    }
+  },
+  "main": {
+    "name": "W_Main",
+    "category": "General",
+    "parent_class": "UserWidget",
+    "file": "general/W_Main.template.json",
+    "stats": {
+      "variables": 5,
+      "components": 4,
+      "events": 6,
+      "functions": 25
+    }
+  },
+  "pickup_item": {
+    "name": "W_PickupItem",
+    "category": "HUD",
+    "parent_class": "UserWidget",
+    "file": "hud/W_PickupItem.template.json",
+    "stats": {
+      "variables": 0,
+      "components": 9,
+      "events": 0,
+      "functions": 0
+    }
+  },
+  "inventory": {
+    "name": "UMG_Inventory",
+    "category": "HUD",
+    "parent_class": "UserWidget",
+    "file": "hud/UMG_Inventory.template.json",
+    "stats": {
+      "variables": 0,
+      "components": 5,
+      "events": 0,
+      "functions": 0
+    }
+  },
+  "radial_menu": {
+    "name": "UMG_RadialMenu",
+    "category": "HUD",
+    "parent_class": "UserWidget",
+    "file": "hud/UMG_RadialMenu.template.json",
+    "stats": {
+      "variables": 0,
+      "components": 4,
+      "events": 0,
+      "functions": 0
+    }
+  },
+  "slot": {
+    "name": "UMG_Slot",
+    "category": "HUD",
+    "parent_class": "UserWidget",
+    "file": "hud/UMG_Slot.template.json",
+    "stats": {
+      "variables": 0,
+      "components": 8,
+      "events": 0,
+      "functions": 0
+    }
+  },
+  "anim_bp_bike": {
+    "name": "AnimBP_Bike",
+    "category": "Animation",
+    "parent_class": "VehicleAnimationInstance",
+    "file": "animation/AnimBP_Bike.template.json",
+    "stats": {
+      "variables": 0,
+      "components": 0,
+      "events": 1,
+      "functions": 1
+    }
+  },
+  "bike": {
+    "name": "BP_Bike",
+    "category": "General",
+    "parent_class": "WheeledVehiclePawn",
+    "file": "general/BP_Bike.template.json",
+    "stats": {
+      "variables": 3,
+      "components": 2,
+      "events": 1,
+      "functions": 28
+    }
+  },
+  "roda_frente": {
+    "name": "RodaFrente",
+    "category": "General",
+    "parent_class": "ChaosVehicleWheel",
+    "file": "general/RodaFrente.template.json",
+    "stats": {
+      "variables": 0,
+      "components": 0,
+      "events": 0,
+      "functions": 0
+    }
+  },
+  "roda_tras": {
+    "name": "RodaTras",
+    "category": "General",
+    "parent_class": "ChaosVehicleWheel",
+    "file": "general/RodaTras.template.json",
+    "stats": {
+      "variables": 0,
+      "components": 0,
+      "events": 0,
+      "functions": 0
+    }
+  },
+  "anim_bp_motorcycle": {
+    "name": "AnimBP_Motorcycle",
+    "category": "Animation",
+    "parent_class": "VehicleAnimationInstance",
+    "file": "animation/AnimBP_Motorcycle.template.json",
+    "stats": {
+      "variables": 2,
+      "components": 0,
+      "events": 3,
+      "functions": 10
+    }
+  },
+  "motorcycle": {
+    "name": "BP_Motorcycle",
+    "category": "General",
+    "parent_class": "WheeledVehiclePawn",
+    "file": "general/BP_Motorcycle.template.json",
+    "stats": {
+      "variables": 0,
+      "components": 2,
+      "events": 3,
+      "functions": 22
+    }
+  },
+  "moto_bwheel": {
+    "name": "MotoBWheel",
+    "category": "General",
+    "parent_class": "ChaosVehicleWheel",
+    "file": "general/MotoBWheel.template.json",
+    "stats": {
+      "variables": 0,
+      "components": 0,
+      "events": 0,
+      "functions": 0
+    }
+  },
+  "moto_fwheel": {
+    "name": "MotoFWheel",
+    "category": "General",
+    "parent_class": "ChaosVehicleWheel",
+    "file": "general/MotoFWheel.template.json",
+    "stats": {
+      "variables": 0,
+      "components": 0,
+      "events": 0,
+      "functions": 0
+    }
+  },
+  "weapon_system": {
+    "name": "AC_WeaponSystem",
+    "category": "Weapons",
+    "parent_class": "ActorComponent",
+    "file": "weapons/AC_WeaponSystem.template.json",
+    "stats": {
+      "variables": 24,
+      "components": 6,
+      "events": 17,
+      "functions": 101
+    }
+  },
+  "ammo_base": {
+    "name": "BP_AmmoBase",
+    "category": "General",
+    "parent_class": "Actor",
+    "file": "general/BP_AmmoBase.template.json",
+    "stats": {
+      "variables": 5,
+      "components": 3,
+      "events": 4,
+      "functions": 4
+    }
+  },
+  "physical_mag": {
+    "name": "BP_PhysicalMag",
+    "category": "Weapons",
+    "parent_class": "StaticMeshActor",
+    "file": "weapons/BP_PhysicalMag.template.json",
+    "stats": {
+      "variables": 3,
+      "components": 2,
+      "events": 1,
+      "functions": 5
+    }
+  },
+  "projectile_base": {
+    "name": "BP_ProjectileBase",
+    "category": "Weapons",
+    "parent_class": "Actor",
+    "file": "weapons/BP_ProjectileBase.template.json",
+    "stats": {
+      "variables": 3,
+      "components": 2,
+      "events": 1,
+      "functions": 18
+    }
+  },
+  "weapon_base": {
+    "name": "BP_WeaponBase",
+    "category": "Weapons",
+    "parent_class": "Actor",
+    "file": "weapons/BP_WeaponBase.template.json",
+    "stats": {
+      "variables": 35,
+      "components": 9,
+      "events": 14,
+      "functions": 97
+    }
+  },
+  "weapon_interface": {
+    "name": "BP_WeaponInterface",
+    "category": "Weapons",
+    "parent_class": "Interface",
+    "file": "weapons/BP_WeaponInterface.template.json",
+    "stats": {
+      "variables": 0,
+      "components": 1,
+      "events": 0,
+      "functions": 0
+    }
+  },
+  "projectile_rifle": {
+    "name": "Projectile_Rifle",
+    "category": "Weapons",
+    "parent_class": "BP_ProjectileBase_C",
+    "file": "weapons/Projectile_Rifle.template.json",
+    "stats": {
+      "variables": 0,
+      "components": 1,
+      "events": 3,
+      "functions": 0
+    }
+  }
+}

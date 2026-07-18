@@ -1,0 +1,48 @@
+{
+  "name": "W_CustomCharacter",
+  "parent_class": "UserWidget",
+  "template_id": "custom_character",
+  "category": "HUD",
+  "variables": [],
+  "components": [
+    {
+      "name": "CanvasPanel_34",
+      "type": "CanvasPanel"
+    },
+    {
+      "name": "HorizontalBox_69",
+      "type": "HorizontalBox"
+    },
+    {
+      "name": "LeftButton",
+      "type": "Button"
+    },
+    {
+      "name": "ButtonSlot_0",
+      "type": "ButtonSlot"
+    },
+    {
+      "name": "TextBlock_48",
+      "type": "TextBlock"
+    },
+    {
+      "name": "RightButton",
+      "type": "Button"
+    },
+    {
+      "name": "ButtonSlot_0",
+      "type": "ButtonSlot"
+    },
+    {
+      "name": "TextBlock",
+      "type": "TextBlock"
+    }
+  ],
+  "events": [],
+  "functions": [],
+  "graph_sections": [],
+  "interfaces": [],
+  "structs_used": [],
+  "key_patterns": {},
+  "source_file": "W_CustomCharacter.md"
+}

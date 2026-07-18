@@ -1,0 +1,169 @@
+{
+  "name": "BP_Character",
+  "parent_class": "Character",
+  "template_id": "character",
+  "category": "Character",
+  "variables": [
+    {
+      "name": "BaseTurnRate",
+      "type": "real (double)"
+    },
+    {
+      "name": "BaseLookUpRate",
+      "type": "real (double)"
+    },
+    {
+      "name": "CameraCrouch",
+      "type": "bool"
+    },
+    {
+      "name": "CameraSmooth",
+      "type": "real (double)"
+    },
+    {
+      "name": "Dead",
+      "type": "bool"
+    },
+    {
+      "name": "SpawnPoints",
+      "type": "name"
+    }
+  ],
+  "components": [
+    {
+      "name": "Collision",
+      "type": "SphereComponent"
+    },
+    {
+      "name": "Mesh",
+      "type": "StaticMeshComponent"
+    },
+    {
+      "name": "Camera",
+      "type": "CameraComponent"
+    },
+    {
+      "name": "CameraBoom",
+      "type": "SpringArmComponent"
+    },
+    {
+      "name": "CameraSmooth",
+      "type": "SpringArmComponent"
+    }
+  ],
+  "events": [
+    "`K2_OnStartCrouch`",
+    "`K2_OnEndCrouch`",
+    "`ReceiveAnyDamage`",
+    "`OnLanded`",
+    "`Death`",
+    "`Reanimate`",
+    "`RespawnCharacter`",
+    "`IsJetpack`",
+    "`IsJumping`",
+    "`IsDead`",
+    "`SetArmour`",
+    "`DamageAnimation`",
+    "`SetDamage`",
+    "`SetHealth`",
+    "`BPI_Set_OverlayState`",
+    "`BPI_Set_ViewMode`",
+    "`BPI_Set_Gait`",
+    "`BPI_Set_RotationMode`",
+    "`BPI_Set_MovementAction`",
+    "`BPI_Set_MovementState`",
+    "`CameraSuave__UpdateFunc`",
+    "`CameraSuave__FinishedFunc`"
+  ],
+  "functions": [
+    "`AddControllerPitchInput()`",
+    "`AddControllerYawInput()`",
+    "`AddMovementInput()`",
+    "`GetControlRotation()`",
+    "`GetForwardVector()`",
+    "`GetRightVector()`",
+    "`BreakRotator()` — *Zero out pitch and roll, only move on plane*",
+    "`MakeRotator()`",
+    "`Crouch()`",
+    "`UnCrouch()`",
+    "`Not_PreBool()`",
+    "`SetDamage()`",
+    "`FallDamage()`",
+    "`Sprint()`",
+    "`MapRangeUnclamped()`",
+    "`SelectFloat()`",
+    "`Divide_DoubleDouble()`",
+    "`K2_SetRelativeLocation()`",
+    "`Lerp()`",
+    "`BreakVector()`",
+    "`MakeVector()`",
+    "`K2_AttachToComponent()`",
+    "`SetCollisionResponseToChannel()`",
+    "`SetCollisionEnabled()`",
+    "`SetSimulatePhysics()`",
+    "`GetAnimInstance()`",
+    "`IsDead()`",
+    "`StopAnimMontage()`",
+    "`Deactivate()`",
+    "`SetGlobalTimeDilation()`",
+    "`GetPlayerCameraManager()`",
+    "`StartCameraFade()`",
+    "`GetPlayerController()`",
+    "`VisibilityHUD()`",
+    "`Delay()`",
+    "`Reanimate()`",
+    "`SetHealth()`",
+    "`K2_SetRelativeTransform()`",
+    "`GetGameInstance()`",
+    "`AddTime()`",
+    "`Activate()`",
+    "`BreakTransform()`",
+    "`K2_SetActorTransform()`",
+    "`SetControlRotation()`",
+    "`BreakRotator()`",
+    "`Subtract_DoubleDouble()`",
+    "`RespawnCharacter()`",
+    "`RangeSpawnPoint()`",
+    "`Map_Values()`",
+    "`MakeTransform()`",
+    "`Jump()`",
+    "`StopJumping()`",
+    "`IsJumping()`",
+    "`LaunchCharacter()`",
+    "`JumpStamina()`",
+    "`K2_GetActorLocation()`",
+    "`Vector_Distance()`",
+    "`Less_DoubleDouble()`",
+    "`IsFalling()`",
+    "`LessEqual_DoubleDouble()`",
+    "`PlayFromStart()`",
+    "`ExecuteUbergraph_BP_Character()`",
+    "`Add_IntInt()`",
+    "`Less_IntInt()`"
+  ],
+  "graph_sections": [],
+  "interfaces": [
+    "BPI_Get_EssentialValues",
+    "BPI_Get_CurrentStates",
+    "BPI_Set_MovementState",
+    "BPI_Set_MovementAction",
+    "BPI_Set_RotationMode",
+    "BPI_Set_Gait",
+    "BPI_Set_OverlayState",
+    "BPI_Set_ViewMode",
+    "BPI_Get_EssentialValues_MERGED",
+    "BPI_Get_CurrentStates_MERGED"
+  ],
+  "structs_used": [],
+  "key_patterns": {
+    "has_replication": false,
+    "has_timers": false,
+    "has_overlap_events": false,
+    "has_enhanced_input": false,
+    "has_timeline": false,
+    "has_data_tables": false,
+    "has_dynamic_material": false,
+    "has_camera_fade": true
+  },
+  "source_file": "BP_Character.md"
+}

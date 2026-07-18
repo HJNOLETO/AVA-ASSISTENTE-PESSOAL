@@ -1,0 +1,52 @@
+{
+  "name": "W_PickupItem",
+  "parent_class": "UserWidget",
+  "template_id": "pickup_item",
+  "category": "HUD",
+  "variables": [],
+  "components": [
+    {
+      "name": "CanvasPanel_0",
+      "type": "CanvasPanel"
+    },
+    {
+      "name": "Border_240",
+      "type": "Border"
+    },
+    {
+      "name": "BorderSlot_0",
+      "type": "BorderSlot"
+    },
+    {
+      "name": "VerticalBox_54",
+      "type": "VerticalBox"
+    },
+    {
+      "name": "HorizontalBox_278",
+      "type": "HorizontalBox"
+    },
+    {
+      "name": "TextBlock_254",
+      "type": "TextBlock"
+    },
+    {
+      "name": "Spacer_369",
+      "type": "Spacer"
+    },
+    {
+      "name": "HorizontalBox_476",
+      "type": "HorizontalBox"
+    },
+    {
+      "name": "TextBlock",
+      "type": "TextBlock"
+    }
+  ],
+  "events": [],
+  "functions": [],
+  "graph_sections": [],
+  "interfaces": [],
+  "structs_used": [],
+  "key_patterns": {},
+  "source_file": "W_PickupItem.md"
+}

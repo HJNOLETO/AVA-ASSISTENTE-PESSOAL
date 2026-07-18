@@ -1,0 +1,4 @@
+Modulo 1: Fundamentos do Sistema.
+O sistema opera com base em um motor de processamento de linguagem natural.
+A primeira camada e a de definicao de comportamento.
+A segunda camada e a de execucao de ferramentas.

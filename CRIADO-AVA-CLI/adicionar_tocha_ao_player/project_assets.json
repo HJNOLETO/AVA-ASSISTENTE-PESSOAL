@@ -1,0 +1,1641 @@
+{
+  "/Game": [
+    {
+      "name": "AM_Climbing_Enter_Top",
+      "class": "AnimMontage"
+    },
+    {
+      "name": "AS_Climbing_Top_Enter",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "A_StartLadder_Montage",
+      "class": "AnimMontage"
+    },
+    {
+      "name": "A_StartLadder",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "A_EndLadder_Montage",
+      "class": "AnimMontage"
+    },
+    {
+      "name": "A_EndLadder",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "ALS_Mannequin_Skeleton",
+      "class": "Skeleton"
+    },
+    {
+      "name": "AS_Climbing_Top_Exit",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "AM_Climbing_Exit_Top",
+      "class": "AnimMontage"
+    },
+    {
+      "name": "AS_Ladder_Enter_Top",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "AM_Ladder_Enter_Top",
+      "class": "AnimMontage"
+    },
+    {
+      "name": "AS_Ladder_Exit_Top",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "AM_Ladder_Exit_Top",
+      "class": "AnimMontage"
+    },
+    {
+      "name": "A_LadderSliding",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "Ladder1",
+      "class": "SoundWave"
+    },
+    {
+      "name": "LadderStep",
+      "class": "SoundCue"
+    },
+    {
+      "name": "Animation_ClimbingLadder_1_2",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "AS_Climbing_Idle",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "AS_Climbing_Down_L_Foot",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "AS_Climbing_Left_Down_L_Hand_Foot",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "AS_Climbing_Left_L_Hand_Foot",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "AS_Climbing_Left_Up_L_Hand_Foot",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "AS_Climbing_Up_L_Hand_Grip",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "BS_Climbing_Left",
+      "class": "BlendSpace"
+    },
+    {
+      "name": "AS_Climbing_Left_Down_L_Hand",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "AS_Climbing_Left_L_Hand",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "AS_Climbing_Left_Up_L_Hand",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "AS_Climbing_Up_L_Hand",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "BS_Climbing_Left_Ready",
+      "class": "BlendSpace"
+    },
+    {
+      "name": "AS_Climbing_Down_R_Foot",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "AS_Climbing_Right_Down_R_Hand_Foot",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "AS_Climbing_Right_R_Hand_Foot",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "AS_Climbing_Right_Up_R_Hand_Foot",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "AS_Climbing_Up_R_Hand_Grip",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "BS_Climbing_Right",
+      "class": "BlendSpace"
+    },
+    {
+      "name": "AS_Climbing_Right_Down_R_Hand",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "AS_Climbing_Right_R_Hand",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "AS_Climbing_Right_Up_R_Hand",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "AS_Climbing_Up_R_Hand",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "BS_Climbing_Right_Ready",
+      "class": "BlendSpace"
+    },
+    {
+      "name": "BP_CustomMovementComponent",
+      "class": "Blueprint"
+    },
+    {
+      "name": "SCustomMoveZone",
+      "class": "UserDefinedStruct"
+    },
+    {
+      "name": "ECustomMoveZoneType",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "BPI_CustomMovementCharacter",
+      "class": "Blueprint"
+    },
+    {
+      "name": "BPI_CustomMoveZone_Climbing",
+      "class": "Blueprint"
+    },
+    {
+      "name": "BPI_CustomMoveZone_Ladder",
+      "class": "Blueprint"
+    },
+    {
+      "name": "FC_EnteringClimbingTopTransitionCurve",
+      "class": "CurveFloat"
+    },
+    {
+      "name": "FC_EnteringClimbingTransitionCurve",
+      "class": "CurveFloat"
+    },
+    {
+      "name": "FC_EnteringLadderBottomTransitionCurve",
+      "class": "CurveFloat"
+    },
+    {
+      "name": "FC_EnteringLadderMiddleTransitionCurve",
+      "class": "CurveFloat"
+    },
+    {
+      "name": "FC_EnteringLadderTopTransitionCurve",
+      "class": "CurveFloat"
+    },
+    {
+      "name": "MovingNextHoldTransitionLocationCurve",
+      "class": "CurveFloat"
+    },
+    {
+      "name": "MovingNextHoldTransitionRotationCurve",
+      "class": "CurveFloat"
+    },
+    {
+      "name": "ECustomMovementMode",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "FC_ClimbingTransitionCurve",
+      "class": "CurveFloat"
+    },
+    {
+      "name": "ABP_CustomMovement",
+      "class": "AnimBlueprint"
+    },
+    {
+      "name": "CameraShake_Notify",
+      "class": "Blueprint"
+    },
+    {
+      "name": "GroundedEntryState",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "ALS_Animation_BPI",
+      "class": "Blueprint"
+    },
+    {
+      "name": "GroundedEntryState_AnimNotify",
+      "class": "Blueprint"
+    },
+    {
+      "name": "Sprint_CameraShake",
+      "class": "Blueprint"
+    },
+    {
+      "name": "ALS_N_LandRoll_F",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "ALS_N_Pose",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "ALS_N_Look_F_Sweep",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "ALS_CLF_Pose",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "ALS_Flail",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "ALS_N_FallLoop",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "ALS_N_FallLoop_Fast",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "ALS_N_JumpLoop",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "ALS_N_JumpRun_LF",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "ALS_N_JumpRun_RF",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "ALS_N_JumpWalk_LF",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "ALS_N_JumpWalk_RF",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "LookIn",
+      "class": "CurveFloat"
+    },
+    {
+      "name": "LookOut",
+      "class": "CurveFloat"
+    },
+    {
+      "name": "AO_SwitchSidesOut",
+      "class": "CurveFloat"
+    },
+    {
+      "name": "AO_SwitchSidesIn",
+      "class": "CurveFloat"
+    },
+    {
+      "name": "ChangeStance",
+      "class": "CurveFloat"
+    },
+    {
+      "name": "AimingOutCurve",
+      "class": "CurveFloat"
+    },
+    {
+      "name": "AimingInCurve",
+      "class": "CurveFloat"
+    },
+    {
+      "name": "ChangeDirection",
+      "class": "CurveFloat"
+    },
+    {
+      "name": "MovementDirection",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "HipsDirection",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "VelocityBlend",
+      "class": "UserDefinedStruct"
+    },
+    {
+      "name": "LeanAmount",
+      "class": "UserDefinedStruct"
+    },
+    {
+      "name": "ALS_MovementState",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "ALS_MovementAction",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "ALS_RotationMode",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "ALS_Gait",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "ALS_Stance",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "ALS_ViewMode",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "ALS_OverlayState",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "TurnInPlace_Asset",
+      "class": "UserDefinedStruct"
+    },
+    {
+      "name": "E_WeaponType",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "ALS_AnimBP",
+      "class": "AnimBlueprint"
+    },
+    {
+      "name": "DynamicMontageParams",
+      "class": "UserDefinedStruct"
+    },
+    {
+      "name": "RotateInPlace_Asset",
+      "class": "UserDefinedStruct"
+    },
+    {
+      "name": "AmmoType",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "ALS_Character_BPI",
+      "class": "Blueprint"
+    },
+    {
+      "name": "ALS_Controller_BPI",
+      "class": "Blueprint"
+    },
+    {
+      "name": "Character_Interface",
+      "class": "Blueprint"
+    },
+    {
+      "name": "S_StoredWeapons",
+      "class": "UserDefinedStruct"
+    },
+    {
+      "name": "E_FireMode",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "E_WeaponState",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "AC_WeaponSystem",
+      "class": "Blueprint"
+    },
+    {
+      "name": "S_WeaponData",
+      "class": "UserDefinedStruct"
+    },
+    {
+      "name": "WeaponSlots",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "Projectile_Size",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "S_CharacterAnims",
+      "class": "UserDefinedStruct"
+    },
+    {
+      "name": "S_WeaponAnims",
+      "class": "UserDefinedStruct"
+    },
+    {
+      "name": "ALS_Camera_BPI",
+      "class": "Blueprint"
+    },
+    {
+      "name": "CameraLerp_1",
+      "class": "CurveFloat"
+    },
+    {
+      "name": "CameraLerp_2",
+      "class": "CurveFloat"
+    },
+    {
+      "name": "Camera_Skeleton",
+      "class": "Skeleton"
+    },
+    {
+      "name": "ALS_PlayerCameraBehavior",
+      "class": "AnimBlueprint"
+    },
+    {
+      "name": "Alpha_Body_MAT",
+      "class": "Material"
+    },
+    {
+      "name": "Camera",
+      "class": "SkeletalMesh"
+    },
+    {
+      "name": "SomMenu2",
+      "class": "SoundWave"
+    },
+    {
+      "name": "ALS_PlayerCameraManager",
+      "class": "Blueprint"
+    },
+    {
+      "name": "BP_ProjectileBase",
+      "class": "Blueprint"
+    },
+    {
+      "name": "Dirt",
+      "class": "Material"
+    },
+    {
+      "name": "Decals_Concrete",
+      "class": "Material"
+    },
+    {
+      "name": "Decals_Gen1",
+      "class": "Material"
+    },
+    {
+      "name": "Decals_Metal",
+      "class": "Material"
+    },
+    {
+      "name": "Decals_Sand",
+      "class": "Material"
+    },
+    {
+      "name": "Decals_Wood2",
+      "class": "Material"
+    },
+    {
+      "name": "Decal_SnowSplatter",
+      "class": "Material"
+    },
+    {
+      "name": "Decal_Water_Splatter",
+      "class": "Material"
+    },
+    {
+      "name": "M_Ground_Grass",
+      "class": "Material"
+    },
+    {
+      "name": "M_Ground_Gravel",
+      "class": "Material"
+    },
+    {
+      "name": "M_Ground_Mud",
+      "class": "Material"
+    },
+    {
+      "name": "ProjectileMat",
+      "class": "Material"
+    },
+    {
+      "name": "Concrete_impact_Dyn",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Bloody_Overkill_Dyn",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Grass_impact_Dyn",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Mud_impact_Dyn2",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Sand_impact_2_Dyn",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Generic_Impact",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Dirt_impact_2_Dyn",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Gravel_impact_2_Dyn",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Metal_impact_Dyn",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Water_impact_Dyn",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Wood_impact_Dyn",
+      "class": "ParticleSystem"
+    },
+    {
+      "name": "Concrete_Impacts",
+      "class": "SoundCue"
+    },
+    {
+      "name": "Dirt_Impacts",
+      "class": "SoundCue"
+    },
+    {
+      "name": "Generic_Ground_Impacts",
+      "class": "SoundCue"
+    },
+    {
+      "name": "Gravel_Impacts",
+      "class": "SoundCue"
+    },
+    {
+      "name": "Metal_Dull_Impacts",
+      "class": "SoundCue"
+    },
+    {
+      "name": "Sand_Impacts",
+      "class": "SoundCue"
+    },
+    {
+      "name": "Water_Impacts",
+      "class": "SoundCue"
+    },
+    {
+      "name": "Wood_2_Impacts",
+      "class": "SoundCue"
+    },
+    {
+      "name": "Shape_Sphere",
+      "class": "StaticMesh"
+    },
+    {
+      "name": "MaterialState",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "MaterialProperties",
+      "class": "UserDefinedStruct"
+    },
+    {
+      "name": "MaterialPropertiesData",
+      "class": "DataTable"
+    },
+    {
+      "name": "Ricochet_1",
+      "class": "Texture2D"
+    },
+    {
+      "name": "Ricochet_1_normal",
+      "class": "Texture2D"
+    },
+    {
+      "name": "Decals__Ricochet_Gen2",
+      "class": "Material"
+    },
+    {
+      "name": "Asphalt_1",
+      "class": "Texture2D"
+    },
+    {
+      "name": "Paper_1_normal",
+      "class": "Texture2D"
+    },
+    {
+      "name": "Decals_Asphalt",
+      "class": "Material"
+    },
+    {
+      "name": "Tiles_1",
+      "class": "Texture2D"
+    },
+    {
+      "name": "Tiles_1_normal",
+      "class": "Texture2D"
+    },
+    {
+      "name": "Decals_Bricks",
+      "class": "Material"
+    },
+    {
+      "name": "Concrete_normal",
+      "class": "Texture2D"
+    },
+    {
+      "name": "dusty_1",
+      "class": "Texture2D"
+    },
+    {
+      "name": "Decals_Dusty",
+      "class": "Material"
+    },
+    {
+      "name": "Fabric_1",
+      "class": "Texture2D"
+    },
+    {
+      "name": "Decals_Fabric",
+      "class": "Material"
+    },
+    {
+      "name": "Metal_1",
+      "class": "Texture2D"
+    },
+    {
+      "name": "Paper_1",
+      "class": "Texture2D"
+    },
+    {
+      "name": "Decals_Paper",
+      "class": "Material"
+    },
+    {
+      "name": "Scorch_1",
+      "class": "Texture2D"
+    },
+    {
+      "name": "Decals_Scorch",
+      "class": "Material"
+    },
+    {
+      "name": "Soil_1",
+      "class": "Texture2D"
+    },
+    {
+      "name": "Decals_Soil",
+      "class": "Material"
+    },
+    {
+      "name": "Tiles_2",
+      "class": "Texture2D"
+    },
+    {
+      "name": "Decals_Tiles",
+      "class": "Material"
+    },
+    {
+      "name": "Wood_1",
+      "class": "Texture2D"
+    },
+    {
+      "name": "Decals_Wood",
+      "class": "Material"
+    },
+    {
+      "name": "Splasher_1",
+      "class": "Texture2D"
+    },
+    {
+      "name": "Splasher_1_normal",
+      "class": "Texture2D"
+    },
+    {
+      "name": "Decal_Acid_Splatter",
+      "class": "Material"
+    },
+    {
+      "name": "Decal_Blood_Splatter",
+      "class": "Material"
+    },
+    {
+      "name": "Splasher_2",
+      "class": "Texture2D"
+    },
+    {
+      "name": "Decal_Blood_Splatter_wall",
+      "class": "Material"
+    },
+    {
+      "name": "Duster_1",
+      "class": "Texture2D"
+    },
+    {
+      "name": "Decal_BrickSplatter2",
+      "class": "Material"
+    },
+    {
+      "name": "Concrete_1",
+      "class": "Texture2D"
+    },
+    {
+      "name": "Duster_2",
+      "class": "Texture2D"
+    },
+    {
+      "name": "Duster_2_normal",
+      "class": "Texture2D"
+    },
+    {
+      "name": "Decal_DustSplatter",
+      "class": "Material"
+    },
+    {
+      "name": "Decal_Lava_Splatter",
+      "class": "Material"
+    },
+    {
+      "name": "Decal_Mud_Splatter",
+      "class": "Material"
+    },
+    {
+      "name": "Decal_Oil_Splatter",
+      "class": "Material"
+    },
+    {
+      "name": "Decal_PowderSplatter",
+      "class": "Material"
+    },
+    {
+      "name": "Decal_SandSplatter",
+      "class": "Material"
+    },
+    {
+      "name": "FXMaterialData",
+      "class": "UserDefinedStruct"
+    },
+    {
+      "name": "M_Radial_Gradient",
+      "class": "Material"
+    },
+    {
+      "name": "M_Spark",
+      "class": "Material"
+    }
+  ],
+  "/Game/Blueprints": [
+    {
+      "name": "A_StartLadder_Montage",
+      "class": "AnimMontage"
+    },
+    {
+      "name": "A_StartLadder",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "A_EndLadder_Montage",
+      "class": "AnimMontage"
+    },
+    {
+      "name": "A_EndLadder",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "A_LadderSliding",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "Animation_ClimbingLadder_1_2",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "E_WeaponType",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "AmmoType",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "Character_Interface",
+      "class": "Blueprint"
+    },
+    {
+      "name": "S_StoredWeapons",
+      "class": "UserDefinedStruct"
+    },
+    {
+      "name": "E_FireMode",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "E_WeaponState",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "AC_WeaponSystem",
+      "class": "Blueprint"
+    },
+    {
+      "name": "S_WeaponData",
+      "class": "UserDefinedStruct"
+    },
+    {
+      "name": "WeaponSlots",
+      "class": "UserDefinedEnum"
+    },
+    {
+      "name": "S_CharacterAnims",
+      "class": "UserDefinedStruct"
+    },
+    {
+      "name": "S_WeaponAnims",
+      "class": "UserDefinedStruct"
+    },
+    {
+      "name": "Alpha_Body_MAT",
+      "class": "Material"
+    },
+    {
+      "name": "BP_ProjectileBase",
+      "class": "Blueprint"
+    },
+    {
+      "name": "ProjectileMat",
+      "class": "Material"
+    },
+    {
+      "name": "AC_PlayerStatus",
+      "class": "Blueprint"
+    },
+    {
+      "name": "AC_Interaction",
+      "class": "Blueprint"
+    },
+    {
+      "name": "BP_InteractionObject",
+      "class": "Blueprint"
+    },
+    {
+      "name": "BP_WeaponBase",
+      "class": "Blueprint"
+    },
+    {
+      "name": "BP_WeaponInterface",
+      "class": "Blueprint"
+    },
+    {
+      "name": "W_Main",
+      "class": "WidgetBlueprint"
+    },
+    {
+      "name": "T_ML_Rubber_Blue_01_D",
+      "class": "Texture2D"
+    },
+    {
+      "name": "T_ML_Rubber_Blue_01_N",
+      "class": "Texture2D"
+    },
+    {
+      "name": "ML_GlossyBlack_Latex_UE4",
+      "class": "MaterialFunction"
+    },
+    {
+      "name": "ML_Plastic_Shiny_Beige",
+      "class": "MaterialFunction"
+    },
+    {
+      "name": "T_UE4Logo_Mask",
+      "class": "Texture2D"
+    },
+    {
+      "name": "ML_Plastic_Shiny_Beige_LOGO",
+      "class": "MaterialFunction"
+    },
+    {
+      "name": "T_ML_Aluminum01",
+      "class": "Texture2D"
+    },
+    {
+      "name": "T_ML_Aluminum01_N",
+      "class": "Texture2D"
+    },
+    {
+      "name": "ML_SoftMetal_UE4",
+      "class": "MaterialFunction"
+    },
+    {
+      "name": "T_Male_Mask",
+      "class": "Texture2D"
+    },
+    {
+      "name": "T_Male_N",
+      "class": "Texture2D"
+    },
+    {
+      "name": "M_Male_Body",
+      "class": "Material"
+    },
+    {
+      "name": "T_UE4Logo_N",
+      "class": "Texture2D"
+    },
+    {
+      "name": "M_UE4Man_ChestLogo",
+      "class": "MaterialInstanceConstant"
+    },
+    {
+      "name": "SK_Mannequin",
+      "class": "SkeletalMesh"
+    },
+    {
+      "name": "BP_Functions",
+      "class": "Blueprint"
+    },
+    {
+      "name": "T_SelectionCircle",
+      "class": "Texture2D"
+    },
+    {
+      "name": "T_WheelMenu2",
+      "class": "Texture2D"
+    },
+    {
+      "name": "T_WheelSelection1",
+      "class": "Texture2D"
+    },
+    {
+      "name": "T_AK47",
+      "class": "Texture2D"
+    },
+    {
+      "name": "UMG_Slot",
+      "class": "WidgetBlueprint"
+    },
+    {
+      "name": "WBCrosshair",
+      "class": "WidgetBlueprint"
+    },
+    {
+      "name": "W_PickupItem",
+      "class": "WidgetBlueprint"
+    },
+    {
+      "name": "T_Damage",
+      "class": "Texture2D"
+    },
+    {
+      "name": "T_SocoIcone",
+      "class": "Texture2D"
+    },
+    {
+      "name": "T_North_Icon",
+      "class": "Texture2D"
+    },
+    {
+      "name": "BebasNeueBold",
+      "class": "FontFace"
+    },
+    {
+      "name": "F_BebasNeueBold",
+      "class": "Font"
+    },
+    {
+      "name": "ComponentsInterface",
+      "class": "Blueprint"
+    },
+    {
+      "name": "BP_PickupObject",
+      "class": "Blueprint"
+    },
+    {
+      "name": "UMG_Inventory",
+      "class": "WidgetBlueprint"
+    },
+    {
+      "name": "UMG_RadialMenu",
+      "class": "WidgetBlueprint"
+    },
+    {
+      "name": "BP_Jetpack",
+      "class": "Blueprint"
+    },
+    {
+      "name": "ProjetoGameInstance",
+      "class": "Blueprint"
+    },
+    {
+      "name": "Listras",
+      "class": "Material"
+    },
+    {
+      "name": "SM_Jetpack_TopMat_BaseColor",
+      "class": "Texture2D"
+    },
+    {
+      "name": "SM_Jetpack_TopMat_Normal",
+      "class": "Texture2D"
+    },
+    {
+      "name": "SM_Jetpack_TopMat_OcclusionRoughnessMetallic",
+      "class": "Texture2D"
+    },
+    {
+      "name": "M_Jetpack",
+      "class": "Material"
+    },
+    {
+      "name": "SM_Jetpack1",
+      "class": "StaticMesh"
+    },
+    {
+      "name": "SM_JetpackThruster",
+      "class": "StaticMesh"
+    },
+    {
+      "name": "BP_PhysicalMag",
+      "class": "Blueprint"
+    },
+    {
+      "name": "IA_Move",
+      "class": "InputAction"
+    },
+    {
+      "name": "Damge_CS",
+      "class": "Blueprint"
+    },
+    {
+      "name": "HitReactCurve",
+      "class": "CurveFloat"
+    },
+    {
+      "name": "MM_Pistol_Equip",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_Pistol_Reload",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_Rifle_Reload",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "A_EquipRifle",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "A_UnequipRifle",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "Projectile_Rifle",
+      "class": "Blueprint"
+    },
+    {
+      "name": "T_Hand",
+      "class": "Texture2D"
+    },
+    {
+      "name": "T_Pistol",
+      "class": "Texture2D"
+    },
+    {
+      "name": "T_Shotgun1",
+      "class": "Texture2D"
+    },
+    {
+      "name": "T_Submachine1",
+      "class": "Texture2D"
+    },
+    {
+      "name": "WeaponList",
+      "class": "DataTable"
+    },
+    {
+      "name": "PC_ProjetoGTA",
+      "class": "Blueprint"
+    },
+    {
+      "name": "IA_Reload",
+      "class": "InputAction"
+    },
+    {
+      "name": "BP_Character",
+      "class": "Blueprint"
+    },
+    {
+      "name": "IA_Aim",
+      "class": "InputAction"
+    },
+    {
+      "name": "IA_Crouch",
+      "class": "InputAction"
+    },
+    {
+      "name": "IA_Jump",
+      "class": "InputAction"
+    },
+    {
+      "name": "IA_LookMouse",
+      "class": "InputAction"
+    },
+    {
+      "name": "IA_Ragdoll",
+      "class": "InputAction"
+    },
+    {
+      "name": "IA_RotationMode",
+      "class": "InputAction"
+    },
+    {
+      "name": "IA_Sprint",
+      "class": "InputAction"
+    },
+    {
+      "name": "IA_ViewMode",
+      "class": "InputAction"
+    },
+    {
+      "name": "IA_Walk",
+      "class": "InputAction"
+    },
+    {
+      "name": "IA_Interact",
+      "class": "InputAction"
+    },
+    {
+      "name": "IA_MousePressed",
+      "class": "InputAction"
+    },
+    {
+      "name": "IA_Roll",
+      "class": "InputAction"
+    },
+    {
+      "name": "IA_SwitchShoulder",
+      "class": "InputAction"
+    },
+    {
+      "name": "IMC_Default",
+      "class": "InputMappingContext"
+    },
+    {
+      "name": "MOB1_Stand_Relaxed_Death_B_IPC",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "ALS_Shooting",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "Injured_Walking",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "InjuredIdle",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "Damage_BS",
+      "class": "BlendSpace1D"
+    },
+    {
+      "name": "MI_EnemyBody",
+      "class": "MaterialInstanceConstant"
+    },
+    {
+      "name": "SK_MotorcycleV2",
+      "class": "SkeletalMesh"
+    },
+    {
+      "name": "SKMotorcycle_PhysicsAsset",
+      "class": "PhysicsAsset"
+    },
+    {
+      "name": "MI_Motorcycle",
+      "class": "MaterialInstanceConstant"
+    },
+    {
+      "name": "MI_Chrome",
+      "class": "MaterialInstanceConstant"
+    },
+    {
+      "name": "M_BikeBody",
+      "class": "Material"
+    },
+    {
+      "name": "M_Moto",
+      "class": "Material"
+    },
+    {
+      "name": "tex",
+      "class": "Texture2D"
+    },
+    {
+      "name": "Door_albedo",
+      "class": "Texture2D"
+    },
+    {
+      "name": "Door_AO",
+      "class": "Texture2D"
+    },
+    {
+      "name": "Door_metallic",
+      "class": "Texture2D"
+    },
+    {
+      "name": "Door_normal",
+      "class": "Texture2D"
+    },
+    {
+      "name": "Door_roughness",
+      "class": "Texture2D"
+    },
+    {
+      "name": "Door",
+      "class": "Material"
+    },
+    {
+      "name": "SM_Door",
+      "class": "StaticMesh"
+    },
+    {
+      "name": "SM_DoorFrame",
+      "class": "StaticMesh"
+    },
+    {
+      "name": "BP_Door",
+      "class": "Blueprint"
+    },
+    {
+      "name": "ProjetoGTA_GameMode",
+      "class": "Blueprint"
+    },
+    {
+      "name": "tIN_albedo",
+      "class": "Texture2D"
+    },
+    {
+      "name": "tIN_AO",
+      "class": "Texture2D"
+    },
+    {
+      "name": "tIN_metallic",
+      "class": "Texture2D"
+    },
+    {
+      "name": "tIN_normal",
+      "class": "Texture2D"
+    },
+    {
+      "name": "tIN_roughness",
+      "class": "Texture2D"
+    },
+    {
+      "name": "AmmoBox1",
+      "class": "Material"
+    },
+    {
+      "name": "Lid_albedo",
+      "class": "Texture2D"
+    },
+    {
+      "name": "Lid_AO",
+      "class": "Texture2D"
+    },
+    {
+      "name": "Lid_metallic",
+      "class": "Texture2D"
+    },
+    {
+      "name": "Lid_normal",
+      "class": "Texture2D"
+    },
+    {
+      "name": "Lid_roughness",
+      "class": "Texture2D"
+    },
+    {
+      "name": "AmmoBox2",
+      "class": "Material"
+    },
+    {
+      "name": "SM_AmmoBox",
+      "class": "StaticMesh"
+    },
+    {
+      "name": "BP_AmmoBox",
+      "class": "Blueprint"
+    },
+    {
+      "name": "BP_MissionMarker",
+      "class": "Blueprint"
+    },
+    {
+      "name": "BikeMovement",
+      "class": "CurveFloat"
+    },
+    {
+      "name": "MotoBWheel",
+      "class": "Blueprint"
+    },
+    {
+      "name": "MotoFWheel",
+      "class": "Blueprint"
+    },
+    {
+      "name": "SKMotorcycle_Skeleton",
+      "class": "Skeleton"
+    },
+    {
+      "name": "AnimBP_Motorcycle",
+      "class": "AnimBlueprint"
+    },
+    {
+      "name": "BP_Motorcycle",
+      "class": "Blueprint"
+    },
+    {
+      "name": "MenuCustom_GM",
+      "class": "Blueprint"
+    },
+    {
+      "name": "BP_CharacterViewer",
+      "class": "Blueprint"
+    },
+    {
+      "name": "UE4_Mannequin_Skeleton_UE4_Mannequin_SkeletonAction",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "SK_Mannequin_PhysicsAsset",
+      "class": "PhysicsAsset"
+    },
+    {
+      "name": "SK_Mannequin_Female_PhysicsAsset",
+      "class": "PhysicsAsset"
+    },
+    {
+      "name": "SK_Mannequin_Female",
+      "class": "SkeletalMesh"
+    },
+    {
+      "name": "Hip_Hop_Dancing",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "Capoeira_Anim",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "AnimBP_Character",
+      "class": "AnimBlueprint"
+    },
+    {
+      "name": "ALS_Mannequin_T_Pose_PoseAsset",
+      "class": "PoseAsset"
+    },
+    {
+      "name": "ALS_Mannequin_T_Pose",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MI_Female_Body",
+      "class": "MaterialInstanceConstant"
+    },
+    {
+      "name": "T_Female_N",
+      "class": "Texture2D"
+    },
+    {
+      "name": "T_Female_Mask",
+      "class": "Texture2D"
+    },
+    {
+      "name": "MM_Shotgun_Reload_Additive",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_Shotgun_Reload",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_Shotgun_Melee_Additive",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_Shotgun_Melee",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_Shotgun_Fire",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_Rifle_Spawn_Turn180",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_Rifle_Spawn_Fast",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_Rifle_Spawn",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_Rifle_Reload_Additive",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_Rifle_Melee_Additive",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_Rifle_Melee",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_Rifle_Idle_ADS",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_Rifle_GrenadeToss_Additive",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_Rifle_GrenadeToss",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_Rifle_Fire",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_Rifle_Equip_Additive",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_Rifle_Equip",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_Rifle_DryFire_Additive",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_Rifle_DryFire",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_Pistol_Spawn_Turn180",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_Pistol_Spawn_Slow",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_Pistol_Spawn",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_Pistol_Reload_Additive",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_Pistol_Melee_Additive",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_Pistol_Melee",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_Pistol_Fire",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_Pistol_Equip_Additive",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_Pistol_DryFire_Additive",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_Pistol_DryFire",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_HitReact_Right_Med_01",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_HitReact_Right_Lgt_01",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_HitReact_Left_Med_01",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_HitReact_Left_Lgt_01",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_HitReact_Front_Med_02",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_HitReact_Front_Med_01",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_HitReact_Front_Lgt_04",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_HitReact_Front_Lgt_03",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_HitReact_Front_Lgt_02",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_HitReact_Front_Lgt_01",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_HitReact_Front_Hvy_01",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_HitReact_Back_Med_01",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_HitReact_Back_Lgt_01",
+      "class": "AnimSequence"
+    },
+    {
+      "name": "MM_Death_Right_01",
+      "class": "AnimSequence"
+    }
+  ],
+  "/Game/Characters": [],
+  "/Game/ALS": [],
+  "/Game/Meshes": [
+    {
+      "name": "M_Marker",
+      "class": "Material"
+    },
+    {
+      "name": "MI_Marker",
+      "class": "MaterialInstanceConstant"
+    },
+    {
+      "name": "SM_MissionMarker",
+      "class": "StaticMesh"
+    },
+    {
+      "name": "T_GradientAlpha",
+      "class": "Texture2D"
+    },
+    {
+      "name": "M_PlaceMarker",
+      "class": "Material"
+    },
+    {
+      "name": "M_PlaceMarker_Inst",
+      "class": "MaterialInstanceConstant"
+    },
+    {
+      "name": "SM_PlaceMarker",
+      "class": "StaticMesh"
+    }
+  ],
+  "/Game/Materials": [],
+  "/Game/Weapons": [],
+  "/Game/Items": []
+}

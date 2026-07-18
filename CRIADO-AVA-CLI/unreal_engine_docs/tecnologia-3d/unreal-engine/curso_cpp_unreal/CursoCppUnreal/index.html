@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curso C++ para Unreal Engine - Roadmap Completo</title>
+    <link rel="stylesheet" href="recursos/css/estilo.css">
+    <script src="recursos/js/quiz.js" defer></script>
+    <!-- Incluir Prism.js para Syntax Highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+</head>
+<body>
+    <button id="dark-mode-toggle">Alternar Modo Escuro</button>
+    <header>
+        <h1>Curso C++ para Unreal Engine</h1>
+        <p>Do Zero à Programação de Jogos</p>
+    </header>
+
+    <div class="container">
+        <div class="content-area">
+            <h2>Visão Geral e Roadmap de Aprendizado</h2>
+            <p>Este curso foi cuidadosamente estruturado para levar um iniciante absoluto a um nível avançado de proficiência em C++ com foco em desenvolvimento para a Unreal Engine. Siga o roadmap abaixo para uma jornada de aprendizado eficiente e completa.</p>
+
+            <h3>Estrutura e Níveis de Proficiência</h3>
+            <p>O conteúdo está dividido em três níveis de proficiência, garantindo que você construa uma base sólida antes de avançar para tópicos mais complexos.</p>
+
+            <table class="roadmap-table">
+                <thead>
+                    <tr>
+                        <th>Módulo</th>
+                        <th>Nível</th>
+                        <th>Conceitos Chave</th>
+                        <th>Tempo Estimado</th>
+                        <th>Acesso</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="level-basic">
+                        <td>**01 - Fundamentos**</td>
+                        <td>Básico</td>
+                        <td>Variáveis, Operadores, Estruturas de Controle, Arrays, Strings.</td>
+                        <td>~15 horas</td>
+                        <td><a href="01-Fundamentos/modulo.html">Iniciar Módulo</a></td>
+                    </tr>
+                    <tr class="level-intermediate">
+                        <td>**02 - Intermediário**</td>
+                        <td>Intermediário</td>
+                        <td>Funções, Ponteiros, Referências, Memória Dinâmica, STL (Vector, Map, Set).</td>
+                        <td>~25 horas</td>
+                        <td><a href="02-Intermediario/modulo.html">Acessar Módulo</a></td>
+                    </tr>
+                    <tr class="level-advanced">
+                        <td>**03 - Avançado - POO**</td>
+                        <td>Avançado</td>
+                        <td>Classes, Objetos, Herança, Polimorfismo, Templates, Exceções, Conceitos Avançados.</td>
+                        <td>~30 horas</td>
+                        <td><a href="03-Avancado-POO/modulo.html">Acessar Módulo</a></td>
+                    </tr>
+                    <tr class="level-advanced">
+                        <td>**04 - Prática Unreal**</td>
+                        <td>Aplicação</td>
+                        <td>Macros Unreal, Tipos Unreal (TArray, FString), Actors, Components, Projeto Final.</td>
+                        <td>~20 horas</td>
+                        <td><a href="04-Pratica-Unreal/modulo.html">Acessar Módulo</a></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Roadmap Detalhado de Conceitos</h3>
+            <p>Abaixo, o detalhamento de **TODOS** os conceitos que você irá dominar, organizados por nível e com suas dependências.</p>
+
+            <div class="roadmap-container">
+                <div class="roadmap-level">
+                    <h3>Nível 1: Fundamentos (Pré-requisito: Nenhum)</h3>
+                    <div class="roadmap-module">
+                        <strong>1.1 Primeiros Passos</strong>
+                        <small>Variáveis, Tipos Primitivos, Operadores, I/O, Casting.</small>
+                    </div>
+                    <div class="roadmap-module">
+                        <strong>1.2 Estruturas de Controle</strong>
+                        <small>Condicionais (`if`, `switch`), Loops (`for`, `while`), `break`, `continue`, Ternário.</small>
+                    </div>
+                    <div class="roadmap-module">
+                        <strong>1.3 Estruturas de Dados Básicas</strong>
+                        <small>Arrays Estáticos, Strings (C-style e `std::string`).</small>
+                    </div>
+                </div>
+
+                <div class="roadmap-level">
+                    <h3>Nível 2: Intermediário (Pré-requisito: Nível 1)</h3>
+                    <div class="roadmap-module">
+                        <strong>2.1 Funções</strong>
+                        <small>Declaração, Parâmetros, Retorno, Sobrecarga, Escopo.</small>
+                    </div>
+                    <div class="roadmap-module">
+                        <strong>2.2 Ponteiros e Referências</strong>
+                        <small>Endereço de Memória, Operadores `&` e `*`, Passagem por Referência, Smart Pointers.</small>
+                    </div>
+                    <div class="roadmap-module">
+                        <strong>2.3 Memória Dinâmica</strong>
+                        <small>Operadores `new` e `delete`, Vazamento de Memória.</small>
+                    </div>
+                    <div class="roadmap-module">
+                        <strong>2.4 Estruturas de Dados da STL</strong>
+                        <small>`std::vector`, `std::map`, `std::set`, Iteradores.</small>
+                    </div>
+                    <div class="roadmap-module">
+                        <strong>2.5 Enumerações e Structs</strong>
+                        <small>`enum class`, `struct` básicas.</small>
+                    </div>
+                </div>
+
+                <div class="roadmap-level">
+                    <h3>Nível 3: Avançado e POO (Pré-requisito: Nível 2)</h3>
+                    <div class="roadmap-module">
+                        <strong>3.1 Classes e Objetos</strong>
+                        <small>Definição, Atributos, Métodos, Encapsulamento, Construtores/Destrutores.</small>
+                    </div>
+                    <div class="roadmap-module">
+                        <strong>3.2 Herança e Polimorfismo</strong>
+                        <small>Herança Simples/Múltipla, Funções Virtuais, Classes Abstratas.</small>
+                    </div>
+                    <div class="roadmap-module">
+                        <strong>3.3 Sobrecarga de Operadores</strong>
+                        <small>Sobrecarga Aritmética, Comparação, I/O (`<<`, `>>`).</small>
+                    </div>
+                    <div class="roadmap-module">
+                        <strong>3.4 Templates</strong>
+                        <small>Templates de Função e Classe, Especialização.</small>
+                    </div>
+                    <div class="roadmap-module">
+                        <strong>3.5 Exceções</strong>
+                        <small>`try`, `catch`, `throw`, Hierarquia.</small>
+                    </div>
+                    <div class="roadmap-module">
+                        <strong>3.6 Conceitos Avançados</strong>
+                        <small>Namespaces, Lambdas, Move Semantics, RAII, Const Correctness.</small>
+                    </div>
+                </div>
+
+                <div class="roadmap-level">
+                    <h3>Nível 4: C++ Específico para Unreal Engine (Pré-requisito: Nível 3)</h3>
+                    <div class="roadmap-module">
+                        <strong>4.1 Fundamentos Unreal</strong>
+                        <small>Macros (`UPROPERTY`, `UFUNCTION`), Tipos Unreal (`TArray`, `FString`), Sistema de Reflexão.</small>
+                    </div>
+                    <div class="roadmap-module">
+                        <strong>4.2 Componentes e Lógica de Jogo</strong>
+                        <small>Actors, Components, Delegates, Timers, Garbage Collection (`UObject`).</small>
+                    </div>
+                    <div class="roadmap-module">
+                        <strong>4.3 Projeto Final</strong>
+                        <small>Implementação de um jogo completo em Unreal Engine.</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 40px;">
+                <h3>Recursos Adicionais</h3>
+                <p>Acesse materiais de referência rápida e guias de consulta:</p>
+                <ul>
+                    <li><a href="recursos/cheatsheets/tipos-dados.md">Cheatsheet: Tipos de Dados e Tamanhos</a></li>
+                    <li><a href="recursos/cheatsheets/stl-referencia.md">Cheatsheet: Referência Rápida da STL</a></li>
+                    <li><a href="recursos/cheatsheets/ponteiros-guia.md">Guia Visual de Ponteiros e Memória</a></li>
+                    <li><a href="recursos/cheatsheets/unreal-macros.md">Referência de Macros Essenciais do Unreal</a></li>
+                    <li><a href="recursos/glossario.md">Glossário de Termos de Programação</a></li>
+                </ul>
+            </div>
+
+            <div class="nav-buttons">
+                <a href="01-Fundamentos/modulo.html" class="next">Começar o Curso &raquo;</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

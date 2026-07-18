@@ -1,0 +1,32 @@
+{
+  "name": "UMG_RadialMenu",
+  "parent_class": "UserWidget",
+  "template_id": "radial_menu",
+  "category": "HUD",
+  "variables": [],
+  "components": [
+    {
+      "name": "CanvasPanel_0",
+      "type": "CanvasPanel"
+    },
+    {
+      "name": "MenuRadial",
+      "type": "Image"
+    },
+    {
+      "name": "Selection",
+      "type": "Image"
+    },
+    {
+      "name": "BorderSelection",
+      "type": "Image"
+    }
+  ],
+  "events": [],
+  "functions": [],
+  "graph_sections": [],
+  "interfaces": [],
+  "structs_used": [],
+  "key_patterns": {},
+  "source_file": "UMG_RadialMenu.md"
+}

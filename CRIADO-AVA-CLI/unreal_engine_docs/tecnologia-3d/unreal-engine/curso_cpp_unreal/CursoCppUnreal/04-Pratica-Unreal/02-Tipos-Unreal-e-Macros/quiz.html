@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: Tipos Unreal e Macros</title>
+    <link rel="stylesheet" href="../../recursos/css/estilo.css">
+    <script src="../../recursos/js/quiz.js" defer></script>
+</head>
+<body>
+    <button id="dark-mode-toggle">Alternar Modo Escuro</button>
+    <header>
+        <h1>Quiz: Tipos Unreal e Macros</h1>
+        <p>Teste seus conhecimentos sobre a linguagem estendida do C++ na Unreal Engine.</p>
+    </header>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Início</a> <span>&gt;</span> <a href="../modulo.html">Módulo 04</a> <span>&gt;</span> Quiz
+        </div>
+
+        <div class="content-area">
+            <h2 id="quiz-titulo">Autoavaliação: Tipos Unreal e Macros</h2>
+            <p>Responda às questões abaixo e clique em "Verificar Respostas" para receber feedback imediato.</p>
+
+            <form id="quiz-form">
+                <!-- Questão 1: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="FName" data-explanation="FName é imutável e otimizado para comparação rápida (hashing), sendo ideal para identificadores.">
+                    <h4>Questão 1 (Múltipla Escolha): Qual tipo de string da Unreal é o mais eficiente para ser usado como identificador único de um recurso (ex: nome de uma animação)?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q0" value="FString"> FString</label>
+                        <label><input type="radio" name="q0" value="FText"> FText</label>
+                        <label><input type="radio" name="q0" value="FName"> FName</label>
+                        <label><input type="radio" name="q0" value="std::string"> std::string</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 2: Verdadeiro/Falso -->
+                <div class="quiz-question" data-correct-answer="Verdadeiro" data-explanation="TArray é o equivalente do std::vector, oferecendo um array dinâmico otimizado para o motor.">
+                    <h4>Questão 2 (Verdadeiro/Falso): O container `TArray<T>` da Unreal Engine é o equivalente funcional do `std::vector<T>` do C++ padrão.</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q1" value="Verdadeiro"> Verdadeiro</label>
+                        <label><input type="radio" name="q1" value="Falso"> Falso</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 3: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="BlueprintCallable" data-explanation="BlueprintCallable permite que o método seja chamado a partir de um Blueprint.">
+                    <h4>Questão 3 (Múltipla Escolha): Qual especificador de `UFUNCTION` permite que um método C++ seja executado a partir de um nó de Blueprint?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q2" value="BlueprintPure"> BlueprintPure</label>
+                        <label><input type="radio" name="q2" value="BlueprintReadWrite"> BlueprintReadWrite</label>
+                        <label><input type="radio" name="q2" value="BlueprintCallable"> BlueprintCallable</label>
+                        <label><input type="radio" name="q2" value="EditAnywhere"> EditAnywhere</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 4: Exercício de Código (Debug) -->
+                <div class="quiz-question" data-correct-answer="GENERATED_BODY()" data-explanation="A macro GENERATED_BODY() é obrigatória em todas as classes e structs que usam macros de reflexão.">
+                    <h4>Questão 4 (Exercício de Código): Qual macro é obrigatória dentro do corpo de uma `UCLASS` ou `USTRUCT`?</h4>
+                    <pre><code>UCLASS()
+class AMinhaClasse : public AActor
+{
+    [MACRO]
+    // ...
+};</code></pre>
+                    <textarea rows="1" name="q3" placeholder="Insira a macro..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 5: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="VisibleAnywhere" data-explanation="VisibleAnywhere torna a variável visível, mas não editável, no editor.">
+                    <h4>Questão 5 (Múltipla Escolha): Qual especificador de `UPROPERTY` torna uma variável visível no editor, mas impede que o designer a modifique?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q4" value="EditAnywhere"> EditAnywhere</label>
+                        <label><input type="radio" name="q4" value="BlueprintReadOnly"> BlueprintReadOnly</label>
+                        <label><input type="radio" name="q4" value="VisibleAnywhere"> VisibleAnywhere</label>
+                        <label><input type="radio" name="q4" value="BlueprintReadWrite"> BlueprintReadWrite</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 6: Verdadeiro/Falso -->
+                <div class="quiz-question" data-correct-answer="Falso" data-explanation="O `FText` é usado para texto que será exibido ao usuário e suporta localização. O `FString` é para manipulação de texto interno.">
+                    <h4>Questão 6 (Verdadeiro/Falso): O tipo `FString` deve ser usado para todo o texto que será exibido na interface do usuário (UI).</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q5" value="Verdadeiro"> Verdadeiro</label>
+                        <label><input type="radio" name="q5" value="Falso"> Falso</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 7: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="Category" data-explanation="O especificador 'Category' organiza as variáveis no painel de detalhes do editor.">
+                    <h4>Questão 7 (Múltipla Escolha): Qual especificador de `UPROPERTY` é usado para agrupar variáveis no painel de detalhes do editor?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q6" value="Group"> Group</label>
+                        <label><input type="radio" name="q6" value="Category"> Category</label>
+                        <label><input type="radio" name="q6" value="Section"> Section</label>
+                        <label><input type="radio" name="q6" value="BlueprintType"> BlueprintType</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 8: Exercício de Código (Debug) -->
+                <div class="quiz-question" data-correct-answer="BlueprintPure" data-explanation="BlueprintPure é usado para métodos que não alteram o estado do objeto (não têm efeitos colaterais) e são executados sem pinos de execução no Blueprint.">
+                    <h4>Questão 8 (Exercício de Código): Qual especificador de `UFUNCTION` deve ser usado para um método `int GetVidaAtual() const`?</h4>
+                    <pre><code>UFUNCTION([ESPECIFICADOR], Category = "Status")
+int GetVidaAtual() const;</code></pre>
+                    <textarea rows="1" name="q7" placeholder="Insira o especificador..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 9: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="TMap" data-explanation="TMap é o container chave-valor da Unreal, equivalente ao std::map.">
+                    <h4>Questão 9 (Múltipla Escolha): Qual container da Unreal Engine é o mais adequado para armazenar um inventário onde você mapeia um `FName` (ID do item) a um `int` (quantidade)?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q8" value="TArray"> TArray</label>
+                        <label><input type="radio" name="q8" value="TSet"> TSet</label>
+                        <label><input type="radio" name="q8" value="TMap"> TMap</label>
+                        <label><input type="radio" name="q8" value="std::map"> std::map</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 10: Questão Conceitual Aplicada -->
+                <div class="quiz-question" data-correct-answer="A macro TEXT() é usada para converter literais de string C++ (const char*) em literais de string da Unreal (const TCHAR*), garantindo que a string seja tratada corretamente pelo motor, especialmente em relação à codificação (Unicode)." data-explanation="A macro TEXT() é essencial para a compatibilidade de strings literais no C++ da Unreal.">
+                    <h4>Questão 10 (Conceitual Aplicada): Qual é a função da macro `TEXT()` ao lidar com strings literais no C++ da Unreal Engine?</h4>
+                    <textarea rows="3" name="q9" placeholder="Responda aqui..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Verificar Respostas</button>
+            </form>
+            <div id="quiz-result"></div>
+
+            <div class="nav-buttons">
+                <a href="../modulo.html" class="prev">&laquo; Voltar ao Módulo</a>
+                <a href="../03-Projeto-Final-FPS/teoria.md" class="next">Próxima Lição: Projeto Final FPS &raquo;</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

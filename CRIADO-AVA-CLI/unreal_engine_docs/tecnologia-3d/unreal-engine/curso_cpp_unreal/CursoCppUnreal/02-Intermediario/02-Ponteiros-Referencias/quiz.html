@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: Ponteiros e Referências</title>
+    <link rel="stylesheet" href="../../recursos/css/estilo.css">
+    <script src="../../recursos/js/quiz.js" defer></script>
+</head>
+<body>
+    <button id="dark-mode-toggle">Alternar Modo Escuro</button>
+    <header>
+        <h1>Quiz: Ponteiros e Referências</h1>
+        <p>Teste seus conhecimentos sobre o gerenciamento de memória em C++.</p>
+    </header>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Início</a> <span>&gt;</span> <a href="../modulo.html">Módulo 02</a> <span>&gt;</span> Quiz
+        </div>
+
+        <div class="content-area">
+            <h2 id="quiz-titulo">Autoavaliação: Ponteiros e Referências</h2>
+            <p>Responda às questões abaixo e clique em "Verificar Respostas" para receber feedback imediato.</p>
+
+            <form id="quiz-form">
+                <!-- Questão 1: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="O endereço de memória da variável" data-explanation="O operador '&' (Address-of) retorna o endereço de memória onde a variável está armazenada.">
+                    <h4>Questão 1 (Múltipla Escolha): O que o operador `&` (e-comercial) retorna quando aplicado a uma variável?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q0" value="O valor da variável"> O valor da variável</label>
+                        <label><input type="radio" name="q0" value="O endereço de memória da variável"> O endereço de memória da variável</label>
+                        <label><input type="radio" name="q0" value="O tipo de dado da variável"> O tipo de dado da variável</label>
+                        <label><input type="radio" name="q0" value="O tamanho da variável"> O tamanho da variável</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 2: Verdadeiro/Falso -->
+                <div class="quiz-question" data-correct-answer="Falso" data-explanation="Uma referência deve ser inicializada no momento da declaração e não pode ser reatribuída para ser um apelido de outra variável.">
+                    <h4>Questão 2 (Verdadeiro/Falso): Uma referência (`&`) pode ser reatribuída para se tornar um apelido de uma variável diferente após sua inicialização.</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q1" value="Verdadeiro"> Verdadeiro</label>
+                        <label><input type="radio" name="q1" value="Falso"> Falso</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 3: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="Desreferência" data-explanation="O operador '*' quando usado em um ponteiro é o operador de desreferência, que acessa o valor armazenado no endereço apontado.">
+                    <h4>Questão 3 (Múltipla Escolha): Qual é o termo usado para descrever a ação de acessar o valor armazenado no endereço de memória contido em um ponteiro?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q2" value="Atribuição"> Atribuição</label>
+                        <label><input type="radio" name="q2" value="Referência"> Referência</label>
+                        <label><input type="radio" name="q2" value="Desreferência"> Desreferência</label>
+                        <label><input type="radio" name="q2" value="Indexação"> Indexação</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 4: Exercício de Código (Debug) -->
+                <div class="quiz-question" data-correct-answer="20" data-explanation="O ponteiro 'ptr' aponta para 'a' (valor 10). A linha '*ptr = 20;' altera o valor de 'a' para 20.">
+                    <h4>Questão 4 (Exercício de Código): Qual será o valor final da variável `a`?</h4>
+                    <pre><code>int a = 10;
+int* ptr = &a;
+*ptr = 20;
+// std::cout << a;</code></pre>
+                    <textarea rows="1" name="q3" placeholder="Insira o valor final..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 5: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="Ponteiro" data-explanation="Apenas ponteiros podem ser inicializados com 'nullptr' para indicar que não estão apontando para nenhum objeto válido. Referências devem sempre ser inicializadas.">
+                    <h4>Questão 5 (Múltipla Escolha): Qual dos seguintes pode ser inicializado com `nullptr`?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q4" value="Referência"> Referência</label>
+                        <label><input type="radio" name="q4" value="Ponteiro"> Ponteiro</label>
+                        <label><input type="radio" name="q4" value="Variável int"> Variável int</label>
+                        <label><input type="radio" name="q4" value="Variável bool"> Variável bool</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 6: Verdadeiro/Falso -->
+                <div class="quiz-question" data-correct-answer="Verdadeiro" data-explanation="Na maioria dos contextos, o nome de um array estático é convertido implicitamente em um ponteiro para o seu primeiro elemento, permitindo a aritmética de ponteiros.">
+                    <h4>Questão 6 (Verdadeiro/Falso): O nome de um array estático em C++ pode ser tratado como um ponteiro para o seu primeiro elemento.</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q5" value="Verdadeiro"> Verdadeiro</label>
+                        <label><input type="radio" name="q5" value="Falso"> Falso</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 7: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="Passagem por referência" data-explanation="A passagem por referência (`int&`) é o método mais limpo e seguro para permitir que uma função modifique o valor de uma variável externa sem a necessidade de ponteiros.">
+                    <h4>Questão 7 (Múltipla Escolha): Qual método de passagem de parâmetro é o mais recomendado para permitir que uma função altere o valor de uma variável externa, mantendo a sintaxe de uso limpa?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q6" value="Passagem por valor"> Passagem por valor</label>
+                        <label><input type="radio" name="q6" value="Passagem por ponteiro"> Passagem por ponteiro</label>
+                        <label><input type="radio" name="q6" value="Passagem por referência"> Passagem por referência</label>
+                        <label><input type="radio" name="q6" value="Passagem por cópia"> Passagem por cópia</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 8: Exercício de Código (Debug) -->
+                <div class="quiz-question" data-correct-answer="30" data-explanation="O array é {10, 20, 30, 40}. O nome do array 'arr' é o endereço do elemento 0. A expressão '*(arr + 2)' usa aritmética de ponteiros para acessar o elemento no índice 2, que é 30.">
+                    <h4>Questão 8 (Exercício de Código): Qual será o valor impresso?</h4>
+                    <pre><code>int arr[] = {10, 20, 30, 40};
+std::cout << *(arr + 2);</code></pre>
+                    <textarea rows="1" name="q7" placeholder="Insira o valor final..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 9: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="É uma variável que armazena o endereço de memória de outra variável." data-explanation="A definição fundamental de um ponteiro é que ele é uma variável que armazena um endereço de memória.">
+                    <h4>Questão 9 (Múltipla Escolha): Qual é a definição mais precisa de um ponteiro em C++?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q8" value="É uma variável que armazena o valor de outra variável."> É uma variável que armazena o valor de outra variável.</label>
+                        <label><input type="radio" name="q8" value="É uma variável que armazena o endereço de memória de outra variável."> É uma variável que armazena o endereço de memória de outra variável.</label>
+                        <label><input type="radio" name="q8" value="É um apelido para uma variável existente."> É um apelido para uma variável existente.</label>
+                        <label><input type="radio" name="q8" value="É um tipo de dado primitivo."> É um tipo de dado primitivo.</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 10: Questão Conceitual Aplicada -->
+                <div class="quiz-question" data-correct-answer="Ponteiros são essenciais para a comunicação entre objetos. Por exemplo, um 'ACharacter' (personagem) precisa de um ponteiro para seu 'UCameraComponent' (componente de câmera) para acessar e manipular a câmera. A verificação de 'nullptr' é crucial antes de usar o ponteiro para evitar falhas." data-explanation="Em Unreal, ponteiros são usados para referenciar outros objetos de jogo (Actors, Components), e a verificação de validade é uma prática de segurança fundamental.">
+                    <h4>Questão 10 (Conceitual Aplicada): Em um jogo, por que é crucial verificar se um ponteiro é `nullptr` antes de tentar usá-lo? Dê um exemplo de um objeto de jogo que usaria um ponteiro.</h4>
+                    <textarea rows="3" name="q9" placeholder="Responda aqui..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Verificar Respostas</button>
+            </form>
+            <div id="quiz-result"></div>
+
+            <div class="nav-buttons">
+                <a href="../modulo.html" class="prev">&laquo; Voltar ao Módulo</a>
+                <a href="../03-Memoria-Dinamica/teoria.md" class="next">Próxima Lição: Memória Dinâmica &raquo;</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,57 @@
+{
+  "name": "BP_AmmoBox",
+  "parent_class": "BP_PickupObject_C",
+  "template_id": "ammo_box",
+  "category": "General",
+  "variables": [
+    {
+      "name": "Ammo Type",
+      "type": "byte (AmmoType)"
+    },
+    {
+      "name": "Weapon ID",
+      "type": "name"
+    },
+    {
+      "name": "Amount Ammo",
+      "type": "int"
+    },
+    {
+      "name": "Weapon Type",
+      "type": "byte (ALS_OverlayState)"
+    },
+    {
+      "name": "Projectile Type",
+      "type": "class (BP_ProjectileBase_C)"
+    }
+  ],
+  "components": [
+    {
+      "name": "Box",
+      "type": "SphereComponent"
+    }
+  ],
+  "events": [
+    "`Interact`",
+    "`ResetDoOnce`"
+  ],
+  "functions": [
+    "`K2_DestroyActor()`",
+    "`AmmoPickup()`",
+    "`ExecuteUbergraph_BP_AmmoBox()`"
+  ],
+  "graph_sections": [],
+  "interfaces": [],
+  "structs_used": [],
+  "key_patterns": {
+    "has_replication": false,
+    "has_timers": false,
+    "has_overlap_events": false,
+    "has_enhanced_input": false,
+    "has_timeline": false,
+    "has_data_tables": false,
+    "has_dynamic_material": false,
+    "has_camera_fade": false
+  },
+  "source_file": "BP_AmmoBox.md"
+}

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: STL Containers</title>
+    <link rel="stylesheet" href="../../recursos/css/estilo.css">
+    <script src="../../recursos/js/quiz.js" defer></script>
+</head>
+<body>
+    <button id="dark-mode-toggle">Alternar Modo Escuro</button>
+    <header>
+        <h1>Quiz: STL Containers</h1>
+        <p>Teste seus conhecimentos sobre as estruturas de dados da Standard Template Library.</p>
+    </header>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Início</a> <span>&gt;</span> <a href="../modulo.html">Módulo 02</a> <span>&gt;</span> Quiz
+        </div>
+
+        <div class="content-area">
+            <h2 id="quiz-titulo">Autoavaliação: STL Containers</h2>
+            <p>Responda às questões abaixo e clique em "Verificar Respostas" para receber feedback imediato.</p>
+
+            <form id="quiz-form">
+                <!-- Questão 1: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="std::vector" data-explanation="O 'std::vector' é o array dinâmico padrão do C++, oferecendo acesso rápido por índice e gerenciamento automático de tamanho.">
+                    <h4>Questão 1 (Múltipla Escolha): Qual container da STL é o mais recomendado para a maioria das coleções de dados, agindo como um array dinâmico?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q0" value="std::list"> std::list</label>
+                        <label><input type="radio" name="q0" value="std::map"> std::map</label>
+                        <label><input type="radio" name="q0" value="std::vector"> std::vector</label>
+                        <label><input type="radio" name="q0" value="std::queue"> std::queue</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 2: Verdadeiro/Falso -->
+                <div class="quiz-question" data-correct-answer="Falso" data-explanation="A inserção e remoção no meio de um 'std::vector' é lenta, pois requer o deslocamento de todos os elementos subsequentes. O 'std::list' é mais eficiente para essa operação.">
+                    <h4>Questão 2 (Verdadeiro/Falso): O `std::vector` é o container mais eficiente para inserção e remoção de elementos no meio da coleção.</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q1" value="Verdadeiro"> Verdadeiro</label>
+                        <label><input type="radio" name="q1" value="Falso"> Falso</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 3: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="std::map" data-explanation="O 'std::map' armazena pares chave-valor e é ideal para mapear um identificador (chave) a um objeto (valor).">
+                    <h4>Questão 3 (Múltipla Escolha): Qual container é ideal para armazenar um inventário onde você precisa mapear o nome de um item (string) à sua quantidade (int)?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q2" value="std::vector"> std::vector</label>
+                        <label><input type="radio" name="q2" value="std::stack"> std::stack</label>
+                        <label><input type="radio" name="q2" value="std::map"> std::map</label>
+                        <label><input type="radio" name="q2" value="std::queue"> std::queue</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 4: Exercício de Código (Debug) -->
+                <div class="quiz-question" data-correct-answer="3" data-explanation="O 'push_back' adiciona 3 elementos. O 'pop_back' remove o último (30). O tamanho final é 2.">
+                    <h4>Questão 4 (Exercício de Código): Qual será o tamanho final do `std::vector`?</h4>
+                    <pre><code>std::vector<int> v;
+v.push_back(10);
+v.push_back(20);
+v.push_back(30);
+v.pop_back();
+// std::cout << v.size();</code></pre>
+                    <textarea rows="1" name="q3" placeholder="Insira o valor final..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 5: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="std::stack" data-explanation="O 'std::stack' implementa o princípio LIFO (Last-In, First-Out), que é o que um sistema de 'Undo' (Desfazer) precisa.">
+                    <h4>Questão 5 (Múltipla Escolha): Qual container adaptador da STL é o mais adequado para implementar um sistema de 'Desfazer' (Undo System) em um jogo?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q4" value="std::queue"> std::queue</label>
+                        <label><input type="radio" name="q4" value="std::vector"> std::vector</label>
+                        <label><input type="radio" name="q4" value="std::stack"> std::stack</label>
+                        <label><input type="radio" name="q4" value="std::list"> std::list</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 6: Verdadeiro/Falso -->
+                <div class="quiz-question" data-correct-answer="Verdadeiro" data-explanation="O 'std::unordered_map' usa tabelas hash, o que geralmente resulta em tempo de acesso O(1) (constante), tornando-o mais rápido que o 'std::map' (O(log n)) quando a ordem não é importante.">
+                    <h4>Questão 6 (Verdadeiro/Falso): O `std::unordered_map` é geralmente mais rápido para busca do que o `std::map`, mas não mantém a ordem dos elementos.</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q5" value="Verdadeiro"> Verdadeiro</label>
+                        <label><input type="radio" name="q5" value="Falso"> Falso</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 7: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="TArray" data-explanation="O 'TArray' é o equivalente otimizado da Unreal Engine para o 'std::vector', sendo o container mais comum para coleções de objetos de jogo.">
+                    <h4>Questão 7 (Múltipla Escolha): Qual é o container da Unreal Engine que é o equivalente direto do `std::vector`?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q6" value="FString"> FString</label>
+                        <label><input type="radio" name="q6" value="TMap"> TMap</label>
+                        <label><input type="radio" name="q6" value="TArray"> TArray</label>
+                        <label><input type="radio" name="q6" value="TList"> TList</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 8: Exercício de Código (Debug) -->
+                <div class="quiz-question" data-correct-answer="Player1" data-explanation="O 'std::queue' é FIFO (First-In, First-Out). O 'front()' retorna o elemento que foi inserido primeiro, que é 'Player1'.">
+                    <h4>Questão 8 (Exercício de Código): Qual será o valor retornado por `fila.front()`?</h4>
+                    <pre><code>std::queue<std::string> fila;
+fila.push("Player1");
+fila.push("Player2");
+fila.push("Player3");
+// std::cout << fila.front();</code></pre>
+                    <textarea rows="1" name="q7" placeholder="Insira o valor final..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 9: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="Acesso rápido a elementos por índice." data-explanation="O 'std::vector' armazena elementos em memória contígua, o que permite acesso direto e rápido a qualquer elemento usando seu índice.">
+                    <h4>Questão 9 (Múltipla Escolha): Qual é a principal vantagem do `std::vector` sobre o `std::list`?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q8" value="Inserção e remoção rápida em qualquer posição."> Inserção e remoção rápida em qualquer posição.</label>
+                        <label><input type="radio" name="q8" value="Acesso rápido a elementos por índice."> Acesso rápido a elementos por índice.</label>
+                        <label><input type="radio" name="q8" value="Não usa memória contígua."> Não usa memória contígua.</label>
+                        <label><input type="radio" name="q8" value="Implementa o princípio LIFO."> Implementa o princípio LIFO.</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 10: Questão Conceitual Aplicada -->
+                <div class="quiz-question" data-correct-answer="Um 'std::map' (ou TMap da Unreal) seria ideal para armazenar dados de configuração de itens, onde a chave é o ID do item (int) e o valor é uma estrutura de dados (struct) contendo o nome, dano e custo do item." data-explanation="Containers associativos são perfeitos para dados de jogo que precisam ser acessados rapidamente por um identificador único.">
+                    <h4>Questão 10 (Conceitual Aplicada): Em um sistema de dados de jogo, como você usaria um container associativo (`std::map` ou `std::unordered_map`)?</h4>
+                    <textarea rows="3" name="q9" placeholder="Responda aqui..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Verificar Respostas</button>
+            </form>
+            <div id="quiz-result"></div>
+
+            <div class="nav-buttons">
+                <a href="../modulo.html" class="prev">&laquo; Voltar ao Módulo</a>
+                <a href="../projeto-integrador/desafio.md" class="next">Próximo: Projeto Integrador &raquo;</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

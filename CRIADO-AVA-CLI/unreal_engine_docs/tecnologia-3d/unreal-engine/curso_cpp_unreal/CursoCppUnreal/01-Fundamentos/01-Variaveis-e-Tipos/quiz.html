@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: Variáveis e Tipos de Dados</title>
+    <link rel="stylesheet" href="../../recursos/css/estilo.css">
+    <script src="../../recursos/js/quiz.js" defer></script>
+</head>
+<body>
+    <button id="dark-mode-toggle">Alternar Modo Escuro</button>
+    <header>
+        <h1>Quiz: Variáveis e Tipos de Dados</h1>
+        <p>Teste seus conhecimentos sobre os fundamentos do C++.</p>
+    </header>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Início</a> <span>&gt;</span> <a href="../modulo.html">Módulo 01</a> <span>&gt;</span> Quiz
+        </div>
+
+        <div class="content-area">
+            <h2 id="quiz-titulo">Autoavaliação: Variáveis e Tipos</h2>
+            <p>Responda às questões abaixo e clique em "Verificar Respostas" para receber feedback imediato.</p>
+
+            <form id="quiz-form">
+                <!-- Questão 1: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="int" data-explanation="O tipo 'int' é o mais comum para contagens e índices, sendo o padrão para a maioria dos números inteiros que não excedem 2 bilhões.">
+                    <h4>Questão 1 (Múltipla Escolha): Qual tipo de dado primitivo é o mais adequado para armazenar a contagem de inimigos em um nível de jogo (máximo de 500)?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q0" value="float"> float</label>
+                        <label><input type="radio" name="q0" value="long long"> long long</label>
+                        <label><input type="radio" name="q0" value="int"> int</label>
+                        <label><input type="radio" name="q0" value="bool"> bool</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 2: Verdadeiro/Falso -->
+                <div class="quiz-question" data-correct-answer="Falso" data-explanation="O tipo 'float' geralmente tem 4 bytes e oferece 6-7 dígitos de precisão, enquanto 'double' tem 8 bytes e 15-16 dígitos de precisão.">
+                    <h4>Questão 2 (Verdadeiro/Falso): O tipo `float` oferece mais precisão do que o tipo `double` para cálculos de ponto flutuante.</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q1" value="Verdadeiro"> Verdadeiro</label>
+                        <label><input type="radio" name="q1" value="Falso"> Falso</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 3: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="static_cast<int>(valor)" data-explanation="O 'static_cast' é a forma preferida e mais segura em C++ moderno para realizar conversões explícitas de tipos, como de 'float' para 'int'.">
+                    <h4>Questão 3 (Múltipla Escolha): Qual é a forma recomendada em C++ moderno para converter explicitamente um `float` chamado `valor` para um `int`?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q2" value="(int)valor"> (int)valor</label>
+                        <label><input type="radio" name="q2" value="int(valor)"> int(valor)</label>
+                        <label><input type="radio" name="q2" value="static_cast<int>(valor)"> static_cast&lt;int&gt;(valor)</label>
+                        <label><input type="radio" name="q2" value="valor.toInt()"> valor.toInt()</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 4: Exercício de Código (Completar) -->
+                <div class="quiz-question" data-correct-answer="1" data-explanation="O tipo 'bool' armazena 'true' ou 'false'. Quando impresso, 'true' é representado como 1 e 'false' como 0.">
+                    <h4>Questão 4 (Exercício de Código): Qual será a saída do seguinte código? (Apenas o número)</h4>
+                    <pre><code>bool is_game_over = true;
+std::cout << is_game_over;</code></pre>
+                    <textarea rows="1" name="q3" placeholder="Insira a saída esperada..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 5: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="O valor da variável 'a' será promovido para 'double' antes da divisão." data-explanation="Na divisão entre um 'int' e um 'double', o C++ promove o 'int' para 'double' (conversão implícita) para evitar perda de precisão, resultando em um 'double' como resultado.">
+                    <h4>Questão 5 (Múltipla Escolha): No código `int a = 10; double b = 4.0; double c = a / b;`, o que acontece antes da divisão?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q4" value="O valor da variável 'b' será truncado para 'int'."> O valor da variável 'b' será truncado para 'int'.</label>
+                        <label><input type="radio" name="q4" value="O valor da variável 'a' será promovido para 'double' antes da divisão."> O valor da variável 'a' será promovido para 'double' antes da divisão.</label>
+                        <label><input type="radio" name="q4" value="O compilador gerará um erro de tipo."> O compilador gerará um erro de tipo.</label>
+                        <label><input type="radio" name="q4" value="A divisão será feita como inteira e depois convertida para 'double'."> A divisão será feita como inteira e depois convertida para 'double'.</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 6: Verdadeiro/Falso -->
+                <div class="quiz-question" data-correct-answer="Verdadeiro" data-explanation="A macro UPROPERTY é essencial na Unreal Engine para que o sistema de reflexão do motor possa reconhecer e gerenciar a variável, permitindo que ela seja editável em Blueprints ou no editor.">
+                    <h4>Questão 6 (Verdadeiro/Falso): Na Unreal Engine, é necessário usar a macro `UPROPERTY` para que uma variável C++ seja acessível ou editável via Blueprints.</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q5" value="Verdadeiro"> Verdadeiro</label>
+                        <label><input type="radio" name="q5" value="Falso"> Falso</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 7: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="long long" data-explanation="O 'long long' é o tipo inteiro de maior capacidade (8 bytes, 64 bits) e é ideal para armazenar números que podem exceder o limite de um 'int' padrão, como a contagem total de frames de um jogo.">
+                    <h4>Questão 7 (Múltipla Escolha): Para armazenar a contagem total de frames renderizados em um jogo que pode rodar por milhares de horas, qual tipo de dado inteiro é o mais seguro para evitar overflow?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q6" value="short"> short</label>
+                        <label><input type="radio" name="q6" value="int"> int</label>
+                        <label><input type="radio" name="q6" value="long long"> long long</label>
+                        <label><input type="radio" name="q6" value="char"> char</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 8: Exercício de Código (Debug) -->
+                <div class="quiz-question" data-correct-answer="5" data-explanation="A divisão entre inteiros (11 / 2) resulta em 5, pois o C++ trunca a parte decimal. O resultado é então armazenado na variável 'resultado'.">
+                    <h4>Questão 8 (Exercício de Código): Qual será o valor final da variável `resultado`?</h4>
+                    <pre><code>int a = 11;
+int b = 2;
+int resultado = a / b;</code></pre>
+                    <textarea rows="1" name="q7" placeholder="Insira o valor final..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 9: Múltipla Escolha -->
+                <div class="quiz-question" data-correct-answer="Um valor de lixo (garbage value) da memória." data-explanation="Se uma variável local não é inicializada, ela contém o valor que estava anteriormente naquela posição de memória, conhecido como 'garbage value'. Usar esse valor leva a um comportamento indefinido do programa.">
+                    <h4>Questão 9 (Múltipla Escolha): Se você declarar uma variável `int pontuacao;` dentro de uma função e tentar usá-la antes de atribuir um valor, qual valor ela provavelmente conterá?</h4>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q8" value="O valor 0."> O valor 0.</label>
+                        <label><input type="radio" name="q8" value="Um valor de lixo (garbage value) da memória."> Um valor de lixo (garbage value) da memória.</label>
+                        <label><input type="radio" name="q8" value="O valor -1."> O valor -1.</label>
+                        <label><input type="radio" name="q8" value="O compilador gerará um erro de compilação."> O compilador gerará um erro de compilação.</label>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- Questão 10: Questão Conceitual Aplicada -->
+                <div class="quiz-question" data-correct-answer="O tipo 'float' é geralmente preferido para coordenadas e física na Unreal Engine devido ao seu bom equilíbrio entre precisão e desempenho, sendo mais rápido para processamento em GPUs." data-explanation="A Unreal Engine usa o tipo 'float' (32-bit) para a maioria dos cálculos de posição e física (FVector, FRotator) por ser mais rápido para processamento em GPU e geralmente suficiente para a precisão de um jogo.">
+                    <h4>Questão 10 (Conceitual Aplicada): Em termos de Game Development (Unreal Engine), por que o tipo `float` é frequentemente preferido ao `double` para armazenar coordenadas de posição (X, Y, Z) de um objeto?</h4>
+                    <textarea rows="3" name="q9" placeholder="Responda aqui..."></textarea>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Verificar Respostas</button>
+            </form>
+            <div id="quiz-result"></div>
+
+            <div class="nav-buttons">
+                <a href="../modulo.html" class="prev">&laquo; Voltar ao Módulo</a>
+                <a href="../02-Operadores/teoria.md" class="next">Próxima Lição: Operadores &raquo;</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

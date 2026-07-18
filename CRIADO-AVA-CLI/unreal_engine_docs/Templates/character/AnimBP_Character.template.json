@@ -1,0 +1,96 @@
+{
+  "name": "AnimBP_Character",
+  "parent_class": "AnimInstance",
+  "template_id": "anim_bp_character",
+  "category": "Character",
+  "variables": [
+    {
+      "name": "BP Character",
+      "type": "object (BP_Character_C)"
+    },
+    {
+      "name": "Speed",
+      "type": "real (double)"
+    },
+    {
+      "name": "isCrouching",
+      "type": "bool"
+    },
+    {
+      "name": "IsFalling",
+      "type": "bool"
+    },
+    {
+      "name": "Jumping",
+      "type": "bool"
+    },
+    {
+      "name": "Damage Anim",
+      "type": "bool"
+    },
+    {
+      "name": "Dead",
+      "type": "bool"
+    },
+    {
+      "name": "Tired Animation",
+      "type": "bool"
+    }
+  ],
+  "components": [],
+  "events": [
+    "`BlueprintUpdateAnimation`",
+    "`DamageAnimation`",
+    "`IsDead`",
+    "`IsJumping`",
+    "`IsJetpack`",
+    "`Death`",
+    "`SetArmour`",
+    "`SetDamage`",
+    "`SetHealth`",
+    "`EvaluateGraphExposedInputs_ExecuteUbergraph_AnimBP_Character_AnimGraphNode_BlendListByBool_217FDBBC448BFB42ED1FEE900A38312C`",
+    "`EvaluateGraphExposedInputs_ExecuteUbergraph_AnimBP_Character_AnimGraphNode_BlendListByBool_285F6FB54BBD1AB593F3FF90F2F33C15`",
+    "`EvaluateGraphExposedInputs_ExecuteUbergraph_AnimBP_Character_AnimGraphNode_BlendSpacePlayer_3494DA294F2E0F7DB112129342382A5D`",
+    "`EvaluateGraphExposedInputs_ExecuteUbergraph_AnimBP_Character_AnimGraphNode_BlendSpacePlayer_D4B674294BE5CD140339B7879C872F8B`",
+    "`EvaluateGraphExposedInputs_ExecuteUbergraph_AnimBP_Character_AnimGraphNode_BlendListByBool_A4C542BB4515D522F09F16B56C857A46`",
+    "`EvaluateGraphExposedInputs_ExecuteUbergraph_AnimBP_Character_AnimGraphNode_BlendListByBool_F69BC7614FDEAE01713BFEBB2DCB59D9`",
+    "`EvaluateGraphExposedInputs_ExecuteUbergraph_AnimBP_Character_AnimGraphNode_BlendSpacePlayer_F755560646B331A7E50215A2CB3ABB5B`",
+    "`EvaluateGraphExposedInputs_ExecuteUbergraph_AnimBP_Character_AnimGraphNode_BlendSpacePlayer_1D2478444FF12A70C87FD7A7B09AE22B`",
+    "`EvaluateGraphExposedInputs_ExecuteUbergraph_AnimBP_Character_AnimGraphNode_BlendListByBool_D8BA7D524B5871E8AFCC35BAFC18AD7C`",
+    "`EvaluateGraphExposedInputs_ExecuteUbergraph_AnimBP_Character_AnimGraphNode_TransitionResult_3001E7BF4E0C9CE45A411D8D6A60B41A`",
+    "`EvaluateGraphExposedInputs_ExecuteUbergraph_AnimBP_Character_AnimGraphNode_TransitionResult_BDA216D948595D831B75A8AC837E87EE`",
+    "`EvaluateGraphExposedInputs_ExecuteUbergraph_AnimBP_Character_AnimGraphNode_TransitionResult_58A8798B4CEB9934C7F28AB10394DDE5`",
+    "`EvaluateGraphExposedInputs_ExecuteUbergraph_AnimBP_Character_AnimGraphNode_TransitionResult_6B0189F04CAC9910806362A28484482A`",
+    "`EvaluateGraphExposedInputs_ExecuteUbergraph_AnimBP_Character_AnimGraphNode_TransitionResult_0F573C284B13097B079C629D67B838B1`",
+    "`EvaluateGraphExposedInputs_ExecuteUbergraph_AnimBP_Character_AnimGraphNode_TransitionResult_47110DEA40F4F32CF2C304B6AF155567`",
+    "`EvaluateGraphExposedInputs_ExecuteUbergraph_AnimBP_Character_AnimGraphNode_TransitionResult_7F22947548037690DC855D8E9769031A`",
+    "`EvaluateGraphExposedInputs_ExecuteUbergraph_AnimBP_Character_AnimGraphNode_TransitionResult_68A7E5D8484CB469455E1DA513DF427D`"
+  ],
+  "functions": [
+    "`Greater_DoubleDouble()`",
+    "`TryGetPawnOwner()`",
+    "`GetVelocity()`",
+    "`VSize()`",
+    "`GetMovementComponent()`",
+    "`IsCrouching()`",
+    "`IsFalling()`",
+    "`Delay()`",
+    "`Not_PreBool()`",
+    "`Less_DoubleDouble()`",
+    "`ExecuteUbergraph_AnimBP_Character()`"
+  ],
+  "graph_sections": [],
+  "interfaces": [],
+  "structs_used": [],
+  "key_patterns": {
+    "has_replication": false,
+    "has_timers": false,
+    "has_overlap_events": false,
+    "has_enhanced_input": false,
+    "has_timeline": false,
+    "has_data_tables": false,
+    "has_dynamic_material": false,
+    "has_camera_fade": false
+  },
+  "source_file": "AnimBP_Character.md"
+}

@@ -1,0 +1,481 @@
+/* Estilo Global para o Curso de C++ para Unreal Engine */
+
+:root {
+    --cor-primaria: #007bff; /* Azul primário */
+    --cor-secundaria: #6c757d; /* Cinza secundário */
+    --cor-fundo: #f8f9fa; /* Fundo claro */
+    --cor-texto: #212529; /* Texto escuro */
+    --cor-fundo-codigo: #e9ecef; /* Fundo para blocos de código */
+    --cor-destaque: #ffc107; /* Amarelo para destaque */
+    --cor-sucesso: #28a745; /* Verde para sucesso */
+    --cor-erro: #dc3545; /* Vermelho para erro */
+    --cor-borda: #dee2e6; /* Borda leve */
+    --cor-dark-fundo: #212529;
+    --cor-dark-texto: #f8f9fa;
+    --cor-dark-fundo-codigo: #343a40;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: var(--cor-texto);
+    background-color: var(--cor-fundo);
+    margin: 0;
+    padding: 0;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Dark Mode */
+body.dark-mode {
+    color: var(--cor-dark-texto);
+    background-color: var(--cor-dark-fundo);
+}
+
+body.dark-mode .container,
+body.dark-mode .sidebar,
+body.dark-mode .card,
+body.dark-mode pre,
+body.dark-mode code {
+    background-color: var(--cor-dark-fundo);
+    color: var(--cor-dark-texto);
+    border-color: #495057;
+}
+
+body.dark-mode pre,
+body.dark-mode code {
+    background-color: var(--cor-dark-fundo-codigo);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    background-color: var(--cor-primaria);
+    color: white;
+    padding: 15px 0;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.5em;
+}
+
+/* Layout Principal */
+.main-content {
+    display: flex;
+    gap: 20px;
+}
+
+.sidebar {
+    width: 250px;
+    flex-shrink: 0;
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 20px;
+    height: fit-content;
+}
+
+.content-area {
+    flex-grow: 1;
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Navegação */
+.sidebar h3 {
+    color: var(--cor-primaria);
+    border-bottom: 2px solid var(--cor-borda);
+    padding-bottom: 5px;
+    margin-top: 0;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li a {
+    display: block;
+    padding: 8px 0;
+    text-decoration: none;
+    color: var(--cor-texto);
+    border-bottom: 1px dotted var(--cor-borda);
+    transition: color 0.2s;
+}
+
+.sidebar ul li a:hover {
+    color: var(--cor-primaria);
+}
+
+.sidebar ul li:last-child a {
+    border-bottom: none;
+}
+
+/* Tipografia e Elementos */
+h2, h3, h4 {
+    color: var(--cor-primaria);
+    border-bottom: 1px solid var(--cor-borda);
+    padding-bottom: 5px;
+    margin-top: 25px;
+}
+
+a {
+    color: var(--cor-primaria);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Blocos de Código */
+pre {
+    background-color: var(--cor-fundo-codigo);
+    padding: 15px;
+    border-radius: 5px;
+    overflow-x: auto;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 0.9em;
+    border: 1px solid var(--cor-borda);
+}
+
+code {
+    background-color: var(--cor-fundo-codigo);
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: 'Consolas', 'Monaco', monospace;
+}
+
+/* Tabelas */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+table th, table td {
+    border: 1px solid var(--cor-borda);
+    padding: 10px;
+    text-align: left;
+}
+
+table th {
+    background-color: var(--cor-primaria);
+    color: white;
+}
+
+/* Cards e Destaques */
+.card {
+    background-color: #fff;
+    border: 1px solid var(--cor-borda);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.tip, .warning, .example {
+    padding: 15px;
+    margin: 15px 0;
+    border-left: 5px solid;
+    border-radius: 5px;
+}
+
+.tip {
+    border-color: var(--cor-sucesso);
+    background-color: #e6ffe6;
+}
+
+.warning {
+    border-color: var(--cor-erro);
+    background-color: #ffe6e6;
+}
+
+.example {
+    border-color: var(--cor-destaque);
+    background-color: #fffbe6;
+}
+
+/* Botões de Navegação */
+.nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+    padding-top: 15px;
+    border-top: 1px solid var(--cor-borda);
+}
+
+.nav-buttons a {
+    padding: 10px 20px;
+    background-color: var(--cor-primaria);
+    color: white;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.nav-buttons a:hover {
+    background-color: #0056b3;
+    text-decoration: none;
+}
+
+.nav-buttons .prev {
+    order: 1;
+}
+
+.nav-buttons .next {
+    order: 2;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+    padding: 10px 0;
+    font-size: 0.9em;
+    color: var(--cor-secundaria);
+}
+
+.breadcrumb a {
+    color: var(--cor-secundaria);
+}
+
+.breadcrumb span {
+    margin: 0 5px;
+}
+
+/* Quiz */
+.quiz-question {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid var(--cor-borda);
+    border-radius: 5px;
+}
+
+.quiz-options label {
+    display: block;
+    margin: 5px 0;
+    cursor: pointer;
+}
+
+.quiz-feedback {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    display: none;
+}
+
+.quiz-feedback.correct {
+    background-color: #d4edda;
+    color: #155724;
+    border-color: #c3e6cb;
+}
+
+.quiz-feedback.incorrect {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-color: #f5c6cb;
+}
+
+#quiz-result {
+    margin-top: 20px;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+/* Toggle Dark Mode */
+#dark-mode-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px;
+    background-color: var(--cor-secundaria);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 1000;
+}
+
+#dark-mode-toggle:hover {
+    background-color: #5a6268;
+}
+
+/* Estilos para o Roadmap */
+.roadmap-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.roadmap-level {
+    border: 1px solid var(--cor-borda);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.roadmap-level h3 {
+    border-bottom: 2px solid var(--cor-primaria);
+    padding-bottom: 10px;
+    margin-top: 0;
+}
+
+.roadmap-module {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-left: 5px solid var(--cor-destaque);
+    background-color: var(--cor-fundo-codigo);
+    border-radius: 4px;
+}
+
+.roadmap-module strong {
+    display: block;
+    font-size: 1.1em;
+    margin-bottom: 5px;
+}
+
+.roadmap-module small {
+    color: var(--cor-secundaria);
+}
+
+.roadmap-module.completed {
+    border-left-color: var(--cor-sucesso);
+}
+
+.roadmap-module.current {
+    border-left-color: var(--cor-erro);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(255, 193, 7, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
+}
+
+/* Estilos para a Tabela de Roadmap */
+.roadmap-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+.roadmap-table th, .roadmap-table td {
+    border: 1px solid var(--cor-borda);
+    padding: 12px;
+    text-align: left;
+}
+
+.roadmap-table th {
+    background-color: var(--cor-primaria);
+    color: white;
+    font-weight: bold;
+}
+
+.roadmap-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+body.dark-mode .roadmap-table tr:nth-child(even) {
+    background-color: #343a40;
+}
+
+.roadmap-table .level-basic {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.roadmap-table .level-intermediate {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.roadmap-table .level-advanced {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+body.dark-mode .roadmap-table .level-basic {
+    background-color: #155724;
+    color: #d4edda;
+}
+
+body.dark-mode .roadmap-table .level-intermediate {
+    background-color: #856404;
+    color: #fff3cd;
+}
+
+body.dark-mode .roadmap-table .level-advanced {
+    background-color: #721c24;
+    color: #f8d7da;
+}
+
+/* Estilos para o Conteúdo de Markdown */
+.markdown-content img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 15px auto;
+    border-radius: 5px;
+}
+
+.markdown-content blockquote {
+    border-left: 4px solid var(--cor-destaque);
+    padding: 10px 15px;
+    margin: 15px 0;
+    background-color: #fffbe6;
+    border-radius: 0 5px 5px 0;
+}
+
+body.dark-mode .markdown-content blockquote {
+    background-color: #495057;
+    border-left-color: var(--cor-destaque);
+}
+
+/* Estilos para o Syntax Highlighting (Simulação) */
+.code-highlight {
+    color: #007bff; /* Variáveis */
+}
+
+.code-keyword {
+    color: #dc3545; /* Palavras-chave (if, for, class) */
+    font-weight: bold;
+}
+
+.code-type {
+    color: #28a745; /* Tipos (int, float, class name) */
+}
+
+.code-string {
+    color: #ffc107; /* Strings */
+}
+
+.code-comment {
+    color: #6c757d; /* Comentários */
+    font-style: italic;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .main-content {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        position: static;
+    }
+
+    .content-area {
+        padding: 15px;
+    }
+}

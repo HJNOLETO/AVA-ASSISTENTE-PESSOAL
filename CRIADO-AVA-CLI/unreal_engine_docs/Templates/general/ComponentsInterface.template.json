@@ -1,0 +1,24 @@
+{
+  "name": "ComponentsInterface",
+  "parent_class": "Interface",
+  "template_id": "components_interface",
+  "category": "General",
+  "variables": [],
+  "components": [],
+  "events": [],
+  "functions": [],
+  "graph_sections": [],
+  "interfaces": [],
+  "structs_used": [],
+  "key_patterns": {
+    "has_replication": false,
+    "has_timers": false,
+    "has_overlap_events": false,
+    "has_enhanced_input": false,
+    "has_timeline": false,
+    "has_data_tables": false,
+    "has_dynamic_material": false,
+    "has_camera_fade": false
+  },
+  "source_file": "ComponentsInterface.md"
+}

@@ -1,0 +1,97 @@
+{
+  "name": "W_Main",
+  "parent_class": "UserWidget",
+  "template_id": "main",
+  "category": "General",
+  "variables": [
+    {
+      "name": "Dinheiro",
+      "type": "int"
+    },
+    {
+      "name": "NormalColor",
+      "type": "struct (LinearColor)"
+    },
+    {
+      "name": "NoAmmoColor",
+      "type": "struct (LinearColor)"
+    },
+    {
+      "name": "Player",
+      "type": "object (ALS_Base_CharacterBP_C)"
+    },
+    {
+      "name": "NorthYaw",
+      "type": "real (double)"
+    }
+  ],
+  "components": [
+    {
+      "name": "Box",
+      "type": "SphereComponent"
+    },
+    {
+      "name": "Mesh",
+      "type": "StaticMeshComponent"
+    },
+    {
+      "name": "Magazine",
+      "type": "StaticMeshComponent"
+    },
+    {
+      "name": "WeaponMesh",
+      "type": "StaticMeshComponent"
+    }
+  ],
+  "events": [
+    "`SetWeaponDataHUD`",
+    "`UpdateAmmoBP`",
+    "`UpdateAmmoMag`",
+    "`PreConstruct` — *This node is disabled and will not be called.\\nDrag off pins to build functionality.*",
+    "`Construct`",
+    "`Tick`"
+  ],
+  "functions": [
+    "`GetPlayerCharacter()`",
+    "`LessEqual_DoubleDouble()`",
+    "`TickBorder()`",
+    "`Divide_DoubleDouble()`",
+    "`Conv_StringToText()`",
+    "`Conv_IntToString()`",
+    "`K2_GetComponentLocation()`",
+    "`GetOwningPlayer()`",
+    "`ProjectWorldLocationToWidgetPosition()`",
+    "`SetPosition()`",
+    "`SlotAsCanvasSlot()`",
+    "`SetActiveWidgetIndex()`",
+    "`GetViewYaw()`",
+    "`SetRenderTransformAngle()`",
+    "`IsVisible()`",
+    "`GetGameInstance()`",
+    "`GetSubstring()`",
+    "`SetText()`",
+    "`SetColorAndOpacity()`",
+    "`Less_IntInt()`",
+    "`Conv_IntToText()`",
+    "`SetBrushFromTexture()`",
+    "`ExecuteUbergraph_W_Main()`",
+    "`EqualEqual_ByteByte()`",
+    "`IsValid()`"
+  ],
+  "graph_sections": [],
+  "interfaces": [],
+  "structs_used": [
+    "LinearColor"
+  ],
+  "key_patterns": {
+    "has_replication": false,
+    "has_timers": false,
+    "has_overlap_events": false,
+    "has_enhanced_input": false,
+    "has_timeline": false,
+    "has_data_tables": false,
+    "has_dynamic_material": false,
+    "has_camera_fade": false
+  },
+  "source_file": "W_Main.md"
+}

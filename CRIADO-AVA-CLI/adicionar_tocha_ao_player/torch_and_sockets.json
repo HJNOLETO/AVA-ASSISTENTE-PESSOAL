@@ -1,0 +1,15 @@
+{
+  "torch_name": "Torch",
+  "torch_class": "StaticMesh",
+  "num_materials": 3,
+  "materials": [
+    "M_Prop_Torch1",
+    "M_Prop_Torch2",
+    "M_Prop_Torch3"
+  ],
+  "bounds": "<Struct 'BoxSphereBounds' (0x000006B5D9BC3F40) {origin: {x: -0.000000, y: -0.000001, z: 16.157028}, box_extent: {x: 3.967577, y: 3.994839, z: 33.721733}, sphere_radius: 33.767109}>",
+  "num_lods": 1,
+  "skeleton_name": "ALS_Mannequin_Skeleton",
+  "sockets": [],
+  "socket_count": 0
+}

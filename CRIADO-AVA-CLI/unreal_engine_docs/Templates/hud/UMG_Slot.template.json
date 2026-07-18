@@ -1,0 +1,48 @@
+{
+  "name": "UMG_Slot",
+  "parent_class": "UserWidget",
+  "template_id": "slot",
+  "category": "HUD",
+  "variables": [],
+  "components": [
+    {
+      "name": "SizeBox_127",
+      "type": "SizeBox"
+    },
+    {
+      "name": "SizeBoxSlot_0",
+      "type": "SizeBoxSlot"
+    },
+    {
+      "name": "Overlay_196",
+      "type": "Overlay"
+    },
+    {
+      "name": "WeaponIcon",
+      "type": "Image"
+    },
+    {
+      "name": "AmmoBox",
+      "type": "HorizontalBox"
+    },
+    {
+      "name": "AmmoMagazine",
+      "type": "TextBlock"
+    },
+    {
+      "name": "Text",
+      "type": "TextBlock"
+    },
+    {
+      "name": "AmmoStored",
+      "type": "TextBlock"
+    }
+  ],
+  "events": [],
+  "functions": [],
+  "graph_sections": [],
+  "interfaces": [],
+  "structs_used": [],
+  "key_patterns": {},
+  "source_file": "UMG_Slot.md"
+}
